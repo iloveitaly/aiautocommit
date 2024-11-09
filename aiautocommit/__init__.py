@@ -11,7 +11,7 @@ CONFIG_PATHS = [
     Path(".aiautocommit"),  # $PWD/.aiautocommit
     Path(os.environ.get("XDG_CONFIG_HOME", "~/.config")).expanduser()
     / "aiautocommit",  # XDG config dir
-    Path(os.environ.get("aiautocommit_CONFIG", "")),  # Custom config path
+    Path(os.environ.get("AIAUTOCOMMIT_CONFIG", "")),  # Custom config path
 ]
 
 DIFF_PROMPT_FILE = "diff_prompt.txt"
@@ -19,7 +19,7 @@ COMMIT_PROMPT_FILE = "commit_prompt.txt"
 EXCLUSIONS_FILE = "exclusions.txt"
 
 
-MODEL_NAME = os.environ.get("aiautocommit_MODEL", "gpt-4o-mini")
+MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "gpt-4o-mini")
 DIFF_PROMPT = """
 Generate a short summary of the git diffs included using these rules:
 
@@ -80,8 +80,8 @@ PROMPT_CUTOFF = 10_000
 logging.basicConfig(
     level=os.environ.get("LOG_LEVEL", "INFO").upper(),
     **(
-        {"filename": os.environ.get("aiautocommit_LOG_PATH")}
-        if os.environ.get("aiautocommit_LOG_PATH")
+        {"filename": os.environ.get("AIAUTOCOMMIT_LOG_PATH")}
+        if os.environ.get("AIAUTOCOMMIT_LOG_PATH")
         else {"stream": sys.stderr}
     ),
 )
