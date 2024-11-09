@@ -1,2 +1,8 @@
 #!/bin/sh
+
+# Exit if a rebase is in progress
+if git rev-parse --git-dir >/dev/null 2>&1 && [ -d "$(git rev-parse --git-dir)/rebase-merge" ] || [ -d "$(git rev-parse --git-dir)/rebase-apply" ]; then
+  exit 0
+fi
+
 autocommit commit --output-file "$1"

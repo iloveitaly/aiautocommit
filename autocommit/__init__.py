@@ -303,7 +303,12 @@ def commit(print_message, output_file, config_dir):
 
 
 @main.command()
-def install_pre_commit():
+@click.option(
+    "--overwrite",
+    is_flag=True,
+    help="Overwrite existing pre-commit hook if it exists",
+)
+def install_pre_commit(overwrite):
     """Install pre-commit script into git hooks directory"""
     git_result = subprocess.run(
         ["git", "rev-parse", "--git-dir"],
@@ -318,7 +323,7 @@ def install_pre_commit():
 
     pre_commit = hooks_dir / "prepare-commit-msg"
 
-    if not pre_commit.exists():
+    if not pre_commit.exists() or overwrite:
         pre_commit_script = Path(__file__).parent / "prepare-commit-msg"
         pre_commit.write_text(pre_commit_script.read_text())
         pre_commit.chmod(0o755)
