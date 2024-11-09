@@ -1,0 +1,2 @@
+#!/bin/sh
+autocommit commit --output-file "$1"

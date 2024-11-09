@@ -7,6 +7,7 @@ requires-python = ">=3.10"
 dependencies = ["click>=8.1.7", "openai>=1.54.3"]
 authors = [{ name = "Michael Bianco", email = "mike@mikebian.co" }]
 keywords = ["git", "commit", "automation", "ai", "openai"]
+urls = { "Repository" = "https://github.com/iloveitaly/autocommit" }
 
 [project.scripts]
 autocommit = "autocommit:main"

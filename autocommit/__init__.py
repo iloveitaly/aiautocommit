@@ -171,10 +171,17 @@ def assemble_diffs(parsed_diffs, cutoff):
     return assembled_diffs
 
 
-async def complete(prompt):
+def asyncopenai() -> "AsyncOpenAI":
     from openai import AsyncOpenAI
 
-    aclient = AsyncOpenAI()
+    if not hasattr(asyncopenai, "_instance"):
+        # Using a class-level attribute to store the singleton instance
+        setattr(asyncopenai, "_instance", AsyncOpenAI())
+    return getattr(asyncopenai, "_instance")
+
+
+async def complete(prompt):
+    aclient = asyncopenai()
     completion_resp = await aclient.chat.completions.create(
         model=MODEL_NAME,
         messages=[{"role": "user", "content": prompt[: PROMPT_CUTOFF + 100]}],
@@ -204,6 +211,8 @@ async def generate_commit_message(diff):
         return ""
 
     assembled_diffs = assemble_diffs(parse_diff(diff), PROMPT_CUTOFF)
+
+    logging.debug(f"Summarizing {len(assembled_diffs)} diffs")
 
     summaries = await asyncio.gather(
         *[summarize_diff(diff) for diff in assembled_diffs]
@@ -297,10 +306,10 @@ def install_pre_commit():
     hooks_dir = Path(git_dir) / "hooks"
     hooks_dir.mkdir(exist_ok=True)
 
-    pre_commit = hooks_dir / "pre-commit"
+    pre_commit = hooks_dir / "prepare-commit-msg"
 
     if not pre_commit.exists():
-        pre_commit_script = Path(__file__).parent / "pre-commit"
+        pre_commit_script = Path(__file__).parent / "prepare-commit-msg"
         pre_commit.write_text(pre_commit_script.read_text())
         pre_commit.chmod(0o755)
         click.echo("Installed pre-commit hook")
