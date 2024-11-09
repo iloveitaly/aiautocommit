@@ -8,10 +8,10 @@ import click
 
 # Config file locations in priority order
 CONFIG_PATHS = [
-    Path(".autocommit"),  # $PWD/.autocommit
+    Path(".aiautocommit"),  # $PWD/.aiautocommit
     Path(os.environ.get("XDG_CONFIG_HOME", "~/.config")).expanduser()
-    / "autocommit",  # XDG config dir
-    Path(os.environ.get("AUTOCOMMIT_CONFIG", "")),  # Custom config path
+    / "aiautocommit",  # XDG config dir
+    Path(os.environ.get("aiautocommit_CONFIG", "")),  # Custom config path
 ]
 
 DIFF_PROMPT_FILE = "diff_prompt.txt"
@@ -19,7 +19,7 @@ COMMIT_PROMPT_FILE = "commit_prompt.txt"
 EXCLUSIONS_FILE = "exclusions.txt"
 
 
-MODEL_NAME = os.environ.get("AUTOCOMMIT_MODEL", "gpt-4o-mini")
+MODEL_NAME = os.environ.get("aiautocommit_MODEL", "gpt-4o-mini")
 DIFF_PROMPT = """
 Generate a short summary of the git diffs included using these rules:
 
@@ -80,8 +80,8 @@ PROMPT_CUTOFF = 10_000
 logging.basicConfig(
     level=os.environ.get("LOG_LEVEL", "INFO").upper(),
     **(
-        {"filename": os.environ.get("AUTOCOMMIT_LOG_PATH")}
-        if os.environ.get("AUTOCOMMIT_LOG_PATH")
+        {"filename": os.environ.get("aiautocommit_LOG_PATH")}
+        if os.environ.get("aiautocommit_LOG_PATH")
         else {"stream": sys.stderr}
     ),
 )
@@ -344,8 +344,8 @@ def install_pre_commit(overwrite):
 
 @main.command()
 def dump_prompts():
-    """Dump default prompts into .autocommit directory for easy customization"""
-    config_dir = Path(".autocommit")
+    """Dump default prompts into .aiautocommit directory for easy customization"""
+    config_dir = Path(".aiautocommit")
     config_dir.mkdir(exist_ok=True)
 
     diff_prompt = config_dir / DIFF_PROMPT_FILE
@@ -360,7 +360,7 @@ def dump_prompts():
         exclusions.write_text("\n".join(EXCLUDED_FILES))
 
     click.echo(
-        """Dumped default prompts to .autocommit directory:
+        """Dumped default prompts to .aiautocommit directory:
 
 - diff_prompt.txt: Template for generating diff summaries, this is passed to commit_prompt.txt
 - commit_prompt.txt: Template for generating commit messages

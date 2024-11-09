@@ -5,4 +5,4 @@ if git rev-parse --git-dir >/dev/null 2>&1 && [ -d "$(git rev-parse --git-dir)/r
   exit 0
 fi
 
-autocommit commit --output-file "$1"
+aiautocommit commit --output-file "$1"

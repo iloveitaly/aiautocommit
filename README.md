@@ -1,8 +1,8 @@
-[![Release Notes](https://img.shields.io/github/release/iloveitaly/autocommit)](https://github.com/iloveitaly/autocommit/releases) [![Downloads](https://static.pepy.tech/badge/autocommit/month)](https://pepy.tech/project/autocommit) [![Python Versions](https://img.shields.io/pypi/pyversions/autocommit)](https://pypi.org/project/autocommit) ![GitHub CI Status](https://github.com/iloveitaly/autocommit/actions/workflows/build_and_publish.yml/badge.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Release Notes](https://img.shields.io/github/release/iloveitaly/aiautocommit)](https://github.com/iloveitaly/aiautocommit/releases) [![Downloads](https://static.pepy.tech/badge/aiautocommit/month)](https://pepy.tech/project/aiautocommit) [![Python Versions](https://img.shields.io/pypi/pyversions/aiautocommit)](https://pypi.org/project/aiautocommit) ![GitHub CI Status](https://github.com/iloveitaly/aiautocommit/actions/workflows/build_and_publish.yml/badge.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-# autocommit
+# aiautocommit
 
-Generate intelligent commit messages using AI. Autocommit analyzes your staged changes and creates conventional commit messages, handling both small tweaks and large changesets effectively.
+Generate intelligent commit messages using AI. aiautocommit analyzes your staged changes and creates conventional commit messages, handling both small tweaks and large changesets effectively.
 
 Yes, there are a lot of these. Main ways this is different:
 
@@ -12,7 +12,7 @@ Yes, there are a lot of these. Main ways this is different:
 ## Installation
 
 ```shell
-pip install autocommit
+pip install aiautocommit
 ```
 
 ## Features
@@ -30,30 +30,30 @@ Set your OpenAI API key:
 export OPENAI_API_KEY=<YOUR API KEY>
 ```
 
-Stage your changes and run autocommit:
+Stage your changes and run aiautocommit:
 
 ```
 git add .
-autocommit
+aiautocommit
 ```
 
 ## Customization
 
 ### Using Config Directory
 
-Autocommit looks for configuration files in these locations (in priority order):
+aiautocommit looks for configuration files in these locations (in priority order):
 
-* .autocommit/ in current directory
-* $XDG_CONFIG_HOME/autocommit/ (defaults to ~/.config/autocommit/)
-* Custom path via AUTOCOMMIT_CONFIG environment variable
+* .aiautocommit/ in current directory
+* $XDG_CONFIG_HOME/aiautocommit/ (defaults to ~/.config/aiautocommit/)
+* Custom path via aiautocommit_CONFIG environment variable
 
 To get started with customization:
 
 ```shell
-autocommit dump-prompts
+aiautocommit dump-prompts
 ```
 
-This creates a `.autocommit/` directory with:
+This creates a `.aiautocommit/` directory with:
 
 * `diff_prompt.txt`: Template for generating diff summaries
 * `commit_prompt.txt`: Template for generating commit messages
@@ -64,16 +64,16 @@ This creates a `.autocommit/` directory with:
 To automatically generate commit messages during git commits:
 
 ```
-autocommit install-pre-commit
+aiautocommit install-pre-commit
 ```
 
 ### Environment Variables
 
 * `OPENAI_API_KEY`: Your OpenAI API key
-* `AUTOCOMMIT_MODEL`: AI model to use (default: gpt-4-mini)
-* `AUTOCOMMIT_CONFIG`: Custom config directory path
+* `aiautocommit_MODEL`: AI model to use (default: gpt-4-mini)
+* `aiautocommit_CONFIG`: Custom config directory path
 * `LOG_LEVEL`: Logging verbosity
-* `AUTOCOMMIT_LOG_PATH`: Custom log file path
+* `aiautocommit_LOG_PATH`: Custom log file path
 
 ## Privacy Disclaimer
 
@@ -87,7 +87,7 @@ autocommit install-pre-commit
 
 I looked at a bunch of projects before building this one.
 
-- https://github.com/abi/autocommit - python, inactive. Many files, not simple.
+- https://github.com/abi/aiautocommit - python, inactive. Many files, not simple.
 - https://github.com/Sett17/turboCommit - rust, inactive.
 - https://github.com/Nutlope/aicommits - typescript. Node is so slow and I hate working with it.
 - https://github.com/Elhameed/aicommits - python
