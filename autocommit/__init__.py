@@ -21,22 +21,32 @@ EXCLUSIONS_FILE = "exclusions.txt"
 
 MODEL_NAME = os.environ.get("AUTOCOMMIT_MODEL", "gpt-4o-mini")
 DIFF_PROMPT = """
-Generate a succinct summary using these rules:
+Generate a short summary of the code changes using these rules:
 
-* Indicate if this is a large, medium, or small (less than 100 lines) change
-* Omit comments or whitespace changes
+* Indicate (ex: "Size: large" on the first line) if the change is large (800+ lines changes), medium (300-800 lines changed), or small (less than 300 lines changed)
+* Exclude comments or whitespace changes from the summary
+* Do not include information about modified comments
+* Omit information about renamed variables or functions
 
-Of the following code changes:
+Only respond with summary content.
+
+---
 """
 COMMIT_MSG_PROMPT = """
-Generate a commit message using these rules:
+Generate a commit message from the code change summaries using these rules:
 
-* No more than 50 characters
+* No more than 50 word summary
 * Conventional commit format
-* When a large diff is , include extended commit message with markdown bullets if there are many details to include
+* When a summary is indicated as large, include extended commit message with markdown bullets. Otherwise, omit the extended commit message.
 * Do not wrap in a codeblock
+* Do not include generic messages without specifics such as:
+  * "Improved comments and structured logic for clarity..."
+  * "Separated logic from the original function..."
+  * "Refactored X into Y..."
+  * "Introduced new function..."
+  * "Enhances clarity and ease of use..."
 
-From these summaries:
+---
 """
 EXCLUDED_FILES = [
     "Gemfile.lock",
