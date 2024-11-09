@@ -39,6 +39,7 @@ Generate a commit message from the code change summaries using these rules:
 * No more than 50 character summary
 * Imperative mood in the subject line
 * Conventional commit format
+  * use `docs` instead of `feat` if it's a documentation change
 * When change summaries are indicated as large, include extended commit message with markdown bullets.
   * Use the extended commit (body) to explain what and why vs. how
 * Do not wrap in a codeblock
