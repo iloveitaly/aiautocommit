@@ -1,55 +1,54 @@
-# [0.5.0](https://github.com/iloveitaly/autocommit/compare/v0.4.0...v0.5.0) (2024-11-09)
+# [0.6.0](https://github.com/iloveitaly/aiautocommit/compare/v0.5.0...v0.6.0) (2024-11-09)
 
 
 ### Features
 
-* add badges to README for release notes, downloads, Python versions, CI status, and license ([276a054](https://github.com/iloveitaly/autocommit/commit/276a0541c6216493c5f24b2431ced6c1780ce973))
-* add rule for empty commit message response ([a4974f8](https://github.com/iloveitaly/autocommit/commit/a4974f8a93106dfdbad2c02b34fabeb38554a319))
-* limit commit message summary to 50 chars ([9049cc8](https://github.com/iloveitaly/autocommit/commit/9049cc8cf461137464b7a0b52f2652a582134799))
-* update function for improved performance ([eb204cd](https://github.com/iloveitaly/autocommit/commit/eb204cd8e68352f01432f384e0a08b1f30cc4bf4))
-* update prompt text in DIFF_PROMPT variable ([4629efa](https://github.com/iloveitaly/autocommit/commit/4629efae6a04095a9b242ce68877679482d82c67))
+* add Makefile and update project configuration ([d18540f](https://github.com/iloveitaly/aiautocommit/commit/d18540f591694cfa349f42901c9afb684d11872d))
 
 
 
-# [0.4.0](https://github.com/iloveitaly/autocommit/compare/v0.3.1...v0.4.0) (2024-11-09)
+# [0.5.0](https://github.com/iloveitaly/aiautocommit/compare/v0.4.0...v0.5.0) (2024-11-09)
 
 
 ### Features
 
-* **pre-commit:** add option to overwrite existing hooks ([8f0af88](https://github.com/iloveitaly/autocommit/commit/8f0af881010624930b65da191119bec1f5bf3dce))
+* add badges to README for release notes, downloads, Python versions, CI status, and license ([276a054](https://github.com/iloveitaly/aiautocommit/commit/276a0541c6216493c5f24b2431ced6c1780ce973))
+* add rule for empty commit message response ([a4974f8](https://github.com/iloveitaly/aiautocommit/commit/a4974f8a93106dfdbad2c02b34fabeb38554a319))
+* limit commit message summary to 50 chars ([9049cc8](https://github.com/iloveitaly/aiautocommit/commit/9049cc8cf461137464b7a0b52f2652a582134799))
+* update function for improved performance ([eb204cd](https://github.com/iloveitaly/aiautocommit/commit/eb204cd8e68352f01432f384e0a08b1f30cc4bf4))
+* update prompt text in DIFF_PROMPT variable ([4629efa](https://github.com/iloveitaly/aiautocommit/commit/4629efae6a04095a9b242ce68877679482d82c67))
 
 
 
-## [0.3.1](https://github.com/iloveitaly/autocommit/compare/v0.3.0...v0.3.1) (2024-11-09)
+# [0.4.0](https://github.com/iloveitaly/aiautocommit/compare/v0.3.1...v0.4.0) (2024-11-09)
+
+
+### Features
+
+* **pre-commit:** add option to overwrite existing hooks ([8f0af88](https://github.com/iloveitaly/aiautocommit/commit/8f0af881010624930b65da191119bec1f5bf3dce))
+
+
+
+## [0.3.1](https://github.com/iloveitaly/aiautocommit/compare/v0.3.0...v0.3.1) (2024-11-09)
 
 
 ### Bug Fixes
 
-* resolve issue with user authentication failure ([152a095](https://github.com/iloveitaly/autocommit/commit/152a095de12995238da8faa114d2ece01dfffae0))
+* resolve issue with user authentication failure ([152a095](https://github.com/iloveitaly/aiautocommit/commit/152a095de12995238da8faa114d2ece01dfffae0))
 
 
 
-# [0.3.0](https://github.com/iloveitaly/autocommit/compare/v0.2.0...v0.3.0) (2024-11-09)
+# [0.3.0](https://github.com/iloveitaly/aiautocommit/compare/v0.2.0...v0.3.0) (2024-11-09)
 
 
 ### Bug Fixes
 
-* update PyPI publish command in workflow   ([4bb7241](https://github.com/iloveitaly/autocommit/commit/4bb7241fa700e4de1c538095f3ccd7f76187ed4e))
+* update PyPI publish command in workflow   ([4bb7241](https://github.com/iloveitaly/aiautocommit/commit/4bb7241fa700e4de1c538095f3ccd7f76187ed4e))
 
 
 ### Features
 
-* update prompts for code change summaries and commit message generation ([a9264e1](https://github.com/iloveitaly/autocommit/commit/a9264e1ea2d25e0d9e2404146fd15556d3d15a2d))
-
-
-
-# [0.2.0](https://github.com/iloveitaly/autocommit/compare/94d263866736174002ae71c06dff0b4d2f5eb843...v0.2.0) (2024-11-09)
-
-
-### Features
-
-* add GitHub Actions workflow for PyPI publishing ([94d2638](https://github.com/iloveitaly/autocommit/commit/94d263866736174002ae71c06dff0b4d2f5eb843))
-* **versions:** add uv version to .tool-versions ([1985249](https://github.com/iloveitaly/autocommit/commit/1985249a051c753eddecdcb201ce2bac5c2fd5a6))
+* update prompts for code change summaries and commit message generation ([a9264e1](https://github.com/iloveitaly/aiautocommit/commit/a9264e1ea2d25e0d9e2404146fd15556d3d15a2d))
 
 
 
