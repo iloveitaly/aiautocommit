@@ -42,7 +42,7 @@ jobs:
       - name: Publish to PyPI
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
         # `gh secret set PYPI_API_TOKEN --app actions --body $PYPI_API_TOKEN`
-        run: uv publish -u __token__ -p ${{ secrets.PYPI_API_TOKEN }}
+        run: uv publish --token ${{ secrets.PYPI_API_TOKEN }}
 
       - name: Github Release
         if: ${{ steps.changelog.outputs.skipped == 'false' }}
