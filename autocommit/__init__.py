@@ -21,7 +21,7 @@ EXCLUSIONS_FILE = "exclusions.txt"
 
 MODEL_NAME = os.environ.get("AUTOCOMMIT_MODEL", "gpt-4o-mini")
 DIFF_PROMPT = """
-Generate a short summary of the code changes using these rules:
+Generate a short summary of the git diffs included using these rules:
 
 * Indicate (ex: "Size: large" on the first line) if the change is large (800+ lines changes), medium (300-800 lines changed), or small (less than 300 lines changed)
 * Exclude comments or whitespace changes from the summary
