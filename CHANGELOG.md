@@ -1,3 +1,12 @@
+# [0.4.0](https://github.com/iloveitaly/autocommit/compare/v0.3.1...v0.4.0) (2024-11-09)
+
+
+### Features
+
+* **pre-commit:** add option to overwrite existing hooks ([8f0af88](https://github.com/iloveitaly/autocommit/commit/8f0af881010624930b65da191119bec1f5bf3dce))
+
+
+
 ## [0.3.1](https://github.com/iloveitaly/autocommit/compare/v0.3.0...v0.3.1) (2024-11-09)
 
 
