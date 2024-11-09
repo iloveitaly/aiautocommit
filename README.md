@@ -34,7 +34,11 @@ Stage your changes and run aiautocommit:
 
 ```
 git add .
-aiautocommit
+# this will generate a commit message and commit the changes
+aiautocommit commit
+
+# or, just to see what it will do
+aiautocommit commit --print-message
 ```
 
 ## Customization
