@@ -49,6 +49,7 @@ Generate a commit message from the code change summaries using these rules:
   * "Introduced new function..."
   * "Enhances clarity and ease of use..."
 * Don't mention details which feat: update prompt text in DIFF_PROMPT variable
+* If there is not enough information to generate a summary, return an empty string
 
 Below are the change summaries:
 
