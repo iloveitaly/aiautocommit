@@ -35,9 +35,11 @@ Only respond with summary content.
 COMMIT_MSG_PROMPT = """
 Generate a commit message from the code change summaries using these rules:
 
-* No more than 50 word summary
+* No more than 50 character summary
+* Imperative mood in the subject line
 * Conventional commit format
-* When a summary is indicated as large, include extended commit message with markdown bullets. Otherwise, omit the extended commit message.
+* When change summaries are indicated as large, include extended commit message with markdown bullets.
+  * Use the extended commit (body) to explain what and why vs. how
 * Do not wrap in a codeblock
 * Do not include generic messages without specifics such as:
   * "Improved comments and structured logic for clarity..."
@@ -45,6 +47,9 @@ Generate a commit message from the code change summaries using these rules:
   * "Refactored X into Y..."
   * "Introduced new function..."
   * "Enhances clarity and ease of use..."
+* Don't mention details which feat: update prompt text in DIFF_PROMPT variable
+
+Below are the change summaries:
 
 ---
 """
