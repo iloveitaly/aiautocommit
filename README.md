@@ -1,4 +1,4 @@
-[![Release Notes](https://img.shields.io/github/release/iloveitaly/autocommit)](https://github.com/iloveitaly/autocommit/releases) [![Downloads](https://static.pepy.tech/badge/autocommit/month)](https://pepy.tech/project/autocommit) [![Python Versions](https://img.shields.io/pypi/pyversions/autocommit)](https://pypi.org/project/autocommit) ![GitHub CI Status](https://github.com/iloveitaly/autocommit/actions/workflows/build_and_publish.yml/badge.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)%
+[![Release Notes](https://img.shields.io/github/release/iloveitaly/autocommit)](https://github.com/iloveitaly/autocommit/releases) [![Downloads](https://static.pepy.tech/badge/autocommit/month)](https://pepy.tech/project/autocommit) [![Python Versions](https://img.shields.io/pypi/pyversions/autocommit)](https://pypi.org/project/autocommit) ![GitHub CI Status](https://github.com/iloveitaly/autocommit/actions/workflows/build_and_publish.yml/badge.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # autocommit
 

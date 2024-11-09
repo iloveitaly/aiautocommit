@@ -32,6 +32,7 @@ Only respond with summary content.
 
 ---
 """
+# https://cbea.ms/git-commit/
 COMMIT_MSG_PROMPT = """
 Generate a commit message from the code change summaries using these rules:
 
