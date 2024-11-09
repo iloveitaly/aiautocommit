@@ -1,3 +1,16 @@
+# [0.5.0](https://github.com/iloveitaly/autocommit/compare/v0.4.0...v0.5.0) (2024-11-09)
+
+
+### Features
+
+* add badges to README for release notes, downloads, Python versions, CI status, and license ([276a054](https://github.com/iloveitaly/autocommit/commit/276a0541c6216493c5f24b2431ced6c1780ce973))
+* add rule for empty commit message response ([a4974f8](https://github.com/iloveitaly/autocommit/commit/a4974f8a93106dfdbad2c02b34fabeb38554a319))
+* limit commit message summary to 50 chars ([9049cc8](https://github.com/iloveitaly/autocommit/commit/9049cc8cf461137464b7a0b52f2652a582134799))
+* update function for improved performance ([eb204cd](https://github.com/iloveitaly/autocommit/commit/eb204cd8e68352f01432f384e0a08b1f30cc4bf4))
+* update prompt text in DIFF_PROMPT variable ([4629efa](https://github.com/iloveitaly/autocommit/commit/4629efae6a04095a9b242ce68877679482d82c67))
+
+
+
 # [0.4.0](https://github.com/iloveitaly/autocommit/compare/v0.3.1...v0.4.0) (2024-11-09)
 
 
