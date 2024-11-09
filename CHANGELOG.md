@@ -1,3 +1,12 @@
+## [0.3.1](https://github.com/iloveitaly/autocommit/compare/v0.3.0...v0.3.1) (2024-11-09)
+
+
+### Bug Fixes
+
+* resolve issue with user authentication failure ([152a095](https://github.com/iloveitaly/autocommit/commit/152a095de12995238da8faa114d2ece01dfffae0))
+
+
+
 # [0.3.0](https://github.com/iloveitaly/autocommit/compare/v0.2.0...v0.3.0) (2024-11-09)
 
 
