@@ -24,8 +24,9 @@ DIFF_PROMPT = """
 Generate a short summary of the git diffs included using these rules:
 
 * Indicate (ex: "Size: large" on the first line) if the change is large (800+ lines changes), medium (300-800 lines changed), or small (less than 300 lines changed)
-* Exclude comments or whitespace changes from the summary
-* Do not include information about modified comments
+* Indicate if only documentation or code comments are changed
+* Omit whitespace changes
+* Omit information about modified comments
 * Omit information about renamed variables or functions
 
 Only respond with summary content.
@@ -39,16 +40,17 @@ Generate a commit message from the code change summaries using these rules:
 * No more than 50 character summary
 * Imperative mood in the subject line
 * Conventional commit format
-  * use `docs` instead of `feat` if it's a documentation change
+  * Use `docs` instead of `feat` ONLY if documentation or code comments are the ONLY changes
 * When change summaries are indicated as large, include extended commit message with markdown bullets.
   * Use the extended commit (body) to explain what and why vs. how
 * Do not wrap in a codeblock
-* Do not include generic messages without specifics such as:
+* Write specifically what was changed and why and avoid general statements like:
   * "Improved comments and structured logic for clarity..."
   * "Separated logic from the original function..."
   * "Refactored X into Y..."
   * "Introduced new function..."
   * "Enhances clarity and ease of use..."
+  * "add new file to the project..."
 * Don't mention details which feat: update prompt text in DIFF_PROMPT variable
 * If there is not enough information to generate a summary, return an empty string
 
@@ -190,6 +192,7 @@ def assemble_diffs(parsed_diffs, cutoff):
 
 
 def asyncopenai() -> "AsyncOpenAI":
+    # waiting to import so the initial load is quick (so --help displays more quickly)
     from openai import AsyncOpenAI
 
     if not hasattr(asyncopenai, "_instance"):
