@@ -58,6 +58,28 @@ Below are the change summaries:
 
 ---
 """
+DIFF_INCLUDED_COMMIT_MSG_PROMPT = """
+Generate a commit message from the `git diff` output below using these rules:
+
+* No more than 50 character summary
+* Imperative mood in the subject line
+* Conventional commit format
+  * Use `docs` instead of `feat` ONLY if documentation or code comments are the ONLY changes
+* When a diff is large (hundreds of lines) include extended commit message with markdown bullets.
+  * Use the extended commit (body) to explain what and why vs. how
+* Do not wrap output in a codeblock
+* Write specifically what was changed and why and avoid general statements like:
+  * "Improved comments and structured logic for clarity..."
+  * "Separated logic from the original function..."
+  * "Refactored X into Y..."
+  * "Introduced new function..."
+  * "Enhances clarity and ease of use..."
+  * "add new file to the project..."
+* Don't mention verbose details such as which variable was updated. Example "feat: update prompt text in DIFF_PROMPT variable"
+* If there is not enough information to generate a summary, return an empty string
+
+---
+"""
 EXCLUDED_FILES = [
     "Gemfile.lock",
     "uv.lock",
@@ -226,10 +248,16 @@ async def summarize_summaries(summaries):
     return await complete(COMMIT_MSG_PROMPT + "\n\n" + summaries + "\n\n")
 
 
+SINGLE_PROMPT = True
+
+
 async def generate_commit_message(diff):
     if not diff:
         logging.debug("No commit message generated")
         return ""
+
+    if SINGLE_PROMPT:
+        return await complete(DIFF_INCLUDED_COMMIT_MSG_PROMPT + "\n\n" + diff)
 
     assembled_diffs = assemble_diffs(parse_diff(diff), PROMPT_CUTOFF)
 
@@ -276,7 +304,7 @@ def main():
     type=click.Path(exists=True, file_okay=False, dir_okay=True),
     help="specify custom config directory",
 )
-def commit(print_message, output_file, config_dir):
+def commit(print_message, output_file, config_dir, single_prompt):
     """
     Generate commit message from git diff.
     """
