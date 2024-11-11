@@ -1,3 +1,12 @@
+## [0.6.1](https://github.com/iloveitaly/aiautocommit/compare/v0.6.0...v0.6.1) (2024-11-11)
+
+
+### Bug Fixes
+
+* more prompt playing ([c97fe6c](https://github.com/iloveitaly/aiautocommit/commit/c97fe6cdb7c19ccab3908d11158113278ea2d168))
+
+
+
 # [0.6.0](https://github.com/iloveitaly/aiautocommit/compare/v0.5.0...v0.6.0) (2024-11-09)
 
 
@@ -35,20 +44,6 @@
 ### Bug Fixes
 
 * resolve issue with user authentication failure ([152a095](https://github.com/iloveitaly/aiautocommit/commit/152a095de12995238da8faa114d2ece01dfffae0))
-
-
-
-# [0.3.0](https://github.com/iloveitaly/aiautocommit/compare/v0.2.0...v0.3.0) (2024-11-09)
-
-
-### Bug Fixes
-
-* update PyPI publish command in workflow   ([4bb7241](https://github.com/iloveitaly/aiautocommit/commit/4bb7241fa700e4de1c538095f3ccd7f76187ed4e))
-
-
-### Features
-
-* update prompts for code change summaries and commit message generation ([a9264e1](https://github.com/iloveitaly/aiautocommit/commit/a9264e1ea2d25e0d9e2404146fd15556d3d15a2d))
 
 
 
