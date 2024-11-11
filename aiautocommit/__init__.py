@@ -1,9 +1,11 @@
 import asyncio
+import logging
 import os
 import subprocess
 import sys
-import logging
+import warnings
 from pathlib import Path
+
 import click
 
 # Config file locations in priority order
@@ -61,6 +63,7 @@ Below are the change summaries:
 DIFF_INCLUDED_COMMIT_MSG_PROMPT = """
 Generate a commit message from the `git diff` output below using these rules:
 
+* Only lines removed or added should be considered
 * No more than 50 character summary
 * Imperative mood in the subject line
 * Conventional commit format
@@ -80,6 +83,8 @@ Generate a commit message from the `git diff` output below using these rules:
 
 ---
 """
+
+# TODO should we ignore files without an extension? can we detect binary files?
 EXCLUDED_FILES = [
     "Gemfile.lock",
     "uv.lock",
@@ -100,6 +105,7 @@ EXCLUDED_FILES = [
     "bun.lockb",
 ]
 
+# characters, not tokens
 PROMPT_CUTOFF = 10_000
 
 logging.basicConfig(
@@ -110,6 +116,18 @@ logging.basicConfig(
         else {"stream": sys.stderr}
     ),
 )
+
+# this is called within py dev environments. Unless it looks like we are explicitly debugging aiautocommit, we force a
+# more silent operation. Checking for AIAUTOCOMMIT_LOG_PATH is not a perfect heuristic, but it works for now.
+if not os.environ.get("AIAUTOCOMMIT_LOG_PATH"):
+    # Suppress ResourceWarnings
+    warnings.filterwarnings("ignore", category=ResourceWarning)
+
+    # Disable asyncio debug logging
+    logging.getLogger("asyncio").setLevel(logging.ERROR)
+
+    # Optional: Disable httpx logging if desired
+    logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
 def configure_prompts(config_dir=None):
@@ -304,7 +322,7 @@ def main():
     type=click.Path(exists=True, file_okay=False, dir_okay=True),
     help="specify custom config directory",
 )
-def commit(print_message, output_file, config_dir, single_prompt):
+def commit(print_message, output_file, config_dir):
     """
     Generate commit message from git diff.
     """

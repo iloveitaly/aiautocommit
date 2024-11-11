@@ -5,3 +5,4 @@ setup:
 clean:
 	rm -rf *.egg-info
 	rm -rf .venv
+	rm autocommit.log
