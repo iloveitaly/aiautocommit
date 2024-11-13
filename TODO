@@ -1,1 +1,2 @@
 - [ ] maybe integrate with cody or vs code so we don't need additional API keys / costs https://github.com/PriNova/codypy/tree/f4aafb994a195c57c5fdcf75a03563a0502485ff
+- [ ] remove summarized diffs

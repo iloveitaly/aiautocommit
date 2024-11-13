@@ -82,13 +82,39 @@ To automatically generate commit messages during git commits:
 aiautocommit install-pre-commit
 ```
 
+[Learn more about git hooks here.](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks)
+
+
+#### Lefthook Configuration
+
+Lefthook is an excellent tool for managing git hooks. To use aiautocommit with lefthook, add the following to your `.lefthook.yml`:
+
+```yaml
+prepare-commit-msg:
+  commands:
+    aiautocommit:
+      run: aiautocommit commit --output-file "{1}"
+      interactive: true
+      env:
+        # without this, lefthook will run in an infinite loop
+        LEFTHOOK: 0
+        # ensures that LOG_LEVEL config of the current project does not interfere with aiautocommit
+        LOG_LEVEL: info
+        OPENAI_LOG: warn
+      skip:
+        merge:
+        rebase:
+        # only run this if the tool exists
+        run: ! which aiautocommit > /dev/null
+```
+
 ### Environment Variables
 
 * `OPENAI_API_KEY`: Your OpenAI API key
-* `aiautocommit_MODEL`: AI model to use (default: gpt-4-mini)
-* `aiautocommit_CONFIG`: Custom config directory path
+* `AIAUTOCOMMIT_MODEL`: AI model to use (default: gpt-4-mini)
+* `AIAUTOCOMMIT_CONFIG`: Custom config directory path
 * `LOG_LEVEL`: Logging verbosity
-* `aiautocommit_LOG_PATH`: Custom log file path
+* `AIAUTOCOMMIT_LOG_PATH`: Custom log file path
 
 ## Privacy Disclaimer
 

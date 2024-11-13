@@ -382,13 +382,14 @@ def install_pre_commit(overwrite):
     git_result.check_returncode()
 
     git_dir = git_result.stdout.strip()
-    hooks_dir = Path(git_dir) / "hooks"
-    hooks_dir.mkdir(exist_ok=True)
 
-    pre_commit = hooks_dir / "prepare-commit-msg"
+    target_hooks_dir = Path(git_dir) / "hooks"
+    target_hooks_dir.mkdir(exist_ok=True)
+
+    pre_commit = target_hooks_dir / "prepare-commit-msg"
+    pre_commit_script = Path(__file__).parent / "prepare-commit-msg"
 
     if not pre_commit.exists() or overwrite:
-        pre_commit_script = Path(__file__).parent / "prepare-commit-msg"
         pre_commit.write_text(pre_commit_script.read_text())
         pre_commit.chmod(0o755)
         click.echo("Installed pre-commit hook")
@@ -396,7 +397,7 @@ def install_pre_commit(overwrite):
         click.echo(
             "pre-commit hook already exists. Here's the contents we would have written:"
         )
-        click.echo(pre_commit.read_text())
+        click.echo(pre_commit_script.read_text())
 
 
 @main.command()
