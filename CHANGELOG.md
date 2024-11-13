@@ -1,3 +1,12 @@
+## [0.6.2](https://github.com/iloveitaly/aiautocommit/compare/v0.6.1...v0.6.2) (2024-11-13)
+
+
+### Bug Fixes
+
+* improving prompt ([89e13da](https://github.com/iloveitaly/aiautocommit/commit/89e13dae5faf63cd5164bfb7cf32963c69137f43))
+
+
+
 ## [0.6.1](https://github.com/iloveitaly/aiautocommit/compare/v0.6.0...v0.6.1) (2024-11-11)
 
 
@@ -35,15 +44,6 @@
 ### Features
 
 * **pre-commit:** add option to overwrite existing hooks ([8f0af88](https://github.com/iloveitaly/aiautocommit/commit/8f0af881010624930b65da191119bec1f5bf3dce))
-
-
-
-## [0.3.1](https://github.com/iloveitaly/aiautocommit/compare/v0.3.0...v0.3.1) (2024-11-09)
-
-
-### Bug Fixes
-
-* resolve issue with user authentication failure ([152a095](https://github.com/iloveitaly/aiautocommit/commit/152a095de12995238da8faa114d2ece01dfffae0))
 
 
 
