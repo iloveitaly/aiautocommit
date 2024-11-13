@@ -43,6 +43,17 @@ aiautocommit commit --print-message
 
 ## Customization
 
+### Logging
+
+First, you'll want to enable logging so you can extract the diff and prompt and iterate on it in ChatGPT:
+
+```shell
+export AIAUTOCOMMIT_LOG_LEVEL=DEBUG
+export AIAUTOCOMMIT_LOG_FILE=aiautocommit.log
+```
+
+Now, you'll have a nice log you can tail and fiddle with from there.
+
 ### Using Config Directory
 
 aiautocommit looks for configuration files in these locations (in priority order):

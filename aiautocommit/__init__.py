@@ -20,7 +20,7 @@ DIFF_PROMPT_FILE = "diff_prompt.txt"
 COMMIT_PROMPT_FILE = "commit_prompt.txt"
 EXCLUSIONS_FILE = "exclusions.txt"
 
-
+# o1-mini is the cheapest of the smaller models, not available publicly yet
 MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "gpt-4o-mini")
 DIFF_PROMPT = """
 Generate a short summary of the git diffs included using these rules:
@@ -63,22 +63,29 @@ Below are the change summaries:
 DIFF_INCLUDED_COMMIT_MSG_PROMPT = """
 Generate a commit message from the `git diff` output below using these rules:
 
+* No more than 50 character subject line
+* Write in imperative mood
 * Only lines removed or added should be considered
-* No more than 50 character summary
-* Imperative mood in the subject line
-* Conventional commit format
+* Use conventional commit format
   * Use `docs` instead of `feat` ONLY if documentation or code comments are the ONLY changes
-* When a diff is large (hundreds of lines) include extended commit message with markdown bullets.
+  * Only use `refactor` for changes that do not change behavior and simply refactor code
+  * Use `style` when updating linting or formatting or configuration for linting or formatting
+* Only include extended commit message when the diff is large (hundreds of lines added or removed)
   * Use the extended commit (body) to explain what and why vs. how
+  * Use markdown bullets to describe changes
+* Some hints on newer file types of programming tools:
+  * `Justfile` is similar to a Makefile and should be considered part of the build system
+* If the diff output below is small, do not include an extended commit message
 * Do not wrap output in a codeblock
-* Write specifically what was changed and why and avoid general statements like:
+* Write why a change was made and avoid general statements like:
   * "Improved comments and structured logic for clarity..."
   * "Separated logic from the original function..."
   * "Refactored X into Y..."
   * "Introduced new function..."
   * "Enhances clarity and ease of use..."
   * "add new file to the project..."
-* Don't mention verbose details such as which variable was updated. Example "feat: update prompt text in DIFF_PROMPT variable"
+* Don't mention verbose details like:
+  * What variable is changed "feat: update prompt text in DIFF_PROMPT variable"
 * If there is not enough information to generate a summary, return an empty string
 
 ---
