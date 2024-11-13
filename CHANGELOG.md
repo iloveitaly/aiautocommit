@@ -1,3 +1,12 @@
+## [0.6.3](https://github.com/iloveitaly/aiautocommit/compare/v0.6.2...v0.6.3) (2024-11-13)
+
+
+### Bug Fixes
+
+* bad pre-commit hook output if file already exists ([e5cdbc7](https://github.com/iloveitaly/aiautocommit/commit/e5cdbc70a7b5ebc271940ed23325d4765b63e6c3))
+
+
+
 ## [0.6.2](https://github.com/iloveitaly/aiautocommit/compare/v0.6.1...v0.6.2) (2024-11-13)
 
 
@@ -35,15 +44,6 @@
 * limit commit message summary to 50 chars ([9049cc8](https://github.com/iloveitaly/aiautocommit/commit/9049cc8cf461137464b7a0b52f2652a582134799))
 * update function for improved performance ([eb204cd](https://github.com/iloveitaly/aiautocommit/commit/eb204cd8e68352f01432f384e0a08b1f30cc4bf4))
 * update prompt text in DIFF_PROMPT variable ([4629efa](https://github.com/iloveitaly/aiautocommit/commit/4629efae6a04095a9b242ce68877679482d82c67))
-
-
-
-# [0.4.0](https://github.com/iloveitaly/aiautocommit/compare/v0.3.1...v0.4.0) (2024-11-09)
-
-
-### Features
-
-* **pre-commit:** add option to overwrite existing hooks ([8f0af88](https://github.com/iloveitaly/aiautocommit/commit/8f0af881010624930b65da191119bec1f5bf3dce))
 
 
 
