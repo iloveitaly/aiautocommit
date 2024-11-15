@@ -73,6 +73,7 @@ This creates a `.aiautocommit/` directory with:
 * `diff_prompt.txt`: Template for generating diff summaries
 * `commit_prompt.txt`: Template for generating commit messages
 * `exclusions.txt`: List of files to exclude from processing
+* `commit_suffix.txt`: Static suffix to append to commit messages. Useful for trailers.
 
 ### Installing Pre-commit Hook
 
@@ -111,6 +112,7 @@ prepare-commit-msg:
 ### Environment Variables
 
 * `OPENAI_API_KEY`: Your OpenAI API key
+* `AIAUTOCOMMIT_OPENAI_API_KEY`: Unique API key for OpenAI, overrides `OPENAI_API_KEY` (useful for tracking or costing purposes)
 * `AIAUTOCOMMIT_MODEL`: AI model to use (default: gpt-4-mini)
 * `AIAUTOCOMMIT_CONFIG`: Custom config directory path
 * `LOG_LEVEL`: Logging verbosity
