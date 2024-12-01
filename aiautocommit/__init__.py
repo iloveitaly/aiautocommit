@@ -16,53 +16,14 @@ CONFIG_PATHS = [
     Path(os.environ.get("AIAUTOCOMMIT_CONFIG", "")),  # Custom config path
 ]
 
-DIFF_PROMPT_FILE = "diff_prompt.txt"
 COMMIT_PROMPT_FILE = "commit_prompt.txt"
 EXCLUSIONS_FILE = "exclusions.txt"
 COMMIT_SUFFIX_FILE = "commit_suffix.txt"
 
-# o1-mini is the cheapest of the smaller models, not available publicly yet
+# https://platform.openai.com/docs/models
 MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "gpt-4o-mini")
-DIFF_PROMPT = """
-Generate a short summary of the git diffs included using these rules:
 
-* Indicate (ex: "Size: large" on the first line) if the change is large (800+ lines changes), medium (300-800 lines changed), or small (less than 300 lines changed)
-* Indicate if only documentation or code comments are changed
-* Omit whitespace changes
-* Omit information about modified comments
-* Omit information about renamed variables or functions
-
-Only respond with summary content.
-
----
-"""
-# https://cbea.ms/git-commit/
-COMMIT_MSG_PROMPT = """
-Generate a commit message from the code change summaries using these rules:
-
-* No more than 50 character summary
-* Imperative mood in the subject line
-* Conventional commit format
-  * Use `docs` instead of `feat` ONLY if documentation or code comments are the ONLY changes
-* When change summaries are indicated as large, include extended commit message with markdown bullets.
-  * Use the extended commit (body) to explain what and why vs. how
-* Do not wrap in a codeblock
-* Write specifically what was changed and why and avoid general statements like:
-  * "Improved comments and structured logic for clarity..."
-  * "Separated logic from the original function..."
-  * "Refactored X into Y..."
-  * "Introduced new function..."
-  * "Enhances clarity and ease of use..."
-  * "add new file to the project..."
-* Don't mention details which feat: update prompt text in DIFF_PROMPT variable
-* If there is not enough information to generate a summary, return an empty string
-
-Below are the change summaries:
-
----
-"""
-# * Subject line (after conventional commit syntax) should always complete the following sentence: "If applied, this commit will $subject"
-DIFF_INCLUDED_COMMIT_MSG_PROMPT = """
+COMMIT_PROMPT = """
 Generate a commit message from the `git diff` output below using these rules:
 
 * No more than 50 character subject line
@@ -170,12 +131,6 @@ def configure_prompts(config_dir=None):
 
     logging.debug(f"Found config directory at {config_dir}")
 
-    # Load diff prompt
-    diff_file = config_dir / DIFF_PROMPT_FILE
-    if diff_file.exists():
-        logging.debug("Loading custom diff prompt from diff.txt")
-        DIFF_PROMPT = diff_file.read_text().strip()
-
     # Load commit prompt
     commit_file = config_dir / COMMIT_PROMPT_FILE
     if commit_file.exists():
@@ -225,44 +180,6 @@ def get_diff(ignore_whitespace=True):
     return normalized_diff
 
 
-def parse_diff(diff):
-    file_diffs = diff.split("\ndiff")
-    file_diffs = [file_diffs[0]] + [
-        "\ndiff" + file_diff for file_diff in file_diffs[1:]
-    ]
-    chunked_file_diffs = []
-    for file_diff in file_diffs:
-        [head, *chunks] = file_diff.split("\n@@")
-        chunks = ["\n@@" + chunk for chunk in reversed(chunks)]
-        chunked_file_diffs.append((head, chunks))
-    return chunked_file_diffs
-
-
-def assemble_diffs(parsed_diffs, cutoff):
-    """
-    Create multiple well-formatted diff strings, each being shorter than cutoff
-    """
-    assembled_diffs = [""]
-
-    def add_chunk(chunk):
-        if len(assembled_diffs[-1]) + len(chunk) <= cutoff:
-            assembled_diffs[-1] += "\n" + chunk
-            return True
-        else:
-            assembled_diffs.append(chunk)
-            return False
-
-    for head, chunks in parsed_diffs:
-        if not chunks:
-            add_chunk(head)
-        else:
-            add_chunk(head + chunks.pop())
-        while chunks:
-            if not add_chunk(chunks.pop()):
-                assembled_diffs[-1] = head + assembled_diffs[-1]
-    return assembled_diffs
-
-
 def asyncopenai() -> "AsyncOpenAI":
     # waiting to import so the initial load is quick (so --help displays more quickly)
     from openai import AsyncOpenAI
@@ -279,23 +196,11 @@ async def complete(prompt):
         model=MODEL_NAME,
         messages=[{"role": "user", "content": prompt[: PROMPT_CUTOFF + 100]}],
         # TODO this seems awfully small?
-        max_tokens=128,
+        # max_completion_tokens=128,
     )
+
     completion = completion_resp.choices[0].message.content.strip()
     return completion
-
-
-async def summarize_diff(diff):
-    assert diff
-
-    summarized_diff = await complete(DIFF_PROMPT + "\n\n" + diff + "\n\n")
-    logging.debug(f"Summarized Diff:\n{summarized_diff}")
-    return summarized_diff
-
-
-async def summarize_summaries(summaries):
-    assert summaries
-    return await complete(COMMIT_MSG_PROMPT + "\n\n" + summaries + "\n\n")
 
 
 SINGLE_PROMPT = True
@@ -306,19 +211,7 @@ async def generate_commit_message(diff):
         logging.debug("No commit message generated")
         return ""
 
-    if SINGLE_PROMPT:
-        return (
-            await complete(DIFF_INCLUDED_COMMIT_MSG_PROMPT + "\n\n" + diff)
-        ) + COMMIT_SUFFIX
-
-    assembled_diffs = assemble_diffs(parse_diff(diff), PROMPT_CUTOFF)
-
-    logging.debug(f"Summarizing {len(assembled_diffs)} diffs")
-
-    summaries = await asyncio.gather(
-        *[summarize_diff(diff) for diff in assembled_diffs]
-    )
-    return await summarize_summaries("\n".join(summaries))
+    return (await complete(COMMIT_PROMPT + "\n\n" + diff)) + COMMIT_SUFFIX
 
 
 def git_commit(message):
@@ -374,7 +267,8 @@ def commit(print_message, output_file, config_dir):
         # run async so when multiple chunks exist we can get summaries concurrently
         commit_message = asyncio.run(generate_commit_message(get_diff()))
     except UnicodeDecodeError:
-        click.echo("gpt-commit does not support binary files", err=True)
+        click.echo("aiautocommit does not support binary files", err=True)
+
         commit_message = (
             # TODO use heredoc
             "# gpt-commit does not support binary files. "
@@ -413,8 +307,9 @@ def install_pre_commit(overwrite):
     target_hooks_dir = Path(git_dir) / "hooks"
     target_hooks_dir.mkdir(exist_ok=True)
 
-    pre_commit = target_hooks_dir / "prepare-commit-msg"
-    pre_commit_script = Path(__file__).parent / "prepare-commit-msg"
+    commit_msg_git_hook_name = "prepare-commit-msg"
+    pre_commit = target_hooks_dir / commit_msg_git_hook_name
+    pre_commit_script = Path(__file__).parent / commit_msg_git_hook_name
 
     if not pre_commit.exists() or overwrite:
         pre_commit.write_text(pre_commit_script.read_text())
@@ -433,13 +328,10 @@ def dump_prompts():
     config_dir = Path(".aiautocommit")
     config_dir.mkdir(exist_ok=True)
 
-    diff_prompt = config_dir / DIFF_PROMPT_FILE
     commit_prompt = config_dir / COMMIT_PROMPT_FILE
     exclusions = config_dir / EXCLUSIONS_FILE
     commit_suffix = config_dir / COMMIT_SUFFIX_FILE
 
-    if not diff_prompt.exists():
-        diff_prompt.write_text(DIFF_PROMPT)
     if not commit_prompt.exists():
         commit_prompt.write_text(COMMIT_MSG_PROMPT)
     if not exclusions.exists():
@@ -448,11 +340,10 @@ def dump_prompts():
         commit_suffix.write_text(COMMIT_SUFFIX)
 
     click.echo(
-        """Dumped default prompts to .aiautocommit directory:
+        f"""Dumped default prompts to .aiautocommit directory:
 
-- diff_prompt.txt: Template for generating diff summaries, this is passed to commit_prompt.txt
-- commit_prompt.txt: Template for generating commit messages
-- exclusions.txt: List of file patterns to exclude from processing
-- commit_suffix.txt: Text appended to the end of every commit message
+- {COMMIT_PROMPT_FILE}: Template for generating commit messages
+- {EXCLUSIONS_FILE}: List of file patterns to exclude from processing
+- {COMMIT_SUFFIX}: Text appended to the end of every commit message
 """
     )
