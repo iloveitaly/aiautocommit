@@ -34,12 +34,15 @@ Stage your changes and run aiautocommit:
 
 ```
 git add .
+
 # this will generate a commit message and commit the changes
 aiautocommit commit
 
 # or, just to see what it will do
 aiautocommit commit --print-message
 ```
+
+Using the CLI directly is the best way to debug and tinker with the project as well.
 
 ## Customization
 
@@ -117,6 +120,10 @@ prepare-commit-msg:
 * `AIAUTOCOMMIT_CONFIG`: Custom config directory path
 * `LOG_LEVEL`: Logging verbosity
 * `AIAUTOCOMMIT_LOG_PATH`: Custom log file path
+
+## Writing Good Commit Messages
+
+* https://cbea.ms/git-commit/
 
 ## Privacy Disclaimer
 
