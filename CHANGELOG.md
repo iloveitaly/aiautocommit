@@ -1,3 +1,12 @@
+# [0.9.0](https://github.com/iloveitaly/aiautocommit/compare/v0.8.0...v0.9.0) (2024-12-01)
+
+
+### Features
+
+* trigger new release to workaround uv breaking publish ([af90ae8](https://github.com/iloveitaly/aiautocommit/commit/af90ae81388f88e5c0e617eb34eb5a2b63d2c105))
+
+
+
 # [0.8.0](https://github.com/iloveitaly/aiautocommit/compare/v0.7.0...v0.8.0) (2024-12-01)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * improving prompt ([89e13da](https://github.com/iloveitaly/aiautocommit/commit/89e13dae5faf63cd5164bfb7cf32963c69137f43))
-
-
-
-## [0.6.1](https://github.com/iloveitaly/aiautocommit/compare/v0.6.0...v0.6.1) (2024-11-11)
-
-
-### Bug Fixes
-
-* more prompt playing ([c97fe6c](https://github.com/iloveitaly/aiautocommit/commit/c97fe6cdb7c19ccab3908d11158113278ea2d168))
 
 
 
