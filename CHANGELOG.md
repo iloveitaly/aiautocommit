@@ -1,3 +1,12 @@
+# [0.8.0](https://github.com/iloveitaly/aiautocommit/compare/v0.7.0...v0.8.0) (2024-12-01)
+
+
+### Features
+
+* prevent commit during merge or reversion ([88993f2](https://github.com/iloveitaly/aiautocommit/commit/88993f2df15d855f0f031348ae18d280c7efe4a7))
+
+
+
 # [0.7.0](https://github.com/iloveitaly/aiautocommit/compare/v0.6.3...v0.7.0) (2024-11-15)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * more prompt playing ([c97fe6c](https://github.com/iloveitaly/aiautocommit/commit/c97fe6cdb7c19ccab3908d11158113278ea2d168))
-
-
-
-# [0.6.0](https://github.com/iloveitaly/aiautocommit/compare/v0.5.0...v0.6.0) (2024-11-09)
-
-
-### Features
-
-* add Makefile and update project configuration ([d18540f](https://github.com/iloveitaly/aiautocommit/commit/d18540f591694cfa349f42901c9afb684d11872d))
 
 
 
