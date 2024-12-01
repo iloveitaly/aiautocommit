@@ -219,6 +219,17 @@ def git_commit(message):
     return subprocess.run(["git", "commit", "--message", message, "--edit"]).returncode
 
 
+def is_reversion():
+    # Check if we're in the middle of a git revert
+    if (Path(".git") / "REVERT_HEAD").exists():
+        return True
+
+    if (Path(".git") / "MERGE_MSG").exists():
+        return True
+
+    return False
+
+
 @click.group(invoke_without_command=True)
 def main():
     """
@@ -253,6 +264,9 @@ def commit(print_message, output_file, config_dir):
     """
     Generate commit message from git diff.
     """
+
+    if is_reversion():
+        return 0
 
     configure_prompts(config_dir)
 

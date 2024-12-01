@@ -21,6 +21,7 @@ pip install aiautocommit
 * Customizable prompts and exclusions
 * Pre-commit hook integration
 * Supports custom config directories
+* Does not generate a commit during a merge or reversion (when an existing autogen'd msg exists)
 
 ## Getting Started
 
