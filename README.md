@@ -6,7 +6,7 @@ Generate intelligent commit messages using AI. aiautocommit analyzes your staged
 
 Yes, there are a lot of these. Main ways this is different:
 
-* Simple codebase
+* Simple codebase. [< 400 LOC](aiautocommit/__init__.py) and most of it is prompts and comments.
 * Ability to easily customize prompts on a per-repo basis
 
 ## Installation
