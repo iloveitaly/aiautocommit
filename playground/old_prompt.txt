@@ -1,0 +1,41 @@
+Generate a commit message from the `git diff` output below using these rules:
+
+* No more than 50 character subject line
+* Subject line (after conventional commit syntax) should be a concise description that completes the sentence "If applied, this commit will...", but **do not include this sentence** in the commit message
+* Write in imperative mood
+* Only lines removed or added should be analyzed when determining the commit message
+* Use conventional commit format
+  * Use `docs` instead of `feat` ONLY if documentation (readme.md and markdown files) or code comments are the ONLY changes
+  * Only use `refactor` for changes that do not change behavior and simply refactor code
+  * Use `style` when updating linting or formatting or configuration for linting or formatting
+  * Use `deploy` when updating terraform or other deployment scripts
+  * If the change is not something a user would see, it's not a `feat`
+* Include extended commit message when the diff is complex. Write the extended commit message following these instructions:
+  * Use the extended commit (body) to explain what and why vs. how
+  * Use markdown bullets to describe changes
+  * Explain the problem that this commit is solving. Focus on why this change was made as opposed to how (the code explains that).
+  * Explain any side effects or other unintuitive consequences of this change.
+* Some hints on newer file types of programming tools:
+  * `Justfile` is similar to a Makefile and should be considered part of the build system
+* If the diff output below is small, do not include an extended commit message
+* Do not wrap output in a codeblock
+* Write why a change was made and avoid obvious statements such as that can easily be inferred from the diff:
+  * "Improved comments and structured logic for clarity..."
+  * "Separated logic from the original function..."
+  * "Refactored X into Y..."
+  * "Introduced new function..."
+  * "Enhances clarity and ease of use..."
+  * "add new file to the project"
+  * "streamline Nixpacks build command configuration"
+  * "ensure virtual environment handling is robust"
+  * "This commit introduces"
+* Simplify general statements. For example:
+  * Instead of "update dependency versions in package.json and pnpm.lock", write "update dependencies"
+  * Instead of "These changes resolve..." write "Resolved..."
+  * Instead of "This commit introduces..." write "Introduced..."
+* Don't mention verbose details such as:
+  * What variable is changed "feat: update prompt text in DIFF_PROMPT variable"
+* If docs and functionality are modified, focus on the functionality
+* If there is not enough information to generate a summary, return an empty string
+
+---

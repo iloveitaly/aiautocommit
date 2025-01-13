@@ -24,39 +24,57 @@ COMMIT_SUFFIX_FILE = "commit_suffix.txt"
 MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "gpt-4o-mini")
 
 COMMIT_PROMPT = """
-Generate a commit message from the `git diff` output below using these rules:
+Generate a commit message from the `git diff` output below using the following rules:
 
-* No more than 50 character subject line
-* Subject line (after conventional commit syntax) should be a concise description that completes the sentence "If applied, this commit will...", but **do not include this sentence** in the commit message
-* Write in imperative mood
-* Only lines removed or added should be considered
-* Use conventional commit format
-  * Use `docs` instead of `feat` ONLY if documentation or code comments are the ONLY changes
-  * Only use `refactor` for changes that do not change behavior and simply refactor code
-  * Use `style` when updating linting or formatting or configuration for linting or formatting
-* Only include extended commit message when the diff is large (hundreds of lines added or removed)
-  * Use the extended commit (body) to explain what and why vs. how
-  * Use markdown bullets to describe changes
-  * Explain the problem that this commit is solving. Focus on why this change was made as opposed to how (the code explains that).
-  * Explain any side effects or other unintuitive consequences of this change.
-* Some hints on newer file types of programming tools:
-  * `Justfile` is similar to a Makefile and should be considered part of the build system
-* If the diff output below is small, do not include an extended commit message
-* Do not wrap output in a codeblock
-* Write why a change was made and avoid general statements like:
-  * "Improved comments and structured logic for clarity..."
-  * "Separated logic from the original function..."
-  * "Refactored X into Y..."
-  * "Introduced new function..."
-  * "Enhances clarity and ease of use..."
-  * "add new file to the project..."
-* Don't mention verbose details like:
-  * What variable is changed "feat: update prompt text in DIFF_PROMPT variable"
-* If docs and functionality are modified, focus on the functionality
-* If there is not enough information to generate a summary, return an empty string
+1. **Subject Line**:
+   - Use a conventional commit prefix (e.g., `feat`, `fix`, `docs`, `style`, `refactor`, `deploy`).
+     - Use `docs` if **documentation files** (like `.md`, `.rst`, or documentation comments in code) are the **only files changed**, even if they include code examples.
+     - Use `docs` if **comments in code** are the **only changes made**.
+     - Use `refactor` only for changes that do not alter behavior.
+     - Use `style` for linting, formatting, or related configuration changes.
+     - Use `deploy` when updating deployment scripts.
+     - Do not use `feat` for changes that users wouldn't notice.
+   - Limit the subject line to **50 characters** after the conventional commit prefix.
+   - Write the subject in the **imperative mood**, as if completing the sentence "If applied, this commit will...".
+   - Analyze only **added or removed lines** when determining the commit message.
+
+2. **Extended Commit Message**:
+   - Include an extended commit message **only if the diff is complex**.
+   - In the extended message:
+     - Focus on **what** and **why**, not **how** (the code explains how).
+     - Use **markdown bullet points** to describe changes.
+     - Explain the **problem** the commit solves, emphasizing the reasons for the change.
+     - Mention any **side effects** or unintended consequences.
+     - **Do not include descriptions of comment changes** in the extended message.
+
+3. **General Guidelines**:
+   - Do **not** wrap the output in a code block.
+   - Do **not** include obvious statements easily inferred from the diff, such as:
+     - "Improved comments and structured logic for clarity..."
+     - "Refactored X into Y..."
+     - Etc.
+   - **Simplify** general statements. For example:
+     - Replace "update dependency versions in package.json and pnpm.lock" with "update dependencies".
+     - Replace "These changes resolve..." with "Resolved...".
+   - **Handling Comment Changes**:
+     - If comment updates are the **only changes**, use the subject line "docs: improved comments".
+     - If comment updates are mixed with other updates, **omit mentioning** the comment changes entirely and focus on the functional changes.
+
+4. **File Type Hints**:
+   - Recognize that a `Justfile` is like a Makefile and is part of the build system.
+
+5. **Avoid Verbose Details**:
+   - Do not mention specific variables or excessive details, such as "feat: update prompt text in DIFF_PROMPT variable".
+
+6. **Focus on Functionality Over Documentation**:
+   - If both documentation and functionality are modified, emphasize the functional changes.
+
+7. **Insufficient Information**:
+   - If there isn't enough information to generate a summary, **return an empty string**.
 
 ---
 """
+
 
 # trailers are a native git feature that can be used to add metadata to a commit
 # https://git-scm.com/docs/git-interpret-trailers
@@ -85,6 +103,7 @@ EXCLUDED_FILES = [
     "pdm.lock",
     "flake.lock",
     "bun.lockb",
+    ".terraform.lock.hcl",
 ]
 
 # characters, not tokens
