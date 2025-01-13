@@ -9,6 +9,9 @@ authors = [{ name = "Michael Bianco", email = "mike@mikebian.co" }]
 keywords = ["git", "commit", "automation", "ai", "openai"]
 urls = { "Repository" = "https://github.com/iloveitaly/aiautocommit" }
 
+[tool.setuptools.packages.find]
+exclude = ["playground", "tests"]
+
 [project.scripts]
 aiautocommit = "aiautocommit:main"
 
