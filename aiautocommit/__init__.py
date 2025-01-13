@@ -1,4 +1,3 @@
-import asyncio
 import logging
 import os
 import subprocess
@@ -7,6 +6,7 @@ import warnings
 from pathlib import Path
 
 import click
+from openai import OpenAI
 
 # Config file locations in priority order
 CONFIG_PATHS = [
@@ -21,58 +21,91 @@ EXCLUSIONS_FILE = "exclusions.txt"
 COMMIT_SUFFIX_FILE = "commit_suffix.txt"
 
 # https://platform.openai.com/docs/models
-MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "gpt-4o-mini")
+# gpt-4o-mini is cheaper, basically free
+MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "gpt-4o")
 
 COMMIT_PROMPT = """
+You are a expert senior software developer.
+
 Generate a commit message from the `git diff` output below using the following rules:
 
 1. **Subject Line**:
-   - Use a conventional commit prefix (e.g., `feat`, `fix`, `docs`, `style`, `refactor`, `deploy`).
+
+   - Use a conventional commit prefix (e.g., `feat`, `fix`, `docs`, `style`, `refactor`, `build`, `deploy`).
      - Use `docs` if **documentation files** (like `.md`, `.rst`, or documentation comments in code) are the **only files changed**, even if they include code examples.
      - Use `docs` if **comments in code** are the **only changes made**.
-     - Use `refactor` only for changes that do not alter behavior.
-     - Use `style` for linting, formatting, or related configuration changes.
+     - Use `style` for **formatting**, **code style**, **linting**, or related configuration changes within code files.
+     - Use `refactor` only for changes that do not alter behavior but improve the code structure.
+     - Use `build` when updating **build scripts**, **configuration files**, or **build system setup** (e.g., `Makefile`, `Justfile`, `package.json`).
      - Use `deploy` when updating deployment scripts.
      - Do not use `feat` for changes that users wouldn't notice.
    - Limit the subject line to **50 characters** after the conventional commit prefix.
    - Write the subject in the **imperative mood**, as if completing the sentence "If applied, this commit will...".
-   - Analyze only **added or removed lines** when determining the commit message.
+   - Analyze **all changes**, including modifications in build scripts and configurations, when determining the commit message.
 
 2. **Extended Commit Message**:
-   - Include an extended commit message **only if the diff is complex**.
+
+   - **Do not include an extended commit message** if the changes are **documentation-only**, involve **comment updates**, **simple formatting changes**, or are **not complex**.
+   - Include an extended commit message **only if the diff is complex and affects functionality or build processes**.
    - In the extended message:
      - Focus on **what** and **why**, not **how** (the code explains how).
      - Use **markdown bullet points** to describe changes.
-     - Explain the **problem** the commit solves, emphasizing the reasons for the change.
-     - Mention any **side effects** or unintended consequences.
-     - **Do not include descriptions of comment changes** in the extended message.
+     - Explain the **problem** the commit solves and the reasons for the change.
+     - Mention any **side effects** or important considerations.
+     - **Do not include descriptions of trivial formatting or comment changes** in the extended message.
 
 3. **General Guidelines**:
+
    - Do **not** wrap the output in a code block.
-   - Do **not** include obvious statements easily inferred from the diff, such as:
-     - "Improved comments and structured logic for clarity..."
-     - "Refactored X into Y..."
-     - Etc.
+   - Do **not** include obvious statements easily inferred from the diff.
    - **Simplify** general statements. For example:
      - Replace "update dependency versions in package.json and pnpm.lock" with "update dependencies".
      - Replace "These changes resolve..." with "Resolved...".
-   - **Handling Comment Changes**:
-     - If comment updates are the **only changes**, use the subject line "docs: improved comments".
-     - If comment updates are mixed with other updates, **omit mentioning** the comment changes entirely and focus on the functional changes.
+   - **Handling Formatting Changes**:
+     - If simple formatting updates (like changing quotes, code reformatting) are the **only changes** in code files, use the subject line "style: formatting update".
+     - **Do not** treat changes in build scripts or configurations that affect functionality as mere formatting changes. They should be described appropriately.
 
 4. **File Type Hints**:
-   - Recognize that a `Justfile` is like a Makefile and is part of the build system.
+
+   - Recognize that a `Justfile` is like a `Makefile` and is part of the **build system**.
+   - Changes to the build system are significant and should be reflected in the commit message.
+   - Recognize other build-related files (e.g., `Dockerfile`, `package.json`, `webpack.config.js`) as part of the build or configuration.
 
 5. **Avoid Verbose Details**:
-   - Do not mention specific variables or excessive details, such as "feat: update prompt text in DIFF_PROMPT variable".
+
+   - Do not mention specific variables or excessive details.
+   - Keep the commit message concise and focused on the overall changes.
 
 6. **Focus on Functionality Over Documentation**:
-   - If both documentation and functionality are modified, emphasize the functional changes.
+
+   - If both documentation and functionality are modified, **emphasize the functional changes**.
 
 7. **Insufficient Information**:
+
    - If there isn't enough information to generate a summary, **return an empty string**.
 
----
+## Example 1
+
+```
+diff --git c/.tmux-shell.sh i/.tmux-shell.sh
+index a34433f..01d2e9f 100755
+--- c/.tmux-shell.sh
++++ i/.tmux-shell.sh
+@@ -14,8 +14,8 @@ while [[ $counter -lt 20 ]]; do
+   session="${session_uid}-${counter}"
+ 
+   # if the session doesn't exist, create it
+-  if ! tmux has-session -t "$session" 2>/dev/null; then
+-    tmux new -ADs "$session"
++  if ! /opt/homebrew/bin/tmux has-session -t "$session" 2>/dev/null; then
++    /opt/homebrew/bin/tmux new -ADs "$session"
+     break
+   fi
+```
+
+This diff is short and should have no extended commit message.
+
+The generated commit message should be: fix: use full path to tmux in .tmux-shell.sh
 """
 
 
@@ -123,9 +156,6 @@ logging.basicConfig(
 if not os.environ.get("AIAUTOCOMMIT_LOG_PATH"):
     # Suppress ResourceWarnings
     warnings.filterwarnings("ignore", category=ResourceWarning)
-
-    # Disable asyncio debug logging
-    logging.getLogger("asyncio").setLevel(logging.ERROR)
 
     # Optional: Disable httpx logging if desired
     logging.getLogger("httpx").setLevel(logging.WARNING)
@@ -199,21 +229,19 @@ def get_diff(ignore_whitespace=True):
     return normalized_diff
 
 
-def asyncopenai() -> "AsyncOpenAI":
-    # waiting to import so the initial load is quick (so --help displays more quickly)
-    from openai import AsyncOpenAI
+def complete(prompt, diff):
+    if len(prompt) > PROMPT_CUTOFF:
+        logging.warning(
+            f"Prompt length ({len(prompt)}) exceeds the maximum allowed length, truncating."
+        )
 
-    if not hasattr(asyncopenai, "_instance"):
-        # Using a class-level attribute to store the singleton instance
-        setattr(asyncopenai, "_instance", AsyncOpenAI())
-    return getattr(asyncopenai, "_instance")
-
-
-async def complete(prompt):
-    aclient = asyncopenai()
-    completion_resp = await aclient.chat.completions.create(
+    client = OpenAI()
+    completion_resp = client.chat.completions.create(
         model=MODEL_NAME,
-        messages=[{"role": "user", "content": prompt[: PROMPT_CUTOFF + 100]}],
+        messages=[
+            {"role": "system", "content": prompt},
+            {"role": "user", "content": diff[:PROMPT_CUTOFF]},
+        ],
         # TODO this seems awfully small?
         # max_completion_tokens=128,
     )
@@ -222,15 +250,12 @@ async def complete(prompt):
     return completion
 
 
-SINGLE_PROMPT = True
-
-
-async def generate_commit_message(diff):
+def generate_commit_message(diff):
     if not diff:
         logging.debug("No commit message generated")
         return ""
 
-    return (await complete(COMMIT_PROMPT + "\n\n" + diff)) + COMMIT_SUFFIX
+    return (complete(COMMIT_PROMPT, diff)) + COMMIT_SUFFIX
 
 
 def git_commit(message):
@@ -297,8 +322,7 @@ def commit(print_message, output_file, config_dir):
             )
             return 1
 
-        # run async so when multiple chunks exist we can get summaries concurrently
-        commit_message = asyncio.run(generate_commit_message(get_diff()))
+        commit_message = generate_commit_message(get_diff())
     except UnicodeDecodeError:
         click.echo("aiautocommit does not support binary files", err=True)
 
