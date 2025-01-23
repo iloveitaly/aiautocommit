@@ -1,3 +1,12 @@
+## [0.10.1](https://github.com/iloveitaly/aiautocommit/compare/v0.10.0...v0.10.1) (2025-01-23)
+
+
+### Bug Fixes
+
+* update uv version in .tool-versions ([99701bb](https://github.com/iloveitaly/aiautocommit/commit/99701bbb79584ccca04d0dab29d52cb3d55105c0))
+
+
+
 # [0.10.0](https://github.com/iloveitaly/aiautocommit/compare/v0.9.0...v0.10.0) (2025-01-23)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * add commit suffix option for messages ([593effd](https://github.com/iloveitaly/aiautocommit/commit/593effde1cbc4e7585b281a63f1dc43b84da4e86))
-
-
-
-## [0.6.3](https://github.com/iloveitaly/aiautocommit/compare/v0.6.2...v0.6.3) (2024-11-13)
-
-
-### Bug Fixes
-
-* bad pre-commit hook output if file already exists ([e5cdbc7](https://github.com/iloveitaly/aiautocommit/commit/e5cdbc70a7b5ebc271940ed23325d4765b63e6c3))
 
 
 
