@@ -1,3 +1,12 @@
+# [0.10.0](https://github.com/iloveitaly/aiautocommit/compare/v0.9.0...v0.10.0) (2025-01-23)
+
+
+### Features
+
+* massive prompt improvement ([e289d70](https://github.com/iloveitaly/aiautocommit/commit/e289d7051ab6bdd58a01f8a7d172c100cc115339))
+
+
+
 # [0.9.0](https://github.com/iloveitaly/aiautocommit/compare/v0.8.0...v0.9.0) (2024-12-01)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * bad pre-commit hook output if file already exists ([e5cdbc7](https://github.com/iloveitaly/aiautocommit/commit/e5cdbc70a7b5ebc271940ed23325d4765b63e6c3))
-
-
-
-## [0.6.2](https://github.com/iloveitaly/aiautocommit/compare/v0.6.1...v0.6.2) (2024-11-13)
-
-
-### Bug Fixes
-
-* improving prompt ([89e13da](https://github.com/iloveitaly/aiautocommit/commit/89e13dae5faf63cd5164bfb7cf32963c69137f43))
 
 
 
