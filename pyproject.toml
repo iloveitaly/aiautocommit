@@ -18,3 +18,7 @@ aiautocommit = "aiautocommit:main"
 # https://github.com/astral-sh/uv/issues/5200
 [tool.uv]
 package = true
+
+# instructs python packaging to include all non-py files referenced in MANIFEST.in
+[tool.setuptools]
+include-package-data = true
