@@ -22,3 +22,8 @@ package = true
 # instructs python packaging to include all non-py files referenced in MANIFEST.in
 [tool.setuptools]
 include-package-data = true
+
+# https://github.com/astral-sh/uv/issues/10733
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
