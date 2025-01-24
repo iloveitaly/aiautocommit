@@ -1,3 +1,12 @@
+## [0.10.2](https://github.com/iloveitaly/aiautocommit/compare/v0.10.1...v0.10.2) (2025-01-24)
+
+
+### Bug Fixes
+
+* include non-py files in packaging ([eef629c](https://github.com/iloveitaly/aiautocommit/commit/eef629cccea7432c5c2aef72c56edd5461984593))
+
+
+
 ## [0.10.1](https://github.com/iloveitaly/aiautocommit/compare/v0.10.0...v0.10.1) (2025-01-23)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * prevent commit during merge or reversion ([88993f2](https://github.com/iloveitaly/aiautocommit/commit/88993f2df15d855f0f031348ae18d280c7efe4a7))
-
-
-
-# [0.7.0](https://github.com/iloveitaly/aiautocommit/compare/v0.6.3...v0.7.0) (2024-11-15)
-
-
-### Features
-
-* add commit suffix option for messages ([593effd](https://github.com/iloveitaly/aiautocommit/commit/593effde1cbc4e7585b281a63f1dc43b84da4e86))
 
 
 
