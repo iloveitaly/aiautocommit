@@ -1,3 +1,12 @@
+## [0.10.3](https://github.com/iloveitaly/aiautocommit/compare/v0.10.2...v0.10.3) (2025-01-24)
+
+
+### Bug Fixes
+
+* update build system to use hatchling ([03a2fec](https://github.com/iloveitaly/aiautocommit/commit/03a2fecb4ac55fc6c3cbe0effde46395ee931b3e))
+
+
+
 ## [0.10.2](https://github.com/iloveitaly/aiautocommit/compare/v0.10.1...v0.10.2) (2025-01-24)
 
 
@@ -31,15 +40,6 @@
 ### Features
 
 * trigger new release to workaround uv breaking publish ([af90ae8](https://github.com/iloveitaly/aiautocommit/commit/af90ae81388f88e5c0e617eb34eb5a2b63d2c105))
-
-
-
-# [0.8.0](https://github.com/iloveitaly/aiautocommit/compare/v0.7.0...v0.8.0) (2024-12-01)
-
-
-### Features
-
-* prevent commit during merge or reversion ([88993f2](https://github.com/iloveitaly/aiautocommit/commit/88993f2df15d855f0f031348ae18d280c7efe4a7))
 
 
 
