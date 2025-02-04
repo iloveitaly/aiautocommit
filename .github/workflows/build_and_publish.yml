@@ -14,15 +14,24 @@ env:
   PIP_RETRIES: 5
 
 jobs:
-  build-and-publish:
+  matrix-test:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.13", "3.12", "3.11", "3.10", "3.9", "3.8"]
     steps:
       - uses: actions/checkout@v4
       - uses: jdx/mise-action@v2
       - run: uv sync
-
       - name: Make sure it runs
         run: uv run ${{ github.event.repository.name }} --help
+
+  build-and-publish:
+    needs: matrix-test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jdx/mise-action@v2
 
       - name: Conventional Changelog Action
         id: changelog
@@ -33,6 +42,8 @@ jobs:
           version-path: "project.version"
           fallback-version: "1.0.0"
           output-file: "CHANGELOG.md"
+
+      - run: uv sync
 
       # NOTE must run after versioning otherwise the right version won't be pushed
       - name: Build distribution package
