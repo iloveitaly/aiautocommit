@@ -1,3 +1,12 @@
+## [0.10.5](https://github.com/iloveitaly/aiautocommit/compare/v0.10.4...v0.10.5) (2025-02-10)
+
+
+### Bug Fixes
+
+* **build:** adjust config path and remove embedded prompt ([e5e1f2f](https://github.com/iloveitaly/aiautocommit/commit/e5e1f2f3d1bf560a2138a763a4179271e37b5a2f))
+
+
+
 ## [0.10.4](https://github.com/iloveitaly/aiautocommit/compare/v0.10.3...v0.10.4) (2025-02-05)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * update uv version in .tool-versions ([99701bb](https://github.com/iloveitaly/aiautocommit/commit/99701bbb79584ccca04d0dab29d52cb3d55105c0))
-
-
-
-# [0.10.0](https://github.com/iloveitaly/aiautocommit/compare/v0.9.0...v0.10.0) (2025-01-23)
-
-
-### Features
-
-* massive prompt improvement ([e289d70](https://github.com/iloveitaly/aiautocommit/commit/e289d7051ab6bdd58a01f8a7d172c100cc115339))
 
 
 
