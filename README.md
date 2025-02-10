@@ -125,6 +125,8 @@ prepare-commit-msg:
 ## Writing Good Commit Messages
 
 * https://cbea.ms/git-commit/
+* https://groups.google.com/g/golang-dev/c/6M4dmZWpFaI
+* https://github.com/RomuloOliveira/commit-messages-guide
 
 ## Privacy Disclaimer
 
