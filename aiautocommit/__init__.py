@@ -329,3 +329,11 @@ def dump_prompts():
     else:
         # this should never happen
         click.echo("Source prompt directory does not exist; nothing to copy.")
+
+
+@main.command()
+def output_prompt():
+    "Dump compiled prompt to stdout"
+
+    configure_prompts()
+    click.echo(COMMIT_PROMPT)
