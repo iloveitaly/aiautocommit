@@ -1,3 +1,12 @@
+## [0.10.6](https://github.com/iloveitaly/aiautocommit/compare/v0.10.5...v0.10.6) (2025-02-10)
+
+
+### Bug Fixes
+
+* remove commit suffix in aiautocommit init ([3019e0b](https://github.com/iloveitaly/aiautocommit/commit/3019e0bdcb0d255e52b22a0643ed42bd7bc1fe08))
+
+
+
 ## [0.10.5](https://github.com/iloveitaly/aiautocommit/compare/v0.10.4...v0.10.5) (2025-02-10)
 
 
@@ -31,15 +40,6 @@
 ### Bug Fixes
 
 * include non-py files in packaging ([eef629c](https://github.com/iloveitaly/aiautocommit/commit/eef629cccea7432c5c2aef72c56edd5461984593))
-
-
-
-## [0.10.1](https://github.com/iloveitaly/aiautocommit/compare/v0.10.0...v0.10.1) (2025-01-23)
-
-
-### Bug Fixes
-
-* update uv version in .tool-versions ([99701bb](https://github.com/iloveitaly/aiautocommit/commit/99701bbb79584ccca04d0dab29d52cb3d55105c0))
 
 
 
