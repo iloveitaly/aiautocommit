@@ -27,3 +27,8 @@ include-package-data = true
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
+
+[dependency-groups]
+dev = [
+    "pudb>=2024.1.3",
+]
