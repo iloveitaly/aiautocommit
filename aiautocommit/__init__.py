@@ -121,7 +121,7 @@ def configure_prompts(config_dir=None):
     if commit_suffix_file.exists():
         logging.debug("Loading custom commit suffix")
         if commit_suffix_file.exists():
-            COMMIT_SUFFIX = "\n" + commit_suffix_file.read_text().strip()
+            COMMIT_SUFFIX = "\n\n" + commit_suffix_file.read_text().strip()
         else:
             logging.debug("Custom commit suffix file does not exist")
 
