@@ -1,6 +1,7 @@
 import logging
 import os
 import re
+import shutil  # added import
 import subprocess
 import sys
 import warnings
@@ -67,7 +68,6 @@ if os.environ.get("AIAUTOCOMMIT_OPENAI_API_KEY"):
 
 
 def configure_prompts(config_dir=None):
-    breakpoint()
     global COMMIT_PROMPT, COMMIT_SUFFIX, EXCLUDED_FILES, CONFIG_PATHS
 
     # Use custom config_dir if provided; otherwise use the default prompt directory
@@ -301,27 +301,25 @@ def install_pre_commit(overwrite):
 
 @main.command()
 def dump_prompts():
-    "Dump default prompts into .aiautocommit directory for easy customization"
+    "Dump default prompts by copying the prompt directory for easy customization"
 
     config_dir = Path(LOCAL_REPO_AUTOCOMMIT_DIR_NAME)
     config_dir.mkdir(exist_ok=True)
 
-    commit_prompt = config_dir / COMMIT_PROMPT_FILE
-    exclusions = config_dir / EXCLUSIONS_FILE
-    commit_suffix = config_dir / COMMIT_SUFFIX_FILE
+    source_prompt_dir = Path(__file__).parent / "prompt"
+    dest_prompt_dir = config_dir / "prompt"
 
-    if not commit_prompt.exists():
-        commit_prompt.write_text(COMMIT_PROMPT)
-    if not exclusions.exists():
-        exclusions.write_text("\n".join(EXCLUDED_FILES))
-    if not commit_suffix.exists():
-        commit_suffix.write_text(COMMIT_SUFFIX)
+    if dest_prompt_dir.exists():
+        click.echo(
+            f"Prompt directory already exists at {dest_prompt_dir}. Skipping copy."
+        )
+        return
 
-    click.echo(
-        f"""Dumped default prompts to {LOCAL_REPO_AUTOCOMMIT_DIR_NAME} directory:
-
-- {COMMIT_PROMPT_FILE}: Template for generating commit messages
-- {EXCLUSIONS_FILE}: List of file patterns to exclude from processing
-- {COMMIT_SUFFIX}: Text appended to the end of every commit message
-"""
-    )
+    if source_prompt_dir.exists():
+        shutil.copytree(source_prompt_dir, dest_prompt_dir)
+        click.echo(
+            f"Copied prompt directory from {source_prompt_dir} to {dest_prompt_dir}"
+        )
+    else:
+        # this should never happen
+        click.echo("Source prompt directory does not exist; nothing to copy.")
