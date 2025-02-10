@@ -1,5 +1,3 @@
-## Example 2
-
 ```
 diff --git a/.git-functions b/.git-functions
 index ba4be51..2bbb33b 100644
@@ -47,9 +45,11 @@ index ba4be51..2bbb33b 100644
 +  # Extract just the specified path
 +  curl -L $tarball | tar xz --strip=1 "$foldername/$filepath"
 +}
+\ No newline at end of file
 ```
 
-This diff is short and should have no extended commit message. The updated comments should be ignored when writing the commit message.
+This diff is short and should have no extended commit message. The updated comments of `render-git-template` and 
+`update-mit-license` should be ignored when writing the commit message.
 
 Example commit message:
 

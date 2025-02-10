@@ -1,5 +1,3 @@
-## Example 3
-
 ```
 8083521 (17 seconds ago) feat: enhance SAS token generation and add new upload endpoints <Michael Bianco>
 - Introduced `UploadType` enum to support multiple upload scenarios.
@@ -170,3 +168,10 @@ index a31db12..d487410 100644
  export default function VisitNoteViewer({
    note,
    defaultOpen = false,
+```
+
+This diff is medium sized and should have no extended commit message.
+
+Example commit message:
+
+feat: sas for multiple storage containers, upload endpoints and expanded settings endpoint
