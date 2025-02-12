@@ -23,8 +23,11 @@ jobs:
       - uses: actions/checkout@v4
       - uses: jdx/mise-action@v2
       - run: uv sync
-      - name: Make sure it runs
-        run: uv run ${{ github.event.repository.name }} --help
+      - run: uv run ${{ github.event.repository.name }} --help
+      - run: uv run ${{ github.event.repository.name }} output-prompt
+      - run: uv run ${{ github.event.repository.name }} output-exclusions
+      - run: uv run ${{ github.event.repository.name }} dump-prompts
+      - run: uv run ${{ github.event.repository.name }} install-pre-commit
 
   build-and-publish:
     needs: matrix-test
