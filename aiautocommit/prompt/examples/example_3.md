@@ -1,3 +1,5 @@
+## Example 3
+
 ```
 8083521 (17 seconds ago) feat: enhance SAS token generation and add new upload endpoints <Michael Bianco>
 - Introduced `UploadType` enum to support multiple upload scenarios.

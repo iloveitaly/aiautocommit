@@ -1,3 +1,5 @@
+## Example 2
+
 ```
 diff --git a/.git-functions b/.git-functions
 index ba4be51..2bbb33b 100644
