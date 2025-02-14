@@ -1,9 +1,22 @@
 import logging
 import os
-import re
-import shutil  # added import
-import subprocess
 import sys
+
+# if this isn't first, other config can take precedence
+logging.basicConfig(
+    level=getattr(logging, os.environ.get("LOG_LEVEL", "INFO").upper(), logging.INFO),
+    **(
+        {"filename": os.environ.get("AIAUTOCOMMIT_LOG_PATH")}
+        if os.environ.get("AIAUTOCOMMIT_LOG_PATH")
+        else {"stream": sys.stderr}
+    ),
+)
+
+logger = logging.getLogger(__name__)
+
+import re
+import shutil
+import subprocess
 import warnings
 from pathlib import Path
 
@@ -23,7 +36,7 @@ if custom_config_path := os.environ.get("AIAUTOCOMMIT_CONFIG", None):
     CONFIG_PATHS.insert(-2, Path(custom_config_path))
 
 COMMIT_PROMPT_FILE = "commit_prompt.txt"
-EXCLUSIONS_FILE = "exclusions.txt"
+EXCLUSIONS_FILE = "excluded_files.txt"
 COMMIT_SUFFIX_FILE = "commit_suffix.txt"
 
 # https://platform.openai.com/docs/models
@@ -41,14 +54,6 @@ COMMIT_SUFFIX = ""
 # characters, not tokens
 PROMPT_CUTOFF = 10_000
 
-logging.basicConfig(
-    level=os.environ.get("LOG_LEVEL", "INFO").upper(),
-    **(
-        {"filename": os.environ.get("AIAUTOCOMMIT_LOG_PATH")}
-        if os.environ.get("AIAUTOCOMMIT_LOG_PATH")
-        else {"stream": sys.stderr}
-    ),
-)
 
 # this is called within py dev environments. Unless it looks like we are explicitly debugging aiautocommit, we force a
 # more silent operation. Checking for AIAUTOCOMMIT_LOG_PATH is not a perfect heuristic, but it works for now.
@@ -80,7 +85,7 @@ def configure_prompts(config_dir=None):
 
     logging.debug(f"Found config directory at {config_dir}")
 
-    commit_file = config_dir / "commit_prompt.txt"
+    commit_file = config_dir / COMMIT_PROMPT_FILE
     if commit_file.exists():
         logging.debug("Loading commit prompt")
         COMMIT_PROMPT = commit_file.read_text().strip()
@@ -106,7 +111,7 @@ def configure_prompts(config_dir=None):
     else:
         logging.debug(f"'examples' directory does not exist in {config_dir}")
 
-    exclusions_file = config_dir / "exclusions.txt"
+    exclusions_file = config_dir / EXCLUSIONS_FILE
     if exclusions_file.exists():
         logging.debug("Loading exclusions")
         EXCLUDED_FILES = [
@@ -115,9 +120,9 @@ def configure_prompts(config_dir=None):
             if line.strip()
         ]
     else:
-        logging.debug(f"'exclusions.txt' does not exist in {config_dir}")
+        logging.debug(f"'{EXCLUSIONS_FILE}' does not exist in {config_dir.absolute()}")
 
-    commit_suffix_file = config_dir / "commit_suffix.txt"
+    commit_suffix_file = config_dir / COMMIT_SUFFIX_FILE
     if commit_suffix_file.exists():
         logging.debug("Loading custom commit suffix")
         if commit_suffix_file.exists():
@@ -143,6 +148,8 @@ def get_diff(ignore_whitespace=True):
 
     for file in EXCLUDED_FILES:
         arguments += [f":(exclude){file}"]
+
+    logging.debug(f"Running git diff command: {arguments}")
 
     diff_process = subprocess.run(arguments, capture_output=True, text=True)
     diff_process.check_returncode()
@@ -180,7 +187,11 @@ def generate_commit_message(diff):
         logging.debug("No commit message generated")
         return ""
 
-    return (complete(COMMIT_PROMPT, diff)) + COMMIT_SUFFIX
+    message = complete(COMMIT_PROMPT, diff)
+    # If the generated message is empty, do not add the commit suffix.
+    if not message.strip():
+        return ""
+    return message + COMMIT_SUFFIX
 
 
 def git_commit(message):
@@ -196,6 +207,40 @@ def is_reversion():
     # Or a merge
     if (Path(".git") / "MERGE_MSG").exists():
         return True
+
+    # Detect fixup commits by checking if the commit message starts with "fixup!"
+    commit_editmsg = Path(".git") / "COMMIT_EDITMSG"
+    if commit_editmsg.exists():
+        try:
+            first_line = commit_editmsg.read_text(
+                encoding="utf-8", errors="ignore"
+            ).splitlines()[0]
+            if first_line.startswith("fixup!"):
+                return True
+        except IndexError:
+            pass
+
+        # Check if a commit amend is happening by comparing the commit edit message
+        # with the last commit message (which is pre-populated during amend)
+        try:
+            current_first_line = (
+                commit_editmsg.read_text(encoding="utf-8", errors="ignore")
+                .splitlines()[0]
+                .strip()
+            )
+            head_first_line = (
+                subprocess.run(
+                    ["git", "log", "-1", "--pretty=%B"],
+                    capture_output=True,
+                    text=True,
+                )
+                .stdout.splitlines()[0]
+                .strip()
+            )
+            if current_first_line == head_first_line:
+                return True
+        except Exception:
+            pass
 
     return False
 
@@ -307,33 +352,41 @@ def install_pre_commit(overwrite):
 
 @main.command()
 def dump_prompts():
-    "Dump default prompts by copying the prompt directory for easy customization"
+    "Dump default prompts by copying the contents of the prompt directory to PWD for customization"
 
     config_dir = Path(LOCAL_REPO_AUTOCOMMIT_DIR_NAME)
     config_dir.mkdir(exist_ok=True)
-
     source_prompt_dir = Path(__file__).parent / "prompt"
-    dest_prompt_dir = config_dir / "prompt"
 
-    if dest_prompt_dir.exists():
-        click.echo(
-            f"Prompt directory already exists at {dest_prompt_dir}. Skipping copy."
-        )
+    if not source_prompt_dir.exists():
+        click.echo("Source prompt directory does not exist; nothing to copy.")
         return
 
-    if source_prompt_dir.exists():
-        shutil.copytree(source_prompt_dir, dest_prompt_dir)
-        click.echo(
-            f"Copied prompt directory from {source_prompt_dir} to {dest_prompt_dir}"
-        )
-    else:
-        # this should never happen
-        click.echo("Source prompt directory does not exist; nothing to copy.")
+    # Copy each item from source_prompt_dir into config_dir
+    for item in source_prompt_dir.iterdir():
+        target = config_dir / item.name
+        if target.exists():
+            click.echo(f"{target} already exists. Skipping copy of {item.name}.")
+            continue
+        if item.is_dir():
+            shutil.copytree(item, target)
+        else:
+            shutil.copy(item, target)
+
+    click.echo(f"Copied contents of {source_prompt_dir} to {config_dir}")
 
 
 @main.command()
 def output_prompt():
-    "Dump compiled prompt to stdout"
+    "Dump compiled prompt, helpful for debugging"
 
     configure_prompts()
     click.echo(COMMIT_PROMPT)
+
+
+@main.command()
+def output_exclusions():
+    "Dump file exclusions, helpful for debugging"
+
+    configure_prompts()
+    click.echo(EXCLUDED_FILES)
