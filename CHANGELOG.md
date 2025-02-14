@@ -1,3 +1,13 @@
+# [0.11.0](https://github.com/iloveitaly/aiautocommit/compare/v0.10.7...v0.11.0) (2025-02-14)
+
+
+### Features
+
+* add output_prompt command to display compiled prompt ([d5d03a1](https://github.com/iloveitaly/aiautocommit/commit/d5d03a1df4d9bf93441462e68685caa22ca169b4))
+* improve logging, prompts handling and git operations ([b1398c8](https://github.com/iloveitaly/aiautocommit/commit/b1398c8796883358df1a6950e733759c1c86fa8f))
+
+
+
 ## [0.10.7](https://github.com/iloveitaly/aiautocommit/compare/v0.10.6...v0.10.7) (2025-02-10)
 
 
@@ -31,15 +41,6 @@
 ### Bug Fixes
 
 * better prompt formatting by using raw string ([68d41fa](https://github.com/iloveitaly/aiautocommit/commit/68d41fa15299f1213f9c647a6bcdde637990331f))
-
-
-
-## [0.10.3](https://github.com/iloveitaly/aiautocommit/compare/v0.10.2...v0.10.3) (2025-01-24)
-
-
-### Bug Fixes
-
-* update build system to use hatchling ([03a2fec](https://github.com/iloveitaly/aiautocommit/commit/03a2fecb4ac55fc6c3cbe0effde46395ee931b3e))
 
 
 
