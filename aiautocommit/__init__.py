@@ -64,9 +64,26 @@ if not os.environ.get("AIAUTOCOMMIT_LOG_PATH"):
     # Optional: Disable httpx logging if desired
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
-# allow a unique API key to be set for OpenAI, for tracking/costing
-if os.environ.get("AIAUTOCOMMIT_OPENAI_API_KEY"):
-    os.environ["OPENAI_API_KEY"] = os.environ["AIAUTOCOMMIT_OPENAI_API_KEY"]
+
+def update_env_variables():
+    """
+    Allow keys specific to AIAUTOCOMMIT to be set globally so project-specific keys can be used for openai calls
+    """
+
+    prefix = "AIAUTOCOMMIT_"
+    env_vars = [
+        "OPENAI_API_KEY",
+        "OPENAI_API_VERSION",
+        "AZURE_ENDPOINT",
+        "AZURE_API_KEY",
+    ]
+
+    for var in env_vars:
+        if value := os.environ.get(prefix + var):
+            os.environ[var] = value
+
+
+update_env_variables()
 
 
 def configure_prompts(config_dir=None):
