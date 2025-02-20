@@ -2,6 +2,28 @@ import logging
 import os
 import sys
 
+
+def update_env_variables():
+    """
+    Allow keys specific to AIAUTOCOMMIT to be set globally so project-specific keys can be used for openai calls
+    """
+
+    prefix = "AIAUTOCOMMIT_"
+    env_vars = [
+        "LOG_LEVEL",
+        "OPENAI_API_KEY",
+        "OPENAI_API_VERSION",
+        "AZURE_ENDPOINT",
+        "AZURE_API_KEY",
+    ]
+
+    for var in env_vars:
+        if value := os.environ.get(prefix + var):
+            os.environ[var] = value
+
+
+update_env_variables()
+
 # if this isn't first, other config can take precedence
 logging.basicConfig(
     level=getattr(logging, os.environ.get("LOG_LEVEL", "INFO").upper(), logging.INFO),
@@ -63,27 +85,6 @@ if not os.environ.get("AIAUTOCOMMIT_LOG_PATH"):
 
     # Optional: Disable httpx logging if desired
     logging.getLogger("httpx").setLevel(logging.WARNING)
-
-
-def update_env_variables():
-    """
-    Allow keys specific to AIAUTOCOMMIT to be set globally so project-specific keys can be used for openai calls
-    """
-
-    prefix = "AIAUTOCOMMIT_"
-    env_vars = [
-        "OPENAI_API_KEY",
-        "OPENAI_API_VERSION",
-        "AZURE_ENDPOINT",
-        "AZURE_API_KEY",
-    ]
-
-    for var in env_vars:
-        if value := os.environ.get(prefix + var):
-            os.environ[var] = value
-
-
-update_env_variables()
 
 
 def configure_prompts(config_dir=None):
@@ -164,7 +165,7 @@ def get_diff(ignore_whitespace=True):
         ]
 
     for file in EXCLUDED_FILES:
-        arguments += [f":(exclude){file}"]
+        arguments += [f":(exclude)**{file}"]
 
     logging.debug(f"Running git diff command: {arguments}")
 
@@ -206,7 +207,7 @@ def generate_commit_message(diff):
 
     message = complete(COMMIT_PROMPT, diff)
     # If the generated message is empty, do not add the commit suffix.
-    if not message.strip():
+    if not message.strip() or message.strip() == '""':
         return ""
     return message + COMMIT_SUFFIX
 
