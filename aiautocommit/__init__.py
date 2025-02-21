@@ -408,3 +408,53 @@ def output_exclusions():
 
     configure_prompts()
     click.echo(EXCLUDED_FILES)
+
+
+@main.command()
+@click.argument("sha")
+@click.argument("message")
+def debug_prompt(sha, message):
+    """
+    Show debug info for a given commit SHA:
+    - the git diff as a Markdown block
+    - the entire prompt as a Markdown block
+    - the full commit message
+    """
+    configure_prompts()
+
+    diff_cmd = ["git", "show", sha, "--pretty="]
+    diff_output = subprocess.run(diff_cmd, capture_output=True, text=True).stdout
+
+    commit_msg_cmd = ["git", "log", "--format=%B", "-n", "1", sha]
+    commit_message = subprocess.run(
+        commit_msg_cmd, capture_output=True, text=True
+    ).stdout
+
+    # remove the fixed commit suffix
+    commit_message = commit_message.replace(COMMIT_SUFFIX, "").strip()
+
+    click.echo(f"""
+Your job is to help me improve a prompt that is being sent to an LLM in order to write a get commit message.
+
+{message}
+
+Explain why and suggest a improved prompt (without examples). Keep your response concise.
+
+Here is the diff:
+
+```
+{diff_output}
+```
+
+Here was the commit message that was generated:
+
+```
+{commit_message}
+```
+
+It was written using the following LLM prompt:
+
+---
+
+{COMMIT_PROMPT}
+""")
