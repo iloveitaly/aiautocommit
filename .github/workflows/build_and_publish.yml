@@ -22,10 +22,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: jdx/mise-action@v2
-        with:
-          tool_versions: |
-            python ${{ matrix.python-version }}
-
+      - run: mise use python@${{ matrix.python-version }}
       - run: uv sync
       - run: uv run ${{ github.event.repository.name }} --help
       - run: uv run ${{ github.event.repository.name }} output-prompt
