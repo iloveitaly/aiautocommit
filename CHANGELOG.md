@@ -1,3 +1,12 @@
+# [0.12.0](https://github.com/iloveitaly/aiautocommit/compare/v0.11.0...v0.12.0) (2025-03-04)
+
+
+### Features
+
+* add debug info command for commit prompts ([9f8a1b4](https://github.com/iloveitaly/aiautocommit/commit/9f8a1b47ee37e8871bb343e2a6d8f27ccd0c9b51))
+
+
+
 # [0.11.0](https://github.com/iloveitaly/aiautocommit/compare/v0.10.7...v0.11.0) (2025-02-14)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * **build:** adjust config path and remove embedded prompt ([e5e1f2f](https://github.com/iloveitaly/aiautocommit/commit/e5e1f2f3d1bf560a2138a763a4179271e37b5a2f))
-
-
-
-## [0.10.4](https://github.com/iloveitaly/aiautocommit/compare/v0.10.3...v0.10.4) (2025-02-05)
-
-
-### Bug Fixes
-
-* better prompt formatting by using raw string ([68d41fa](https://github.com/iloveitaly/aiautocommit/commit/68d41fa15299f1213f9c647a6bcdde637990331f))
 
 
 
