@@ -27,13 +27,13 @@ pip install aiautocommit
 
 Set your OpenAI API key:
 
-```
+```shell
 export OPENAI_API_KEY=<YOUR API KEY>
 ```
 
 Stage your changes and run aiautocommit:
 
-```
+```shell
 git add .
 
 # this will generate a commit message and commit the changes
@@ -89,10 +89,31 @@ aiautocommit install-pre-commit
 
 [Learn more about git hooks here.](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks)
 
+### Customize Scopes
+
+First, dump the prompts into your project:
+
+```shell
+aiautocommit dump-prompts
+```
+
+Then add your scope specification to the commit prompt:
+
+```
+#### 4. **Scopes**
+
+Optional scopes (e.g., `feat(api):`):
+- `api`: API endpoints, controllers, services.
+- `frontend`: React components, styles, state management.
+- `migration`: Database schema changes.
+- `jobs`: Background jobs, scheduled tasks.
+- `infra`: Infrastructure, networking, deployment, containerization.
+- `prompt`: Updates to LLM or AI prompts.
+```
 
 #### Lefthook Configuration
 
-Lefthook is an excellent tool for managing git hooks. To use aiautocommit with lefthook, add the following to your `.lefthook.yml`:
+[Lefthook](https://lefthook.dev) is an excellent tool for managing git hooks. To use aiautocommit with lefthook, add the following to your `.lefthook.yml`:
 
 ```yaml
 prepare-commit-msg:
@@ -123,6 +144,8 @@ prepare-commit-msg:
 * `AIAUTOCOMMIT_LOG_PATH`: Custom log file path
 
 ## Writing Good Commit Messages
+
+Some guides to writing good commit messages:
 
 * https://cbea.ms/git-commit/
 * https://groups.google.com/g/golang-dev/c/6M4dmZWpFaI
