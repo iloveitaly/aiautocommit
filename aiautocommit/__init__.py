@@ -63,7 +63,7 @@ COMMIT_SUFFIX_FILE = "commit_suffix.txt"
 
 # https://platform.openai.com/docs/models
 # gpt-4o-mini is cheaper, basically free
-MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "gpt-4o")
+MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "gpt-4.1")
 
 COMMIT_PROMPT = ""
 EXCLUDED_FILES = []
@@ -438,7 +438,7 @@ Your job is to help me improve a prompt that is being sent to an LLM in order to
 
 {message}
 
-Explain why and suggest a improved prompt (without examples). Keep your response concise.
+Explain why and suggest a improved prompt (without examples) in a markdown block. Keep your response concise.
 
 Here is the diff:
 
