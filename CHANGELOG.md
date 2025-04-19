@@ -1,3 +1,12 @@
+## [0.12.1](https://github.com/iloveitaly/aiautocommit/compare/v0.12.0...v0.12.1) (2025-04-19)
+
+
+### Bug Fixes
+
+* update default model to gpt-4.1 and clarify prompt instructions ([bfe0c5a](https://github.com/iloveitaly/aiautocommit/commit/bfe0c5af796ba60facea872215aac810ca578451))
+
+
+
 # [0.12.0](https://github.com/iloveitaly/aiautocommit/compare/v0.11.0...v0.12.0) (2025-03-04)
 
 
@@ -32,15 +41,6 @@
 ### Bug Fixes
 
 * remove commit suffix in aiautocommit init ([3019e0b](https://github.com/iloveitaly/aiautocommit/commit/3019e0bdcb0d255e52b22a0643ed42bd7bc1fe08))
-
-
-
-## [0.10.5](https://github.com/iloveitaly/aiautocommit/compare/v0.10.4...v0.10.5) (2025-02-10)
-
-
-### Bug Fixes
-
-* **build:** adjust config path and remove embedded prompt ([e5e1f2f](https://github.com/iloveitaly/aiautocommit/commit/e5e1f2f3d1bf560a2138a763a4179271e37b5a2f))
 
 
 
