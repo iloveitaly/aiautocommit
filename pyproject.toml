@@ -4,7 +4,11 @@ version = "0.12.1"
 description = "AI generated commit messages"
 readme = "README.md"
 requires-python = ">=3.8"
-dependencies = ["click>=8.1.7", "openai>=1.54.3"]
+dependencies = [
+    "backoff>=2.2.1",
+    "click>=8.1.7",
+ "openai>=1.54.3",
+]
 authors = [{ name = "Michael Bianco", email = "mike@mikebian.co" }]
 keywords = ["git", "commit", "automation", "ai", "openai"]
 urls = { "Repository" = "https://github.com/iloveitaly/aiautocommit" }
