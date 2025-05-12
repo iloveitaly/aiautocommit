@@ -1,6 +1,9 @@
 import logging
 import os
 import sys
+from typing import List
+
+from .internet import wait_for_internet_connection
 
 
 def update_env_variables():
@@ -43,7 +46,7 @@ import warnings
 from pathlib import Path
 
 import click
-from openai import OpenAI
+from openai import AzureOpenAI, OpenAI
 
 # Config file locations in priority order
 LOCAL_REPO_AUTOCOMMIT_DIR_NAME = ".aiautocommit"
@@ -62,7 +65,6 @@ EXCLUSIONS_FILE = "excluded_files.txt"
 COMMIT_SUFFIX_FILE = "commit_suffix.txt"
 
 # https://platform.openai.com/docs/models
-# gpt-4o-mini is cheaper, basically free
 MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "gpt-4.1")
 
 COMMIT_PROMPT = ""
@@ -149,8 +151,42 @@ def configure_prompts(config_dir=None):
             logging.debug("Custom commit suffix file does not exist")
 
 
+def get_diff_size(section: List[str]) -> int:
+    """Calculate the number of changed lines in a diff section."""
+    try:
+        i = next(j for j, line in enumerate(section) if line.startswith("@@"))
+        return sum(
+            1 for line in section[i:] if line.startswith("+") or line.startswith("-")
+        )
+    except StopIteration:
+        return 0
+
+
+def sort_git_diff(diff_str: str) -> str:
+    """Sort git diff string by number of changed lines, smallest first."""
+    if not diff_str:
+        return diff_str
+
+    lines: List[str] = diff_str.splitlines()
+    sections: List[List[str]] = []
+    current_section: List[str] = []
+
+    for line in lines:
+        if line.startswith("diff --git"):
+            if current_section:
+                sections.append(current_section)
+            current_section = [line]
+        else:
+            current_section.append(line)
+    if current_section:
+        sections.append(current_section)
+
+    sorted_sections: List[List[str]] = sorted(sections, key=get_diff_size)
+    return "\n".join("\n".join(section) for section in sorted_sections)
+
+
 def get_diff(ignore_whitespace=True):
-    """Generate diff for staged changes (ignores whitespace and file exclusions)."""
+    """Generate diff for staged changes (ignores whitespace and file exclusions), sorted by diff size."""
 
     arguments = [
         "git",
@@ -173,9 +209,20 @@ def get_diff(ignore_whitespace=True):
     diff_process.check_returncode()
     normalized_diff = diff_process.stdout.strip()
 
-    logging.debug(f"Discovered Diff:\n{normalized_diff}")
+    # Sort the diff output by size (smallest diffs first)
+    sorted_diff = sort_git_diff(normalized_diff)
 
-    return normalized_diff
+    logging.debug(f"Discovered Diff (sorted by size):\n{sorted_diff}")
+
+    return sorted_diff
+
+
+# check if AZURE credentials are set and use them
+def open_ai_client():
+    if os.environ.get("AZURE_OPENAI_API_KEY"):
+        return AzureOpenAI()
+    else:
+        return OpenAI()
 
 
 def complete(prompt, diff):
@@ -184,7 +231,7 @@ def complete(prompt, diff):
             f"Prompt length ({len(diff)}) exceeds the maximum allowed length, truncating."
         )
 
-    client = OpenAI()
+    client = open_ai_client()
     completion_resp = client.chat.completions.create(
         model=MODEL_NAME,
         messages=[
@@ -299,6 +346,12 @@ def commit(print_message, output_file, config_dir):
     """
 
     if is_reversion():
+        return 0
+
+    try:
+        wait_for_internet_connection()
+    except Exception:
+        logging.warning("No internet connection. Skipping OpenAI completion.")
         return 0
 
     configure_prompts(config_dir)

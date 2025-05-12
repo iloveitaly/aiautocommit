@@ -1,7 +1,7 @@
 import backoff
 
-# 8 hours, in case the internet goes down overnight
-MAX_WAIT_TIME = 60 * 60 * 8
+# 2 seconds
+MAX_WAIT_TIME = 2
 
 
 @backoff.on_exception(backoff.expo, Exception, max_time=MAX_WAIT_TIME)
