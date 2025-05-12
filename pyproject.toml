@@ -1,6 +1,6 @@
 [project]
 name = "aiautocommit"
-version = "0.12.1"
+version = "0.13.0"
 description = "AI generated commit messages"
 readme = "README.md"
 requires-python = ">=3.8"

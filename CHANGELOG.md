@@ -1,3 +1,13 @@
+# [0.13.0](https://github.com/iloveitaly/aiautocommit/compare/v0.12.1...v0.13.0) (2025-05-12)
+
+
+### Features
+
+* add utility to wait for internet connection ([0d859a8](https://github.com/iloveitaly/aiautocommit/commit/0d859a8eb4e821cd598b732080f6f60bb6cf08b4))
+* sort git diff by change size and add Azure OpenAI support ([6962f47](https://github.com/iloveitaly/aiautocommit/commit/6962f47d838d73d74005e1d75e66b7a93802c594))
+
+
+
 ## [0.12.1](https://github.com/iloveitaly/aiautocommit/compare/v0.12.0...v0.12.1) (2025-04-19)
 
 
@@ -32,15 +42,6 @@
 ### Bug Fixes
 
 * add extra newline to commit suffix for clarity ([29583bc](https://github.com/iloveitaly/aiautocommit/commit/29583bc148e9e66120c56227968e11037067f5e7))
-
-
-
-## [0.10.6](https://github.com/iloveitaly/aiautocommit/compare/v0.10.5...v0.10.6) (2025-02-10)
-
-
-### Bug Fixes
-
-* remove commit suffix in aiautocommit init ([3019e0b](https://github.com/iloveitaly/aiautocommit/commit/3019e0bdcb0d255e52b22a0643ed42bd7bc1fe08))
 
 
 
