@@ -1,3 +1,13 @@
+## [0.13.1](https://github.com/iloveitaly/aiautocommit/compare/v0.13.0...v0.13.1) (2025-08-18)
+
+
+### Bug Fixes
+
+* don't exit early if commit message file exists ([80e57eb](https://github.com/iloveitaly/aiautocommit/commit/80e57ebbe2867c4bb7b8c6493c170b7c1f1a8284))
+* revised iteration on AI commit prompts ([4649f28](https://github.com/iloveitaly/aiautocommit/commit/4649f288b129b6bfce6fa5cd8f73e0d12f24ca7d))
+
+
+
 # [0.13.0](https://github.com/iloveitaly/aiautocommit/compare/v0.12.1...v0.13.0) (2025-05-12)
 
 
@@ -33,15 +43,6 @@
 
 * add output_prompt command to display compiled prompt ([d5d03a1](https://github.com/iloveitaly/aiautocommit/commit/d5d03a1df4d9bf93441462e68685caa22ca169b4))
 * improve logging, prompts handling and git operations ([b1398c8](https://github.com/iloveitaly/aiautocommit/commit/b1398c8796883358df1a6950e733759c1c86fa8f))
-
-
-
-## [0.10.7](https://github.com/iloveitaly/aiautocommit/compare/v0.10.6...v0.10.7) (2025-02-10)
-
-
-### Bug Fixes
-
-* add extra newline to commit suffix for clarity ([29583bc](https://github.com/iloveitaly/aiautocommit/commit/29583bc148e9e66120c56227968e11037067f5e7))
 
 
 
