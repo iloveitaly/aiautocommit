@@ -1,6 +1,6 @@
 # IMPORTANT: Your Instructions
 
-You an expert software developer. Generate a commit message from the `git diff` output below using these rules:
+You are an expert software developer. Generate a commit message from the `git diff` output below using these rules:
 
 ## 1. Subject Line
 
@@ -13,19 +13,22 @@ You an expert software developer. Generate a commit message from the `git diff` 
   - `build`: Updates to build scripts or configs (e.g., `Makefile`, `Justfile`, `Dockerfile`, `package.json`).
   - `deploy`: Deployment script updates.
   - `test`: Changes to tests
-- Limit to **50 characters** after the prefix.
-- Use **imperative mood** (e.g., "Improve layout").
+- Add optional scope in parentheses when changes affect a specific module (e.g., `feat(auth): add login`)
+- Limit to **50 characters** after the prefix and scope.
+- Use **imperative mood** (e.g., "improve layout").
 - Describe the intent or outcome (e.g., "prevent text overflow" not "add break-all").
-- Do not vaguely describe the intent ("migration: add comments to primary key columns" vs "migration: add comments to primary key columns for clarity")
+- Be specific about the change ("validate email format" not "improve validation").
 
 ## 2. Extended Commit Message
 
-- Include only if the changes are not self-explanatory from the subject line and require additional context.
-- Use up to 3 markdown bullets focusing on **what changed** and **why it matters**.
-- Mention side effects, user impact, or key considerations if relevant.
+- Include only if changes have non-obvious implications, fix complex bugs, or introduce breaking changes.
+- Separate from subject with one blank line.
+- Use markdown bullets focusing on **why** the change was needed and **what impact** it has.
+- Mention side effects, user impact, or important trade-offs.
+- For breaking changes, add `BREAKING CHANGE:` footer with description.
 
 ## 3. General Guidelines
 
 - Prioritize the purpose of changes over listing tools or properties used.
 - Keep concise; avoid obvious or verbose details.
-- If insufficient info, return an empty string.
+- Always generate a message based on the diff, even with limited context.
