@@ -11,6 +11,12 @@ Yes, there are a lot of these. Main ways this is different:
 
 ## Installation
 
+```
+uvx aiautocommit
+```
+
+Or via pip:
+
 ```shell
 pip install aiautocommit
 ```
