@@ -21,6 +21,80 @@ Or via pip:
 pip install aiautocommit
 ```
 
+## MCP Server Configuration
+
+aiautocommit can be configured as an MCP (Model Context Protocol) server for various AI coding tools. Below are the configuration file locations for popular AI assistants:
+
+### Claude Desktop
+
+**Configuration file location:**
+- **macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+- **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
+
+You can also access this file by clicking the "Edit Config" button in the Developer tab of Claude Desktop's Settings.
+
+### Claude Code
+
+**Configuration file location:**
+- `~/.claude.json` (recommended for consistent behavior across versions)
+
+You can also manage MCP servers using the CLI:
+```shell
+claude mcp add <server-name> --scope user
+```
+
+### Cursor IDE
+
+**Configuration file locations:**
+- **Global configuration**: `~/.cursor/mcp.json`
+- **Project-specific configuration**: `.cursor/mcp.json` (in project root)
+
+Access via: Cursor Settings > Features > MCP > + Add New MCP Server
+
+### GitHub Copilot (VS Code)
+
+**Configuration file locations:**
+- **Repository-specific**: `.vscode/mcp.json` (in repository root)
+- **Personal configuration**: Add to VS Code's `settings.json`
+
+For GitHub Copilot coding agent: Navigate to GitHub settings > Code & automation > Copilot > Coding agent > MCP configuration section
+
+**Note**: Requires VS Code 1.102 or later
+
+### Windsurf IDE (Codeium)
+
+**Configuration file location:**
+- **macOS**: `~/.codeium/windsurf/mcp_config.json`
+- **Windows**: `%USERPROFILE%\.codeium\windsurf\mcp_config.json`
+
+Access via: Click the Hammer Icon on the Cascade toolbar > Configure
+
+### Google Gemini (AI Studio/Firebase Studio)
+
+**Configuration file locations:**
+- **Interactive chat**: `.idx/mcp.json`
+- **Gemini CLI**: `.gemini/settings.json`
+
+Access via: Command Palette (Shift+Ctrl+P) > Firebase Studio: Add MCP Server
+
+### Configuration Format
+
+All tools use a similar JSON structure with an `mcpServers` object:
+
+```json
+{
+  "mcpServers": {
+    "aiautocommit": {
+      "command": "uvx",
+      "args": ["aiautocommit", "serve"],
+      "env": {
+        "OPENAI_API_KEY": "your-api-key-here"
+      }
+    }
+  }
+}
+```
+
 ## Features
 
 * Generates conventional commit messages
