@@ -82,12 +82,6 @@ cargo install difftastic
 # https://github.com/Wilfred/difftastic/releases
 ```
 
-Verify installation:
-
-```shell
-aiautocommit check-difftastic
-```
-
 ### Usage
 
 Enable difftastic with the CLI flag:

@@ -4,7 +4,7 @@ import sys
 from typing import List
 
 from .internet import wait_for_internet_connection
-from .difftastic import get_difftastic_diff, check_difftastic_version
+from .difftastic import get_difftastic_diff
 
 
 def update_env_variables():
@@ -541,24 +541,3 @@ It was written using the following LLM prompt:
 
 {COMMIT_PROMPT}
 """)
-
-
-@main.command()
-def check_difftastic():
-    """Check if difftastic is installed and available"""
-    version = check_difftastic_version()
-
-    if version:
-        click.echo(f"✓ Difftastic is installed: {version}")
-        click.echo("\nUsage:")
-        click.echo("  aiautocommit commit --difftastic")
-        click.echo("  AIAUTOCOMMIT_DIFFTASTIC=1 aiautocommit commit")
-        return 0
-    else:
-        click.echo("✗ Difftastic not found in PATH", err=True)
-        click.echo("\nInstall difftastic:", err=True)
-        click.echo("  macOS:   brew install difftastic", err=True)
-        click.echo("  Linux:   cargo install difftastic", err=True)
-        click.echo("  Windows: cargo install difftastic", err=True)
-        click.echo("  Or download from: https://github.com/Wilfred/difftastic/releases", err=True)
-        return 1
