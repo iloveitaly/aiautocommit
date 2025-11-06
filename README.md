@@ -21,6 +21,16 @@ Or via pip:
 pip install aiautocommit
 ```
 
+## MCP Server Configuration
+
+| Tool | Configuration Location | Notes |
+|------|------------------------|-------|
+| Claude Desktop | macOS: `~/Library/Application Support/Claude/claude_desktop_config.json`<br>Windows: `%APPDATA%\Claude\claude_desktop_config.json` | Standard MCP JSON format with `mcpServers` object |
+| Claude Code | `~/.claude.json` | Can also use `claude mcp add` CLI command |
+| Cursor | Global: `~/.cursor/mcp.json`<br>Project: `.cursor/mcp.json` | Standard MCP JSON format |
+| GitHub Copilot | Repo: `.vscode/mcp.json`<br>Personal: VS Code `settings.json` | Requires VS Code 1.102+, standard MCP format |
+| Google Gemini | Interactive: `.idx/mcp.json`<br>CLI: `.gemini/settings.json` | Standard MCP JSON format |
+
 ## Features
 
 * Generates conventional commit messages
