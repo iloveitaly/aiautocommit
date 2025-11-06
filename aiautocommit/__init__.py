@@ -4,6 +4,7 @@ import sys
 from typing import List
 
 from .internet import wait_for_internet_connection
+from .difftastic import get_difftastic_diff, check_difftastic_version
 
 
 def update_env_variables():
@@ -185,9 +186,29 @@ def sort_git_diff(diff_str: str) -> str:
     return "\n".join("\n".join(section) for section in sorted_sections)
 
 
-def get_diff(ignore_whitespace=True):
-    """Generate diff for staged changes (ignores whitespace and file exclusions), sorted by diff size."""
+def get_diff(ignore_whitespace=True, use_difftastic=False):
+    """
+    Generate diff for staged changes.
 
+    Args:
+        ignore_whitespace: If True, ignore whitespace changes (git diff only)
+        use_difftastic: If True, attempt to use difftastic for syntax-aware diff
+
+    Returns:
+        Diff string, using difftastic if requested and available, otherwise standard git diff
+    """
+    # Try difftastic if requested
+    if use_difftastic:
+        logging.info("Attempting to use difftastic for syntax-aware diff")
+        difftastic_output = get_difftastic_diff(EXCLUDED_FILES)
+
+        if difftastic_output:
+            logging.info("Successfully generated difftastic diff")
+            return difftastic_output
+        else:
+            logging.warning("difftastic not available, falling back to standard git diff")
+
+    # Standard git diff (existing implementation)
     arguments = [
         "git",
         "--no-pager",
@@ -340,7 +361,13 @@ def main():
     type=click.Path(exists=True, file_okay=False, dir_okay=True),
     help="specify custom config directory",
 )
-def commit(print_message, output_file, config_dir):
+@click.option(
+    "--difftastic",
+    is_flag=True,
+    default=False,
+    help="use difftastic for syntax-aware diff analysis (requires difftastic to be installed)",
+)
+def commit(print_message, output_file, config_dir, difftastic):
     """
     Generate commit message from git diff.
     """
@@ -356,15 +383,18 @@ def commit(print_message, output_file, config_dir):
 
     configure_prompts(config_dir)
 
+    # Support environment variable to enable difftastic by default
+    use_difftastic = difftastic or os.environ.get("AIAUTOCOMMIT_DIFFTASTIC", "").lower() in ("1", "true", "yes")
+
     try:
-        if not get_diff(ignore_whitespace=False):
+        if not get_diff(ignore_whitespace=False, use_difftastic=use_difftastic):
             click.echo(
                 "No changes staged. Use `git add` to stage files before invoking gpt-commit.",
                 err=True,
             )
             return 1
 
-        commit_message = generate_commit_message(get_diff())
+        commit_message = generate_commit_message(get_diff(use_difftastic=use_difftastic))
     except UnicodeDecodeError:
         click.echo("aiautocommit does not support binary files", err=True)
 
@@ -511,3 +541,24 @@ It was written using the following LLM prompt:
 
 {COMMIT_PROMPT}
 """)
+
+
+@main.command()
+def check_difftastic():
+    """Check if difftastic is installed and available"""
+    version = check_difftastic_version()
+
+    if version:
+        click.echo(f"✓ Difftastic is installed: {version}")
+        click.echo("\nUsage:")
+        click.echo("  aiautocommit commit --difftastic")
+        click.echo("  AIAUTOCOMMIT_DIFFTASTIC=1 aiautocommit commit")
+        return 0
+    else:
+        click.echo("✗ Difftastic not found in PATH", err=True)
+        click.echo("\nInstall difftastic:", err=True)
+        click.echo("  macOS:   brew install difftastic", err=True)
+        click.echo("  Linux:   cargo install difftastic", err=True)
+        click.echo("  Windows: cargo install difftastic", err=True)
+        click.echo("  Or download from: https://github.com/Wilfred/difftastic/releases", err=True)
+        return 1

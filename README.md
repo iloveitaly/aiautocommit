@@ -28,6 +28,7 @@ pip install aiautocommit
 * Pre-commit hook integration
 * Supports custom config directories
 * Does not generate a commit during a merge or reversion (when an existing autogen'd msg exists)
+* **Optional difftastic integration** for syntax-aware semantic diffs
 
 ## Getting Started
 
@@ -50,6 +51,59 @@ aiautocommit commit --print-message
 ```
 
 Using the CLI directly is the best way to debug and tinker with the project as well.
+
+## Difftastic Integration (Optional)
+
+For enhanced commit message quality, aiautocommit can use [difftastic](https://github.com/Wilfred/difftastic) - a syntax-aware structural diff tool that understands code semantics rather than just line-by-line changes.
+
+### Why Difftastic?
+
+Difftastic helps the AI distinguish between:
+- **Refactoring vs functional changes** - Renaming variables across 50 lines is identified as a structural no-op
+- **Semantic changes** - Function additions, class modifications, parameter signature updates
+- **Import changes** - New dependencies vs code logic changes
+
+This leads to more accurate commit messages like:
+- `refactor: rename userId to user_id for consistency` instead of `update user module (52 lines changed)`
+- `feat: add email verification step` instead of vague descriptions mixing refactoring with features
+
+### Installation
+
+Install difftastic using your package manager:
+
+```shell
+# macOS
+brew install difftastic
+
+# Linux/Windows (requires Rust)
+cargo install difftastic
+
+# Or download from releases
+# https://github.com/Wilfred/difftastic/releases
+```
+
+Verify installation:
+
+```shell
+aiautocommit check-difftastic
+```
+
+### Usage
+
+Enable difftastic with the CLI flag:
+
+```shell
+aiautocommit commit --difftastic
+```
+
+Or set an environment variable to enable by default:
+
+```shell
+export AIAUTOCOMMIT_DIFFTASTIC=1
+aiautocommit commit
+```
+
+**Note:** If difftastic is not installed, aiautocommit automatically falls back to standard git diff.
 
 ## Customization
 
@@ -146,6 +200,7 @@ prepare-commit-msg:
 * `AIAUTOCOMMIT_OPENAI_API_KEY`: Unique API key for OpenAI, overrides `OPENAI_API_KEY` (useful for tracking or costing purposes)
 * `AIAUTOCOMMIT_MODEL`: AI model to use (default: gpt-4-mini)
 * `AIAUTOCOMMIT_CONFIG`: Custom config directory path
+* `AIAUTOCOMMIT_DIFFTASTIC`: Enable difftastic for syntax-aware diffs (set to "1", "true", or "yes")
 * `LOG_LEVEL`: Logging verbosity
 * `AIAUTOCOMMIT_LOG_PATH`: Custom log file path
 
