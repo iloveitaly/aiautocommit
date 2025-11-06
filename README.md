@@ -31,21 +31,6 @@ pip install aiautocommit
 | GitHub Copilot | Repo: `.vscode/mcp.json`<br>Personal: VS Code `settings.json` | Requires VS Code 1.102+, standard MCP format |
 | Google Gemini | Interactive: `.idx/mcp.json`<br>CLI: `.gemini/settings.json` | Standard MCP JSON format |
 
-Example configuration:
-```json
-{
-  "mcpServers": {
-    "aiautocommit": {
-      "command": "uvx",
-      "args": ["aiautocommit", "serve"],
-      "env": {
-        "OPENAI_API_KEY": "your-api-key-here"
-      }
-    }
-  }
-}
-```
-
 ## Features
 
 * Generates conventional commit messages
