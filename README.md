@@ -54,50 +54,11 @@ Using the CLI directly is the best way to debug and tinker with the project as w
 
 ## Difftastic Integration (Optional)
 
-For enhanced commit message quality, aiautocommit can use [difftastic](https://github.com/Wilfred/difftastic) - a syntax-aware structural diff tool that understands code semantics rather than just line-by-line changes.
-
-### Why Difftastic?
-
-Difftastic helps the AI distinguish between:
-- **Refactoring vs functional changes** - Renaming variables across 50 lines is identified as a structural no-op
-- **Semantic changes** - Function additions, class modifications, parameter signature updates
-- **Import changes** - New dependencies vs code logic changes
-
-This leads to more accurate commit messages like:
-- `refactor: rename userId to user_id for consistency` instead of `update user module (52 lines changed)`
-- `feat: add email verification step` instead of vague descriptions mixing refactoring with features
-
-### Installation
-
-Install difftastic using your package manager:
-
-```shell
-# macOS
-brew install difftastic
-
-# Linux/Windows (requires Rust)
-cargo install difftastic
-
-# Or download from releases
-# https://github.com/Wilfred/difftastic/releases
-```
-
-### Usage
-
-Enable difftastic with the CLI flag:
+aiautocommit can optionally use [difftastic](https://github.com/Wilfred/difftastic) for syntax-aware diffs that understand code structure rather than just line-by-line changes. This helps the AI distinguish between refactoring (variable renames, code movement) and actual functional changes, leading to more accurate commit messages. Install with `brew install difftastic` (macOS) or `cargo install difftastic` (Linux/Windows), then enable with:
 
 ```shell
 aiautocommit commit --difftastic
 ```
-
-Or set an environment variable to enable by default:
-
-```shell
-export AIAUTOCOMMIT_DIFFTASTIC=1
-aiautocommit commit
-```
-
-**Note:** If difftastic is not installed, aiautocommit automatically falls back to standard git diff.
 
 ## Customization
 
