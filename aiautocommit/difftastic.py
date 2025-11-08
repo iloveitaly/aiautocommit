@@ -30,15 +30,7 @@ def get_difftastic_diff(excluded_files: list[str] = None) -> Optional[str]:
     # Check if difftastic is available
     difft_path = shutil.which("difft")
     if not difft_path:
-        logger.warning(
-            "difftastic was requested but is not installed. "
-            "Falling back to standard git diff. "
-            "Install difftastic to get syntax-aware diffs:\n"
-            "  macOS:   brew install difftastic\n"
-            "  Linux:   cargo install difftastic\n"
-            "  Windows: cargo install difftastic\n"
-            "  Or download from: https://github.com/Wilfred/difftastic/releases"
-        )
+        logger.warning("difftastic was requested but is not installed, falling back to standard git diff")
         return None
 
     logger.info("Using difftastic for syntax-aware diff analysis")
