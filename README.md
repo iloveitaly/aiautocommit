@@ -38,6 +38,7 @@ pip install aiautocommit
 * Pre-commit hook integration
 * Supports custom config directories
 * Does not generate a commit during a merge or reversion (when an existing autogen'd msg exists)
+* **Optional difftastic integration** for syntax-aware semantic diffs
 
 ## Getting Started
 
@@ -60,6 +61,14 @@ aiautocommit commit --print-message
 ```
 
 Using the CLI directly is the best way to debug and tinker with the project as well.
+
+## Difftastic Integration (Optional)
+
+aiautocommit can optionally use [difftastic](https://github.com/Wilfred/difftastic) for syntax-aware diffs that understand code structure rather than just line-by-line changes. This helps the AI distinguish between refactoring (variable renames, code movement) and actual functional changes, leading to more accurate commit messages. Install with `brew install difftastic` (macOS) or `cargo install difftastic` (Linux/Windows), then enable with:
+
+```shell
+aiautocommit commit --difftastic
+```
 
 ## Customization
 
@@ -156,6 +165,7 @@ prepare-commit-msg:
 * `AIAUTOCOMMIT_OPENAI_API_KEY`: Unique API key for OpenAI, overrides `OPENAI_API_KEY` (useful for tracking or costing purposes)
 * `AIAUTOCOMMIT_MODEL`: AI model to use (default: gpt-4-mini)
 * `AIAUTOCOMMIT_CONFIG`: Custom config directory path
+* `AIAUTOCOMMIT_DIFFTASTIC`: Enable difftastic for syntax-aware diffs (set to "1", "true", or "yes")
 * `LOG_LEVEL`: Logging verbosity
 * `AIAUTOCOMMIT_LOG_PATH`: Custom log file path
 
