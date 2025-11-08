@@ -14,78 +14,69 @@ from typing import Optional
 logger = logging.getLogger(__name__)
 
 
-def get_difftastic_diff(excluded_files: list[str] = None) -> Optional[str]:
+def get_difftastic_diff(excluded_files: list[str] = None) -> str:
     """
-    Get semantic diff using difftastic with fallback handling.
+    Get semantic diff using difftastic.
 
-    This is the main entry point for getting a difftastic diff. It handles
-    detection, execution, and error cases gracefully.
+    Assumes difftastic is installed and available in PATH. Caller should
+    verify availability before calling this function.
 
     Args:
         excluded_files: List of file patterns to exclude from diff
 
     Returns:
-        Difftastic output string, or None if unavailable/failed.
+        Difftastic output string.
+
+    Raises:
+        FileNotFoundError: If difftastic binary not found
+        subprocess.TimeoutExpired: If difftastic times out
+        subprocess.CalledProcessError: If difftastic fails
     """
-    # Check if difftastic is available
     difft_path = shutil.which("difft")
     if not difft_path:
-        logger.warning("difftastic was requested but is not installed, falling back to standard git diff")
-        return None
+        raise FileNotFoundError("difftastic binary 'difft' not found in PATH")
 
     logger.info("Using difftastic for syntax-aware diff analysis")
 
     excluded_files = excluded_files or []
 
-    try:
-        # Build the git diff command
-        cmd = [
-            "git",
-            "--no-pager",
-            "diff",
-            "--staged",
-        ]
+    # Build the git diff command
+    cmd = [
+        "git",
+        "--no-pager",
+        "diff",
+        "--staged",
+    ]
 
-        # Add exclusions
-        for pattern in excluded_files:
-            cmd.append(f":(exclude)**{pattern}")
+    # Add exclusions
+    for pattern in excluded_files:
+        cmd.append(f":(exclude)**{pattern}")
 
-        logger.debug(f"Running git diff with difftastic: {' '.join(cmd)}")
+    logger.debug(f"Running git diff with difftastic: {' '.join(cmd)}")
 
-        # Set up environment to use difftastic as external diff
-        env = os.environ.copy()
-        env["GIT_EXTERNAL_DIFF"] = difft_path
-        env["DFT_DISPLAY"] = "inline"  # Compact display mode
-        env["DFT_COLOR"] = "never"     # No color for LLM consumption
+    # Set up environment to use difftastic as external diff
+    env = os.environ.copy()
+    env["GIT_EXTERNAL_DIFF"] = difft_path
+    env["DFT_DISPLAY"] = "inline"  # Compact display mode
+    env["DFT_COLOR"] = "never"     # No color for LLM consumption
 
-        result = subprocess.run(
+    result = subprocess.run(
+        cmd,
+        capture_output=True,
+        text=True,
+        timeout=60,  # 60 second timeout for large diffs
+        env=env,
+    )
+
+    # git diff returns 0 for no changes, 1 for changes found
+    if result.returncode not in (0, 1):
+        raise subprocess.CalledProcessError(
+            result.returncode,
             cmd,
-            capture_output=True,
-            text=True,
-            timeout=60,  # 60 second timeout for large diffs
-            env=env,
+            output=result.stdout,
+            stderr=result.stderr
         )
 
-        # git diff returns 0 for no changes, 1 for changes
-        if result.returncode not in (0, 1):
-            logger.warning(f"git diff with difftastic failed with code {result.returncode}: {result.stderr}")
-            return None
-
-        output = result.stdout.strip()
-
-        if not output:
-            logger.debug("difftastic produced no output")
-            return None
-
-        logger.debug(f"difftastic output length: {len(output)} characters")
-        return output
-
-    except subprocess.TimeoutExpired:
-        logger.warning("difftastic timed out after 60 seconds")
-        return None
-    except subprocess.CalledProcessError as e:
-        logger.warning(f"difftastic failed: {e}")
-        return None
-    except Exception as e:
-        logger.error(f"Unexpected error running difftastic: {e}")
-        return None
+    output = result.stdout.strip()
+    logger.debug(f"difftastic output length: {len(output)} characters")
+    return output

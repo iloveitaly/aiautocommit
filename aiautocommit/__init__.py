@@ -192,21 +192,14 @@ def get_diff(ignore_whitespace=True, use_difftastic=False):
 
     Args:
         ignore_whitespace: If True, ignore whitespace changes (git diff only)
-        use_difftastic: If True, attempt to use difftastic for syntax-aware diff
+        use_difftastic: If True, use difftastic for syntax-aware diff
 
     Returns:
-        Diff string, using difftastic if requested and available, otherwise standard git diff
+        Diff string, using difftastic if requested, otherwise standard git diff
     """
-    # Try difftastic if requested
+    # Use difftastic if requested (caller should verify availability first)
     if use_difftastic:
-        logging.info("Attempting to use difftastic for syntax-aware diff")
-        difftastic_output = get_difftastic_diff(EXCLUDED_FILES)
-
-        if difftastic_output:
-            logging.info("Successfully generated difftastic diff")
-            return difftastic_output
-        else:
-            logging.warning("difftastic not available, falling back to standard git diff")
+        return get_difftastic_diff(EXCLUDED_FILES)
 
     # Standard git diff (existing implementation)
     arguments = [
@@ -385,6 +378,11 @@ def commit(print_message, output_file, config_dir, difftastic):
 
     # Support environment variable to enable difftastic by default
     use_difftastic = difftastic or os.environ.get("AIAUTOCOMMIT_DIFFTASTIC", "").lower() in ("1", "true", "yes")
+
+    # Check if difftastic is requested but not available
+    if use_difftastic and not shutil.which("difft"):
+        logger.warning("difftastic was requested but is not installed, falling back to standard git diff")
+        use_difftastic = False
 
     try:
         if not get_diff(ignore_whitespace=False, use_difftastic=use_difftastic):
