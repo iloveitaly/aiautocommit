@@ -1,3 +1,12 @@
+# [0.14.0](https://github.com/iloveitaly/aiautocommit/compare/v0.13.1...v0.14.0) (2025-11-08)
+
+
+### Features
+
+* difftastic integration ([de5d360](https://github.com/iloveitaly/aiautocommit/commit/de5d360fe0e3f20944316de8f031cc555c75bf7e))
+
+
+
 ## [0.13.1](https://github.com/iloveitaly/aiautocommit/compare/v0.13.0...v0.13.1) (2025-08-18)
 
 
@@ -33,16 +42,6 @@
 ### Features
 
 * add debug info command for commit prompts ([9f8a1b4](https://github.com/iloveitaly/aiautocommit/commit/9f8a1b47ee37e8871bb343e2a6d8f27ccd0c9b51))
-
-
-
-# [0.11.0](https://github.com/iloveitaly/aiautocommit/compare/v0.10.7...v0.11.0) (2025-02-14)
-
-
-### Features
-
-* add output_prompt command to display compiled prompt ([d5d03a1](https://github.com/iloveitaly/aiautocommit/commit/d5d03a1df4d9bf93441462e68685caa22ca169b4))
-* improve logging, prompts handling and git operations ([b1398c8](https://github.com/iloveitaly/aiautocommit/commit/b1398c8796883358df1a6950e733759c1c86fa8f))
 
 
 
