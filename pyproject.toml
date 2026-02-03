@@ -2,37 +2,40 @@
 name = "aiautocommit"
 version = "0.14.0"
 description = "AI generated commit messages"
+keywords = ["git", "commit", "automation", "ai", "openai"]
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.11"
 dependencies = [
+    "structlog-config>=0.6.0",
     "backoff>=2.2.1",
     "click>=8.1.7",
- "openai>=1.54.3",
+    "openai>=1.54.3",
 ]
 authors = [{ name = "Michael Bianco", email = "mike@mikebian.co" }]
-keywords = ["git", "commit", "automation", "ai", "openai"]
 urls = { "Repository" = "https://github.com/iloveitaly/aiautocommit" }
 
-[tool.setuptools.packages.find]
-exclude = ["playground", "tests"]
-
+# additional packaging information: https://packaging.python.org/en/latest/specifications/core-metadata/#license
 [project.scripts]
 aiautocommit = "aiautocommit:main"
 
-# https://github.com/astral-sh/uv/issues/5200
-[tool.uv]
-package = true
-
-# instructs python packaging to include all non-py files referenced in MANIFEST.in
-[tool.setuptools]
-include-package-data = true
-
-# https://github.com/astral-sh/uv/issues/10733
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["uv_build>=0.9.0,<0.10.0"]
+build-backend = "uv_build"
+
+[tool.uv.build-backend]
+# avoids the src/ directory structure
+module-root = ""
 
 [dependency-groups]
 dev = [
+    "pytest>=8.3.3",
+    "pyright[nodejs]>=1.1.380",
+    "ruff>=0.8.0",
     "pudb>=2024.1.3",
 ]
+
+[tool.pyright]
+exclude = ["examples/", "playground/", "tmp/", ".venv/", "tests/"]
+
+[tool.ruff]
+extend-exclude = ["playground.py", "playground/"]
