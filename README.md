@@ -99,9 +99,8 @@ aiautocommit dump-prompts
 
 This creates a `.aiautocommit/` directory with:
 
-* `diff_prompt.txt`: Template for generating diff summaries
 * `commit_prompt.txt`: Template for generating commit messages
-* `exclusions.txt`: List of files to exclude from processing
+* `excluded_files.txt`: List of files to exclude from processing
 * `commit_suffix.txt`: Static suffix to append to commit messages. Useful for trailers.
 
 ### Installing Pre-commit Hook
