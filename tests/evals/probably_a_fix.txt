@@ -1,0 +1,22 @@
+TODO probably a fix for typing or API
+
+---
+
+
+b813919 (15 seconds ago) test: update user_list retrieval method in utils.py <Michael Bianco>
+Generated-by: aiautocommit
+
+
+diff --git a/tests/routes/utils.py b/tests/routes/utils.py
+index 9c67607..6778544 100644
+--- a/tests/routes/utils.py
++++ b/tests/routes/utils.py
+@@ -55,7 +55,7 @@ def base_server_url(protocol: t.Literal["http", "https"] = "https"):
+ 
+ @cached(cache=clerk_cache_instance)
+ def _get_or_create_clerk_user(email: str):
+-    user_list = clerk.users.list(email_address=[email])
++    user_list = clerk.users.list(request={"email_address": [email]})
+     assert user_list is not None
+ 
+     if len(user_list) == 1:

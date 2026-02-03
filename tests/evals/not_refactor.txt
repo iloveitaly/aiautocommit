@@ -1,0 +1,99 @@
+ad897b3 (31 seconds ago) refactor: update price extraction method and XPath queries <Michael Bianco>
+- Changed price extraction to use `aria-label` instead of SVG path for better accuracy.
+- Updated XPath queries to align with new data attributes.
+- Enhanced logging for better traceability and debugging.
+
+Generated-by: aiautocommit
+
+
+diff --git a/index.ts b/index.ts
+index 9a9cfea..3e5bf12 100644
+--- a/index.ts
++++ b/index.ts
+@@ -19,7 +19,8 @@ puppeteer.use(PluginREPL());
+ 
+ async function getBrowser() {
+   const puppeteerOpts: PuppeteerLaunchOptions = {
+-    headless: true,
++    // change when debugging to see what's going on
++    headless: false,
+ 
+     // Increase the protocol timeout to 60 seconds
+     // this fixes timeouts on slow machines (like a raspberry pi)
+@@ -38,6 +39,7 @@ async function getBrowser() {
+   // should be safe since only 3 known domains are accessed
+   // required for docker and pi deployments and anyone that wants to use as root
+   puppeteerOpts.args!.push("--no-sandbox");
++
+   if (isPi()) {
+     puppeteerOpts.executablePath = "/usr/bin/chromium";
+   } else {
+@@ -164,36 +166,31 @@ async function extractKBBPrice(
+     );
+   }
+ 
+-  const svgPath = await extractTextFromXPath(
++  const ariaLabelPrice = await extractTextFromXPath(
+     browser,
+     assetMetadata.url,
+-    // TODO there's a priceAdvisorWrapper div, but the `object` is not always nested within it
+-    // "//*[@id='priceAdvisorWrapper']/*/object/@data"
+-
+-    // NOTE cannot use `string(//object/@data)`, puppeteer does not support a non-element return
+-    "//object/@data",
++    "//object/@aria-label",
+   );
+-
+-  if (!svgPath) {
+-    console.log(`could not find svg path for ${assetMetadata.url}`);
++  
++  if (!ariaLabelPrice) {
++    console.log(`Could not find price information for ${assetMetadata.url}`);
+     return;
+   }
+-
+-  const kbbPriceWithCurrency: string | undefined | null =
+-    await extractTextFromXPath(
+-      browser,
+-      svgPath,
+-      "//*[@id='RangeBox']/*[name()='text'][4]",
+-    );
+-
+-  if (!kbbPriceWithCurrency) {
+-    console.warn(`could not find kbb price on svg ${svgPath}`);
++  
++  console.log(`Found price information: ${ariaLabelPrice}`);
++  
++  // Example aria-label: "private party range $18,453 to $20,982, private party value $19,716"
++  // Extract the value after "private party value $"
++  const match = ariaLabelPrice.match(/private party value \$([0-9,]+)/);
++  if (!match || !match[1]) {
++    console.log(`Could not extract price from aria-label: ${ariaLabelPrice}`);
+     return;
+-  } else {
+-    console.log(`kbb price: ${kbbPriceWithCurrency}`);
+   }
+-
+-  let kbbPrice: number = parseCurrencyStringToFloat(kbbPriceWithCurrency);
++  
++  const priceString = match[1];
++  console.log(`Extracted KBB price: $${priceString}`);
++  
++  let kbbPrice: number = parseCurrencyStringToFloat(priceString);
+ 
+   if (assetMetadata.adjustment) {
+     console.log(`applying adjustment of ${assetMetadata.adjustment}`);
+@@ -235,11 +232,11 @@ for (const [lunchMoneyAssetId, assetMetadata] of Object.entries(assets)) {
+       assetMetadata.url,
+       // if this breaks, load up a browser, identify the price, and copy the new xpath
+       // https://www.zillow.com/homedetails/2090-Bedminster-Rd-Perkasie-PA-18944/8943331_zpid/
+-      '//*[@id="home-details-home-values"]/div/div[1]/div/div/div[1]/div/p/h3',
++      '[data-testid="price"]'
+     );
+ 
+     if (!zillowHomeValue) {
+-      console.log(`could not find zillow home value for ${assetMetadata.url}`);
++      console.warn(`could not find zillow home value for ${assetMetadata.url}`);
+       continue;
+     }
+ 
