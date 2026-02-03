@@ -368,12 +368,6 @@ def commit(print_message, output_file, config_dir, difftastic):
     if is_reversion():
         return 0
 
-    try:
-        wait_for_internet_connection()
-    except Exception:
-        logging.warning("No internet connection. Skipping OpenAI completion.")
-        return 0
-
     configure_prompts(config_dir)
 
     # Support environment variable to enable difftastic by default
@@ -385,14 +379,25 @@ def commit(print_message, output_file, config_dir, difftastic):
         use_difftastic = False
 
     try:
-        if not get_diff(ignore_whitespace=False, use_difftastic=use_difftastic):
+        staged_diff = get_diff(ignore_whitespace=False, use_difftastic=use_difftastic)
+        if not staged_diff:
             click.echo(
                 "No changes staged. Use `git add` to stage files before invoking gpt-commit.",
                 err=True,
             )
             return 1
 
-        commit_message = generate_commit_message(get_diff(use_difftastic=use_difftastic))
+        diff = get_diff(use_difftastic=use_difftastic)
+        if not diff:
+            commit_message = "style: whitespace change" + COMMIT_SUFFIX
+        else:
+            try:
+                wait_for_internet_connection()
+            except Exception:
+                logging.warning("No internet connection. Skipping OpenAI completion.")
+                return 0
+
+            commit_message = generate_commit_message(diff)
     except UnicodeDecodeError:
         click.echo("aiautocommit does not support binary files", err=True)
 
