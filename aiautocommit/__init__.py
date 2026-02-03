@@ -389,7 +389,7 @@ def commit(print_message, output_file, config_dir, difftastic):
         staged_diff = get_diff(ignore_whitespace=False, use_difftastic=use_difftastic)
         if not staged_diff:
             click.echo(
-                "No changes staged. Use `git add` to stage files before invoking gpt-commit.",
+                "No changes staged. Use `git add` to stage files before invoking aiautocommit.",
                 err=True,
             )
             click.get_current_context().exit(1)
@@ -410,7 +410,7 @@ def commit(print_message, output_file, config_dir, difftastic):
 
         commit_message = (
             # TODO use heredoc
-            "# gpt-commit does not support binary files. "
+            "# aiautocommit does not support binary files. "
             "Please enter a commit message manually or unstage any binary files."
         )
 
