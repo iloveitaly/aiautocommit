@@ -1,6 +1,7 @@
 import subprocess
 import os
 
+
 class GitTestMixin:
     """Mixin to provide git helper methods for tests."""
 

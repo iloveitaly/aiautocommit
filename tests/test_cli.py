@@ -3,6 +3,7 @@ from click.testing import CliRunner
 from aiautocommit import main
 from tests.utils import GitTestMixin
 
+
 class TestCli(unittest.TestCase, GitTestMixin):
     def setUp(self):
         self.runner = CliRunner()
@@ -10,21 +11,21 @@ class TestCli(unittest.TestCase, GitTestMixin):
     def test_whitespace_change(self):
         with self.runner.isolated_filesystem():
             self.init_repo()
-            
+
             # Create initial file
             self.create_file("test.txt", "hello\n")
             self.git_add("test.txt")
             self.git_commit("initial")
-            
+
             # Make whitespace change
             self.create_file("test.txt", "hello \n")
             self.git_add("test.txt")
-            
+
             self.cleanup_commit_editmsg()
 
             # Run command
             result = self.runner.invoke(main, ["commit", "--print-message"])
-            
+
             # Assertions
             self.assertEqual(result.exit_code, 0)
             self.assertIn("style: whitespace change", result.output)

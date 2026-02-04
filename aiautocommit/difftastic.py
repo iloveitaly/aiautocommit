@@ -9,12 +9,11 @@ import logging
 import os
 import shutil
 import subprocess
-from typing import Optional
 
 logger = logging.getLogger(__name__)
 
 
-def get_difftastic_diff(excluded_files: list[str] = None) -> str:
+def get_difftastic_diff(excluded_files: list[str] | None = None) -> str:
     """
     Get semantic diff using difftastic.
 
@@ -58,7 +57,7 @@ def get_difftastic_diff(excluded_files: list[str] = None) -> str:
     env = os.environ.copy()
     env["GIT_EXTERNAL_DIFF"] = difft_path
     env["DFT_DISPLAY"] = "inline"  # Compact display mode
-    env["DFT_COLOR"] = "never"     # No color for LLM consumption
+    env["DFT_COLOR"] = "never"  # No color for LLM consumption
 
     result = subprocess.run(
         cmd,
@@ -71,10 +70,7 @@ def get_difftastic_diff(excluded_files: list[str] = None) -> str:
     # git diff returns 0 for no changes, 1 for changes found
     if result.returncode not in (0, 1):
         raise subprocess.CalledProcessError(
-            result.returncode,
-            cmd,
-            output=result.stdout,
-            stderr=result.stderr
+            result.returncode, cmd, output=result.stdout, stderr=result.stderr
         )
 
     output = result.stdout.strip()

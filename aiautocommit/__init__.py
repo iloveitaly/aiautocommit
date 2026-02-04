@@ -1,10 +1,18 @@
 import logging
 import os
+import re
+import shutil
+import subprocess
 import sys
+import warnings
+from pathlib import Path
 from typing import List
 
-from .internet import wait_for_internet_connection
+import click
+from openai import AzureOpenAI, OpenAI
+
 from .difftastic import get_difftastic_diff
+from .internet import wait_for_internet_connection
 
 
 def update_env_variables():
@@ -34,20 +42,11 @@ logging.basicConfig(
     **(
         {"filename": os.environ.get("AIAUTOCOMMIT_LOG_PATH")}
         if os.environ.get("AIAUTOCOMMIT_LOG_PATH")
-        else {"stream": sys.stderr}
+        else {"stream": sys.stderr}  # type: ignore
     ),
 )
 
 logger = logging.getLogger(__name__)
-
-import re
-import shutil
-import subprocess
-import warnings
-from pathlib import Path
-
-import click
-from openai import AzureOpenAI, OpenAI
 
 # Config file locations in priority order
 LOCAL_REPO_AUTOCOMMIT_DIR_NAME = ".aiautocommit"
@@ -154,7 +153,9 @@ def configure_prompts(config_dir=None):
         # Note: This may require `git commit --cleanup=verbatim` to prevent git from collapsing the blank lines.
         COMMIT_SUFFIX = "\n\n\n" + commit_suffix_file.read_text().strip()
     else:
-        logging.debug(f"'{COMMIT_SUFFIX_FILE}' does not exist in {config_dir.absolute()}")
+        logging.debug(
+            f"'{COMMIT_SUFFIX_FILE}' does not exist in {config_dir.absolute()}"
+        )
 
 
 def get_diff_size(section: List[str]) -> int:
@@ -262,8 +263,10 @@ def complete(prompt, diff):
         # max_completion_tokens=128,
     )
 
-    completion = completion_resp.choices[0].message.content.strip()
-    return completion
+    completion = completion_resp.choices[0].message.content
+    if completion is None:
+        return ""
+    return completion.strip()
 
 
 def generate_commit_message(diff):
@@ -378,11 +381,15 @@ def commit(print_message, output_file, config_dir, difftastic):
     configure_prompts(config_dir)
 
     # Support environment variable to enable difftastic by default
-    use_difftastic = difftastic or os.environ.get("AIAUTOCOMMIT_DIFFTASTIC", "").lower() in ("1", "true", "yes")
+    use_difftastic = difftastic or os.environ.get(
+        "AIAUTOCOMMIT_DIFFTASTIC", ""
+    ).lower() in ("1", "true", "yes")
 
     # Check if difftastic is requested but not available
     if use_difftastic and not shutil.which("difft"):
-        logger.warning("difftastic was requested but is not installed, falling back to standard git diff")
+        logger.warning(
+            "difftastic was requested but is not installed, falling back to standard git diff"
+        )
         use_difftastic = False
 
     try:
