@@ -10,7 +10,8 @@ import os
 import shutil
 import subprocess
 
-logger = logging.getLogger(__name__)
+from .log import log
+from .utils import run_command
 
 
 def get_difftastic_diff(excluded_files: list[str] | None = None) -> str:
@@ -35,7 +36,7 @@ def get_difftastic_diff(excluded_files: list[str] | None = None) -> str:
     if not difft_path:
         raise FileNotFoundError("difftastic binary 'difft' not found in PATH")
 
-    logger.info("Using difftastic for syntax-aware diff analysis")
+    log.info("Using difftastic for syntax-aware diff analysis")
 
     excluded_files = excluded_files or []
 
@@ -51,15 +52,13 @@ def get_difftastic_diff(excluded_files: list[str] | None = None) -> str:
     for pattern in excluded_files:
         cmd.append(f":(exclude)**{pattern}")
 
-    logger.debug(f"Running git diff with difftastic: {' '.join(cmd)}")
-
     # Set up environment to use difftastic as external diff
     env = os.environ.copy()
     env["GIT_EXTERNAL_DIFF"] = difft_path
     env["DFT_DISPLAY"] = "inline"  # Compact display mode
     env["DFT_COLOR"] = "never"  # No color for LLM consumption
 
-    result = subprocess.run(
+    result = run_command(
         cmd,
         capture_output=True,
         text=True,
@@ -74,5 +73,5 @@ def get_difftastic_diff(excluded_files: list[str] | None = None) -> str:
         )
 
     output = result.stdout.strip()
-    logger.debug(f"difftastic output length: {len(output)} characters")
+    log.debug(f"difftastic output length: {len(output)} characters")
     return output

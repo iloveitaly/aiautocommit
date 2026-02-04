@@ -32,6 +32,7 @@ all-providers = [
 
 [package.dev-dependencies]
 dev = [
+    { name = "beautiful-traceback" },
     { name = "pudb" },
     { name = "pyright", extra = ["nodejs"] },
     { name = "pytest" },
@@ -50,6 +51,7 @@ provides-extras = ["all-providers"]
 
 [package.metadata.requires-dev]
 dev = [
+    { name = "beautiful-traceback", specifier = ">=0.5.0" },
     { name = "pudb", specifier = ">=2024.1.3" },
     { name = "pyright", extras = ["nodejs"], specifier = ">=1.1.380" },
     { name = "pytest", specifier = ">=8.3.3" },
@@ -286,6 +288,18 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/c7/94/1009e248bbfbab11397abca7193bea6626806be9a327d399810d523a07cb/beartype-0.22.9.tar.gz", hash = "sha256:8f82b54aa723a2848a56008d18875f91c1db02c32ef6a62319a002e3e25a975f", size = 1608866, upload-time = "2025-12-13T06:50:30.72Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/71/cc/18245721fa7747065ab478316c7fea7c74777d07f37ae60db2e84f8172e8/beartype-0.22.9-py3-none-any.whl", hash = "sha256:d16c9bbc61ea14637596c5f6fbff2ee99cbe3573e46a716401734ef50c3060c2", size = 1333658, upload-time = "2025-12-13T06:50:28.266Z" },
+]
+
+[[package]]
+name = "beautiful-traceback"
+version = "0.5.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "colorama" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/e6/29/910e8a289f9485d49711198c88c121bbc91acab2dd4da671415d6c43f66c/beautiful_traceback-0.5.0.tar.gz", hash = "sha256:7f7c3ef32c4c5d822ae5ccd9f1a57ba24049d6c1ea40a0df538b2122f93131f7", size = 15202, upload-time = "2026-02-04T20:50:51.479Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4a/73/61114793610fed17701c114e0f85e8ec0aa7a4f4249c0d115fad6d0a0103/beautiful_traceback-0.5.0-py3-none-any.whl", hash = "sha256:c37825bae79bb8be9db7689055d8a870043924622a51cc6f27af3d3c0d0742c9", size = 19543, upload-time = "2026-02-04T20:50:47.977Z" },
 ]
 
 [[package]]

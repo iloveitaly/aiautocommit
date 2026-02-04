@@ -9,10 +9,13 @@ from pathlib import Path
 from typing import List
 
 import click
+import structlog
 from pydantic_ai import Agent
 
 from .difftastic import get_difftastic_diff
 from .internet import wait_for_internet_connection
+from .log import log
+from .utils import run_command
 
 
 def update_env_variables():
@@ -31,18 +34,6 @@ def update_env_variables():
 
 update_env_variables()
 
-
-# if this isn't first, other config can take precedence
-logging.basicConfig(
-    level=getattr(logging, os.environ.get("LOG_LEVEL", "INFO").upper(), logging.INFO),
-    **(
-        {"filename": os.environ.get("AIAUTOCOMMIT_LOG_PATH")}
-        if os.environ.get("AIAUTOCOMMIT_LOG_PATH")
-        else {"stream": sys.stderr}  # type: ignore
-    ),
-)
-
-logger = logging.getLogger(__name__)
 
 # Config file locations in priority order
 LOCAL_REPO_AUTOCOMMIT_DIR_NAME = ".aiautocommit"
@@ -99,21 +90,21 @@ def configure_prompts(config_dir=None):
     config_dir = next((path for path in CONFIG_PATHS if path and path.exists()), None)
 
     if not config_dir:
-        logging.debug("No config directory found")
+        log.debug("No config directory found")
         return
 
-    logging.debug(f"Found config directory at {config_dir}")
+    log.debug(f"Found config directory at {config_dir}")
 
     commit_file = config_dir / COMMIT_PROMPT_FILE
     if commit_file.exists():
-        logging.debug("Loading commit prompt")
+        log.debug("Loading commit prompt")
         COMMIT_PROMPT = commit_file.read_text().strip()
     else:
-        logging.debug(f"'commit_prompt.txt' does not exist in {config_dir}")
+        log.debug(f"'commit_prompt.txt' does not exist in {config_dir}")
 
     examples_dir = config_dir / "examples"
     if examples_dir.exists():
-        logging.debug("Loading examples")
+        log.debug("Loading examples")
         pattern = re.compile(r"example_\d\.md$")
         example_files = sorted(
             [
@@ -125,31 +116,31 @@ def configure_prompts(config_dir=None):
         )
 
         for file in example_files:
-            logging.debug(f"Adding example from {file}")
+            log.debug(f"Adding example from {file}")
             COMMIT_PROMPT += "\n\n" + file.read_text().strip() + "\n\n"
     else:
-        logging.debug(f"'examples' directory does not exist in {config_dir}")
+        log.debug(f"'examples' directory does not exist in {config_dir}")
 
     exclusions_file = config_dir / EXCLUSIONS_FILE
     if exclusions_file.exists():
-        logging.debug("Loading exclusions")
+        log.debug("Loading exclusions")
         EXCLUDED_FILES = [
             line.strip()
             for line in exclusions_file.read_text().splitlines()
             if line.strip()
         ]
     else:
-        logging.debug(f"'{EXCLUSIONS_FILE}' does not exist in {config_dir.absolute()}")
+        log.debug(f"'{EXCLUSIONS_FILE}' does not exist in {config_dir.absolute()}")
 
     commit_suffix_file = config_dir / COMMIT_SUFFIX_FILE
     if commit_suffix_file.exists():
-        logging.debug("Loading custom commit suffix")
+        log.debug("Loading custom commit suffix")
         # GitHub requires two blank lines before trailers for some features to work correctly
         # See: https://github.com/orgs/community/discussions/143092
         # Note: This may require `git commit --cleanup=verbatim` to prevent git from collapsing the blank lines.
         COMMIT_SUFFIX = "\n\n\n" + commit_suffix_file.read_text().strip()
     else:
-        logging.debug(
+        log.debug(
             f"'{COMMIT_SUFFIX_FILE}' does not exist in {config_dir.absolute()}"
         )
 
@@ -219,23 +210,23 @@ def get_diff(ignore_whitespace=True, use_difftastic=False):
     for file in EXCLUDED_FILES:
         arguments += [f":(exclude)**{file}"]
 
-    logging.debug(f"Running git diff command: {arguments}")
+    log.debug(f"Running git diff command: {arguments}")
 
-    diff_process = subprocess.run(arguments, capture_output=True, text=True)
+    diff_process = run_command(arguments)
     diff_process.check_returncode()
     normalized_diff = diff_process.stdout.strip()
 
     # Sort the diff output by size (smallest diffs first)
     sorted_diff = sort_git_diff(normalized_diff)
 
-    logging.debug(f"Discovered Diff (sorted by size):\n{sorted_diff}")
+    log.debug(f"Discovered Diff (sorted by size):\n{sorted_diff}")
 
     return sorted_diff
 
 
 def complete(prompt, diff):
     if len(diff) > PROMPT_CUTOFF:
-        logging.info(
+        log.info(
             f"Prompt length ({len(diff)}) exceeds the maximum allowed length, truncating."
         )
 
@@ -259,7 +250,7 @@ def complete(prompt, diff):
 
 def generate_commit_message(diff):
     if not diff:
-        logging.debug("No commit message generated")
+        log.debug("No commit message generated")
         return ""
 
     message = complete(COMMIT_PROMPT, diff)
@@ -271,15 +262,19 @@ def generate_commit_message(diff):
 
 def git_commit(message):
     # will ignore message if diff is empty
-    return subprocess.run(["git", "commit", "--message", message, "--edit"]).returncode
+    return run_command(
+        ["git", "commit", "--message", message, "--edit"],
+        capture_output=False,
+    ).returncode
 
 
 def get_git_dir():
     try:
         return Path(
-            subprocess.check_output(
-                ["git", "rev-parse", "--git-dir"], text=True
-            ).strip()
+            run_command(
+                ["git", "rev-parse", "--git-dir"],
+                check=True,
+            ).stdout.strip()
         )
     except subprocess.CalledProcessError:
         return None
@@ -321,10 +316,8 @@ def is_reversion(commit_msg_path=None):
                 .strip()
             )
             head_first_line = (
-                subprocess.run(
+                run_command(
                     ["git", "log", "-1", "--pretty=%B"],
-                    capture_output=True,
-                    text=True,
                 )
                 .stdout.splitlines()[0]
                 .strip()
@@ -392,7 +385,7 @@ def commit(print_message, output_file, config_dir, difftastic):
 
     # Check if difftastic is requested but not available
     if use_difftastic and not shutil.which("difft"):
-        logger.warning(
+        log.warning(
             "difftastic was requested but is not installed, falling back to standard git diff"
         )
         use_difftastic = False
@@ -413,7 +406,7 @@ def commit(print_message, output_file, config_dir, difftastic):
             try:
                 wait_for_internet_connection()
             except Exception:
-                logging.warning("No internet connection. Skipping AI completion.")
+                log.warning("No internet connection. Skipping AI completion.")
                 click.get_current_context().exit(0)
 
             commit_message = generate_commit_message(diff)
@@ -446,12 +439,10 @@ def commit(print_message, output_file, config_dir, difftastic):
 )
 def install_pre_commit(overwrite):
     """Install pre-commit script into git hooks directory"""
-    git_result = subprocess.run(
+    git_result = run_command(
         ["git", "rev-parse", "--git-dir"],
-        capture_output=True,
-        text=True,
+        check=True,
     )
-    git_result.check_returncode()
 
     git_dir = git_result.stdout.strip()
 
@@ -528,12 +519,10 @@ def debug_prompt(sha, message):
     configure_prompts()
 
     diff_cmd = ["git", "show", sha, "--pretty="]
-    diff_output = subprocess.run(diff_cmd, capture_output=True, text=True).stdout
+    diff_output = run_command(diff_cmd).stdout
 
     commit_msg_cmd = ["git", "log", "--format=%B", "-n", "1", sha]
-    commit_message = subprocess.run(
-        commit_msg_cmd, capture_output=True, text=True
-    ).stdout
+    commit_message = run_command(commit_msg_cmd).stdout
 
     # remove the fixed commit suffix
     commit_message = commit_message.replace(COMMIT_SUFFIX, "").strip()
