@@ -5,7 +5,6 @@ This module provides functionality to shell out to the difftastic CLI tool
 for syntax-aware structural diffing, with graceful fallback to standard git diff.
 """
 
-import logging
 import os
 import shutil
 import subprocess

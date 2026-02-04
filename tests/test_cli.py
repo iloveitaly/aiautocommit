@@ -97,6 +97,7 @@ class TestCli(unittest.TestCase, GitTestMixin):
 
     def test_lock_file_not_excluded(self):
         from unittest.mock import patch
+
         with self.runner.isolated_filesystem():
             self.init_repo()
 
@@ -112,9 +113,13 @@ class TestCli(unittest.TestCase, GitTestMixin):
             self.cleanup_commit_editmsg()
 
             # Mock generate_commit_message to return a fixed string
-            with patch("aiautocommit.generate_commit_message", return_value="AI message"):
+            with patch(
+                "aiautocommit.generate_commit_message", return_value="AI message"
+            ):
                 # Run command with custom config
-                result = self.runner.invoke(main, ["commit", "--print-message", "--config-dir", str(config_dir)])
+                result = self.runner.invoke(
+                    main, ["commit", "--print-message", "--config-dir", str(config_dir)]
+                )
 
             # Assertions - should use AI because uv.lock is not excluded in this config
             self.assertEqual(result.exit_code, 0)

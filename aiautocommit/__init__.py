@@ -3,13 +3,11 @@ import os
 import re
 import shutil
 import subprocess
-import sys
 import warnings
 from pathlib import Path
 from typing import List
 
 import click
-import structlog
 from pydantic_ai import Agent
 
 from .difftastic import get_difftastic_diff
@@ -156,9 +154,7 @@ def configure_prompts(config_dir=None):
         # Note: This may require `git commit --cleanup=verbatim` to prevent git from collapsing the blank lines.
         COMMIT_SUFFIX = "\n\n\n" + commit_suffix_file.read_text().strip()
     else:
-        log.debug(
-            f"'{COMMIT_SUFFIX_FILE}' does not exist in {config_dir.absolute()}"
-        )
+        log.debug(f"'{COMMIT_SUFFIX_FILE}' does not exist in {config_dir.absolute()}")
 
 
 def get_diff_size(section: List[str]) -> int:
@@ -311,7 +307,9 @@ def is_reversion(commit_msg_path=None):
 
     # Detect fixup commits by checking if the commit message starts with "fixup!"
     # If commit_msg_path is provided, use it; otherwise default to COMMIT_EDITMSG
-    commit_editmsg = Path(commit_msg_path) if commit_msg_path else git_dir / "COMMIT_EDITMSG"
+    commit_editmsg = (
+        Path(commit_msg_path) if commit_msg_path else git_dir / "COMMIT_EDITMSG"
+    )
 
     if commit_editmsg.exists():
         try:

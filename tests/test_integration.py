@@ -11,7 +11,9 @@ from tests.utils import GitTestMixin
 class TestIntegration(unittest.TestCase, GitTestMixin):
     def setUp(self):
         self.runner = CliRunner()
-        self.model_name = os.environ.get("AIAUTOCOMMIT_MODEL", "gemini:gemini-flash-latest")
+        self.model_name = os.environ.get(
+            "AIAUTOCOMMIT_MODEL", "gemini:gemini-flash-latest"
+        )
 
         # Verify we have an API key for integration tests
         if os.environ.get("OPENAI_API_KEY"):
