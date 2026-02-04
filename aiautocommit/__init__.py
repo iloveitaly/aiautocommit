@@ -235,7 +235,7 @@ def get_diff(ignore_whitespace=True, use_difftastic=False):
 
 def complete(prompt, diff):
     if len(diff) > PROMPT_CUTOFF:
-        logging.warning(
+        logging.info(
             f"Prompt length ({len(diff)}) exceeds the maximum allowed length, truncating."
         )
 
@@ -274,17 +274,34 @@ def git_commit(message):
     return subprocess.run(["git", "commit", "--message", message, "--edit"]).returncode
 
 
-def is_reversion():
+def get_git_dir():
+    try:
+        return Path(
+            subprocess.check_output(
+                ["git", "rev-parse", "--git-dir"], text=True
+            ).strip()
+        )
+    except subprocess.CalledProcessError:
+        return None
+
+
+def is_reversion(commit_msg_path=None):
+    git_dir = get_git_dir()
+    if not git_dir:
+        return False
+
     # Check if we're in the middle of a git revert
-    if (Path(".git") / "REVERT_HEAD").exists():
+    if (git_dir / "REVERT_HEAD").exists():
         return True
 
     # Or a merge
-    if (Path(".git") / "MERGE_MSG").exists():
+    if (git_dir / "MERGE_MSG").exists():
         return True
 
     # Detect fixup commits by checking if the commit message starts with "fixup!"
-    commit_editmsg = Path(".git") / "COMMIT_EDITMSG"
+    # If commit_msg_path is provided, use it; otherwise default to COMMIT_EDITMSG
+    commit_editmsg = Path(commit_msg_path) if commit_msg_path else git_dir / "COMMIT_EDITMSG"
+
     if commit_editmsg.exists():
         try:
             first_line = commit_editmsg.read_text(
@@ -363,7 +380,7 @@ def commit(print_message, output_file, config_dir, difftastic):
 
     # click.get_current_context().exit() is used instead of sys.exit() because it's the
     # idiomatic way to exit in Click, allowing for proper context cleanup and better testability.
-    if is_reversion():
+    if is_reversion(output_file):
         click.get_current_context().exit(0)
 
     configure_prompts(config_dir)
