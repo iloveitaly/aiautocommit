@@ -68,6 +68,22 @@ COMMIT_SUFFIX = ""
 # characters, not tokens
 PROMPT_CUTOFF = 10_000
 
+LOCK_FILE_MESSAGES = {
+    "uv.lock": "chore(deps): update uv.lock",
+    "poetry.lock": "chore(deps): update poetry.lock",
+    "Pipfile.lock": "chore(deps): update Pipfile.lock",
+    "package-lock.json": "chore(deps): update package-lock.json",
+    "yarn.lock": "chore(deps): update yarn.lock",
+    "pnpm-lock.yaml": "chore(deps): update pnpm-lock.yaml",
+    "bun.lockb": "chore(deps): update bun.lockb",
+    "Gemfile.lock": "chore(deps): update Gemfile.lock",
+    "composer.lock": "chore(deps): update composer.lock",
+    "mix.lock": "chore(deps): update mix.lock",
+    "Cargo.lock": "chore(deps): update Cargo.lock",
+    "go.sum": "chore(deps): update go.sum",
+    ".terraform.lock.hcl": "chore(deps): update .terraform.lock.hcl",
+}
+
 
 # this is called within py dev environments. Unless it looks like we are explicitly debugging aiautocommit, we force a
 # more silent operation. Checking for AIAUTOCOMMIT_LOG_PATH is not a perfect heuristic, but it works for now.
@@ -330,6 +346,33 @@ def is_reversion(commit_msg_path=None):
     return False
 
 
+def check_lock_files():
+    """
+    Check if only lock files are changed and return a standard commit message if so.
+    """
+    staged_files = get_staged_files()
+    if not staged_files:
+        return None
+
+    # check if all changed files are lock files
+    lock_files = []
+    for file_path in staged_files:
+        filename = Path(file_path).name
+        if filename in LOCK_FILE_MESSAGES:
+            lock_files.append(filename)
+        else:
+            # If any file is not a recognized lock file, we can't use a static message
+            return None
+
+    # If we are here, all staged files are recognized lock files
+    unique_messages = {LOCK_FILE_MESSAGES[f] for f in lock_files}
+
+    if len(unique_messages) == 1:
+        return unique_messages.pop() + COMMIT_SUFFIX
+
+    return "chore(deps): update lock files" + COMMIT_SUFFIX
+
+
 @click.group(invoke_without_command=True)
 def main():
     """
@@ -339,6 +382,12 @@ def main():
     ctx = click.get_current_context()
     if ctx.invoked_subcommand is None:
         ctx.invoke(commit)
+
+
+def get_staged_files() -> List[str]:
+    """Get a list of all staged files."""
+    result = run_command(["git", "diff", "--staged", "--name-only"])
+    return result.stdout.strip().splitlines()
 
 
 @main.command()
@@ -392,24 +441,31 @@ def commit(print_message, output_file, config_dir, difftastic):
 
     try:
         staged_diff = get_diff(ignore_whitespace=False, use_difftastic=use_difftastic)
+
         if not staged_diff:
-            click.echo(
-                "No changes staged. Use `git add` to stage files before invoking aiautocommit.",
-                err=True,
-            )
-            click.get_current_context().exit(1)
-
-        diff = get_diff(use_difftastic=use_difftastic)
-        if not diff:
-            commit_message = "style: whitespace change" + COMMIT_SUFFIX
+            # If no staged diff (likely due to exclusions), check if we have any staged files
+            # that we can handle with a static commit message.
+            if lock_message := check_lock_files():
+                commit_message = lock_message
+                log.info(f"Detected lock file change, using message: {commit_message}")
+            else:
+                click.echo(
+                    "No changes staged. Use `git add` to stage files before invoking aiautocommit.",
+                    err=True,
+                )
+                click.get_current_context().exit(1)
         else:
-            try:
-                wait_for_internet_connection()
-            except Exception:
-                log.warning("No internet connection. Skipping AI completion.")
-                click.get_current_context().exit(0)
+            diff = get_diff(use_difftastic=use_difftastic)
+            if not diff:
+                commit_message = "style: whitespace change" + COMMIT_SUFFIX
+            else:
+                try:
+                    wait_for_internet_connection()
+                except Exception:
+                    log.warning("No internet connection. Skipping AI completion.")
+                    click.get_current_context().exit(0)
 
-            commit_message = generate_commit_message(diff)
+                commit_message = generate_commit_message(diff)
     except UnicodeDecodeError:
         click.echo("aiautocommit does not support binary files", err=True)
 

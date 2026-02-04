@@ -40,6 +40,7 @@ pip install aiautocommit
 * Pre-commit hook integration
 * Supports custom config directories
 * Does not generate a commit during a merge or reversion (when an existing autogen'd msg exists)
+* **Automatic lock file handling**: recognizable lock files (e.g., `uv.lock`, `package-lock.json`) generate specific conventional messages (e.g., `build: updating python packages`) even when they are excluded from the AI prompt.
 * **Optional difftastic integration** for syntax-aware semantic diffs
 
 ## Getting Started
@@ -71,6 +72,19 @@ aiautocommit can optionally use [difftastic](https://github.com/Wilfred/difftast
 ```shell
 aiautocommit commit --difftastic
 ```
+
+## Automatic Lock File Handling
+
+Lock files (like `uv.lock`, `package-lock.json`, `Gemfile.lock`, etc.) are frequently updated but don't provide much context for an AI-generated message. By default, these are excluded from the AI prompt to save tokens and improve quality.
+
+However, if you stage *only* lock files, aiautocommit will detect them and automatically generate a conventional commit message:
+
+- `uv.lock`, `poetry.lock` -> `build: updating python packages`
+- `package-lock.json`, `yarn.lock` -> `build: updating node packages`
+- `.terraform.lock.hcl` -> `build: updating terraform providers`
+- Mixed lock files -> `build: updating packages`
+
+If any non-lock files are staged alongside them, the AI will ignore the lock files (based on your exclusions) and focus on the meaningful code changes.
 
 ## Customization
 
