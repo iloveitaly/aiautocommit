@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import List
 
 import click
-from openai import AzureOpenAI, OpenAI
+from pydantic_ai import Agent
 
 from .difftastic import get_difftastic_diff
 from .internet import wait_for_internet_connection
@@ -17,24 +17,20 @@ from .internet import wait_for_internet_connection
 
 def update_env_variables():
     """
-    Allow keys specific to AIAUTOCOMMIT to be set globally so project-specific keys can be used for openai calls
+    Allow keys specific to AIAUTOCOMMIT to be set globally so project-specific keys can be used for AI calls
     """
-
     prefix = "AIAUTOCOMMIT_"
-    env_vars = [
-        "LOG_LEVEL",
-        "OPENAI_API_KEY",
-        "OPENAI_API_VERSION",
-        "AZURE_ENDPOINT",
-        "AZURE_API_KEY",
-    ]
-
-    for var in env_vars:
-        if value := os.environ.get(prefix + var):
-            os.environ[var] = value
+    # Create a list copy of keys to avoid "dictionary changed size during iteration" errors
+    # as we update os.environ within the loop.
+    for key in list(os.environ.keys()):
+        if key.startswith(prefix):
+            base_key = key[len(prefix) :]
+            # AIAUTOCOMMIT_ prefixed variables take precedence over existing variables
+            os.environ[base_key] = os.environ[key]
 
 
 update_env_variables()
+
 
 # if this isn't first, other config can take precedence
 logging.basicConfig(
@@ -64,8 +60,8 @@ COMMIT_PROMPT_FILE = "commit_prompt.txt"
 EXCLUSIONS_FILE = "excluded_files.txt"
 COMMIT_SUFFIX_FILE = "commit_suffix.txt"
 
-# https://platform.openai.com/docs/models
-MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "gpt-4.1")
+# https://ai.pydantic.dev/models/overview
+MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "gemini:gemini-flash-latest")
 
 COMMIT_PROMPT = ""
 EXCLUDED_FILES = []
@@ -237,33 +233,25 @@ def get_diff(ignore_whitespace=True, use_difftastic=False):
     return sorted_diff
 
 
-# check if AZURE credentials are set and use them
-def open_ai_client():
-    if os.environ.get("AZURE_OPENAI_API_KEY"):
-        return AzureOpenAI()
-    else:
-        return OpenAI()
-
-
 def complete(prompt, diff):
     if len(diff) > PROMPT_CUTOFF:
         logging.warning(
             f"Prompt length ({len(diff)}) exceeds the maximum allowed length, truncating."
         )
 
-    client = open_ai_client()
-    completion_resp = client.chat.completions.create(
-        model=MODEL_NAME,
-        messages=[
-            # TODO not all models support system vs user messages...
-            {"role": "system", "content": prompt},
-            {"role": "user", "content": diff[:PROMPT_CUTOFF]},
-        ],
-        # TODO this seems awfully small?
-        # max_completion_tokens=128,
-    )
+    # Allow custom provider settings via environment variables
+    # Pydantic AI automatically handles OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.
+    # but we map our legacy/custom prefixes if they exist and standard ones don't
 
-    completion = completion_resp.choices[0].message.content
+    # Create the agent with the configured model
+    agent = Agent(MODEL_NAME, system_prompt=prompt)
+
+    # Run the agent synchronously
+    result = agent.run_sync(diff[:PROMPT_CUTOFF])
+
+    # Pydantic AI returns a RunResult object, we need the output data
+    completion = result.output
+
     if completion is None:
         return ""
     return completion.strip()
@@ -408,7 +396,7 @@ def commit(print_message, output_file, config_dir, difftastic):
             try:
                 wait_for_internet_connection()
             except Exception:
-                logging.warning("No internet connection. Skipping OpenAI completion.")
+                logging.warning("No internet connection. Skipping AI completion.")
                 click.get_current_context().exit(0)
 
             commit_message = generate_commit_message(diff)

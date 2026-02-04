@@ -21,6 +21,8 @@ Or via pip:
 pip install aiautocommit
 ```
 
+> **Note**: OpenAI, Anthropic, and Gemini (Google) are supported by default. To install all providers supported by Pydantic AI, use `pip install "aiautocommit[all-providers]"`.
+
 ## MCP Server Configuration
 
 | Tool | Configuration Location | Notes |
@@ -42,10 +44,10 @@ pip install aiautocommit
 
 ## Getting Started
 
-Set your OpenAI API key:
+Set your API key (Gemini is the default):
 
 ```shell
-export OPENAI_API_KEY=<YOUR API KEY>
+export GEMINI_API_KEY=<YOUR API KEY>
 ```
 
 Stage your changes and run aiautocommit:
@@ -160,13 +162,29 @@ prepare-commit-msg:
 
 ### Environment Variables
 
-* `OPENAI_API_KEY`: Your OpenAI API key
+* `AIAUTOCOMMIT_MODEL`: AI model to use, in `provider:model` format (default: `gemini:gemini-flash-latest`). Examples: `anthropic:claude-3-5-sonnet-latest`, `openai:gpt-4o`.
+* `OPENAI_API_KEY`: Your OpenAI API key (if using OpenAI models)
+* `ANTHROPIC_API_KEY`: Your Anthropic API key (if using Anthropic models)
+* `GEMINI_API_KEY`: Your Gemini API key (if using Gemini models)
 * `AIAUTOCOMMIT_OPENAI_API_KEY`: Unique API key for OpenAI, overrides `OPENAI_API_KEY` (useful for tracking or costing purposes)
-* `AIAUTOCOMMIT_MODEL`: AI model to use (default: gpt-4-mini)
 * `AIAUTOCOMMIT_CONFIG`: Custom config directory path
 * `AIAUTOCOMMIT_DIFFTASTIC`: Enable difftastic for syntax-aware diffs (set to "1", "true", or "yes")
 * `LOG_LEVEL`: Logging verbosity
 * `AIAUTOCOMMIT_LOG_PATH`: Custom log file path
+
+### Model Configuration
+
+`aiautocommit` uses [pydantic-ai](https://ai.pydantic.dev/) under the hood, supporting a wide range of providers including OpenAI, Anthropic, and Gemini (via VertexAI or Generative AI) by default. You can specify the model using the `provider:model` syntax in the `AIAUTOCOMMIT_MODEL` environment variable.
+
+Common examples:
+
+* `gemini:gemini-flash-latest` (default)
+* `openai:gpt-4o`
+* `anthropic:claude-3-5-sonnet-latest`
+* `gemini:gemini-1.5-pro`
+* `ollama:llama3` (for local models)
+
+Ensure you have the corresponding API key set in your environment (e.g., `ANTHROPIC_API_KEY` for Anthropic models).
 
 ## Writing Good Commit Messages
 
@@ -176,11 +194,7 @@ Some guides to writing good commit messages:
 * https://groups.google.com/g/golang-dev/c/6M4dmZWpFaI
 * https://github.com/RomuloOliveira/commit-messages-guide
 
-## Privacy
-
-`aiautocommit` uses the [OpenAI API](https://platform.openai.com/docs) to generate commit messages. Both file names and contents from files that contain staged changes will be shared with OpenAI when using `aiautocommit`. OpenAI will process this data according to their [terms of use](https://openai.com/policies/terms-of-use) and [API data usage policies](https://openai.com/policies/api-data-usage-policies). On March 1st 2023 OpenAI pledged that by default, they would not use data submitted by customers via their API to train or improve their models, and that this data will be retained for a maximum of 30 days, after which it will be deleted.
-
-## Special Thanks
+## Credits
 
 [This project](https://github.com/markuswt/gpt-commit) inspired this project. It had a very simple codebase. I've taken the idea and expanded it to include a lot more features, specifically per-project prompt customization.
 

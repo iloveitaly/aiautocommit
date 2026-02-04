@@ -2,17 +2,22 @@
 name = "aiautocommit"
 version = "0.14.0"
 description = "AI generated commit messages"
-keywords = ["git", "commit", "automation", "ai", "openai"]
+keywords = ["git", "commit", "automation", "ai", "openai", "gemini", "anthropic"]
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "structlog-config>=0.6.0",
     "backoff>=2.2.1",
     "click>=8.1.7",
-    "openai>=1.54.3",
+    "pydantic-ai-slim[openai,anthropic,vertexai,google]>=0.0.18",
 ]
 authors = [{ name = "Michael Bianco", email = "mike@mikebian.co" }]
 urls = { "Repository" = "https://github.com/iloveitaly/aiautocommit" }
+
+[project.optional-dependencies]
+all-providers = [
+    "pydantic-ai>=0.0.18",
+]
 
 # additional packaging information: https://packaging.python.org/en/latest/specifications/core-metadata/#license
 [project.scripts]
@@ -36,6 +41,12 @@ dev = [
 
 [tool.pyright]
 exclude = ["examples/", "playground/", "tmp/", ".venv/", "tests/"]
+
+[tool.pytest.ini_options]
+markers = [
+    "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
+]
+
 
 [tool.ruff]
 extend-exclude = ["playground.py", "playground/"]
