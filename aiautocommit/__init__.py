@@ -26,11 +26,19 @@ update_env_variables()
 
 import click  # noqa: E402
 from pydantic_ai import Agent  # noqa: E402
+from pydantic_ai.models import infer_model  # noqa: E402
 
 from .difftastic import get_difftastic_diff  # noqa: E402
 from .internet import wait_for_internet_connection  # noqa: E402
 from .log import log  # noqa: E402
 from .utils import run_command  # noqa: E402
+
+try:
+    from importlib.metadata import PackageNotFoundError, version
+    __version__ = version("aiautocommit")
+except (ImportError, PackageNotFoundError):
+    # Package is not installed in the environment (e.g. running from source during development)
+    __version__ = "unknown"
 
 
 # Config file locations in priority order
@@ -50,7 +58,7 @@ EXCLUSIONS_FILE = "excluded_files.txt"
 COMMIT_SUFFIX_FILE = "commit_suffix.txt"
 
 # https://ai.pydantic.dev/models/overview
-MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "gemini:gemini-flash-latest")
+MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "gemini:gemini-3-flash-preview")
 
 COMMIT_PROMPT = ""
 EXCLUDED_FILES = []
@@ -249,8 +257,20 @@ def complete(prompt, diff):
     # Create the agent with the configured model
     agent = Agent(MODEL_NAME, system_prompt=prompt)
 
+    model_settings = None
+    from pydantic_ai.models.google import GoogleModel
+    if isinstance(agent.model, GoogleModel):
+        # Configure minimal thinking budget for Gemini models
+        # https://ai.pydantic.dev/models/google/#application-default-credentials
+        from pydantic_ai.models.google import GoogleModelSettings
+
+        model_settings = GoogleModelSettings(
+            # include_thoughts=True improves accuracy via CoT and is filtered out of result.output by pydantic-ai
+            google_thinking_config={"include_thoughts": True, "thinking_level": "minimal"}
+        )
+
     # Run the agent synchronously
-    result = agent.run_sync(diff[:PROMPT_CUTOFF])
+    result = agent.run_sync(diff[:PROMPT_CUTOFF], model_settings=model_settings)
 
     # Pydantic AI returns a RunResult object, we need the output data
     completion = result.output
@@ -373,6 +393,7 @@ def check_lock_files():
 
 
 @click.group(invoke_without_command=True)
+@click.version_option(version=__version__)
 def main():
     """
     Generate a commit message for staged files and commit them.
