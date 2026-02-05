@@ -306,10 +306,11 @@ def is_reversion(commit_msg_path=None):
         return True
 
     # Detect fixup commits by checking if the commit message starts with "fixup!"
-    # If commit_msg_path is provided, use it; otherwise default to COMMIT_EDITMSG
-    commit_editmsg = (
-        Path(commit_msg_path) if commit_msg_path else git_dir / "COMMIT_EDITMSG"
-    )
+    # If commit_msg_path is provided, use it. If not, we don't want to use the stale COMMIT_EDITMSG.
+    if not commit_msg_path:
+        return False
+
+    commit_editmsg = Path(commit_msg_path)
 
     if commit_editmsg.exists():
         try:

@@ -1,5 +1,4 @@
 import os
-import unittest
 import pytest
 from unittest.mock import patch
 from click.testing import CliRunner
@@ -8,8 +7,9 @@ from tests.utils import GitTestMixin
 
 
 @pytest.mark.integration
-class TestIntegration(unittest.TestCase, GitTestMixin):
-    def setUp(self):
+class TestIntegration(GitTestMixin):
+    @pytest.fixture(autouse=True)
+    def setup(self):
         self.runner = CliRunner()
         self.model_name = os.environ.get(
             "AIAUTOCOMMIT_MODEL", "gemini:gemini-flash-latest"
@@ -26,11 +26,11 @@ class TestIntegration(unittest.TestCase, GitTestMixin):
             # Configure for Azure if available
             # If AIAUTOCOMMIT_MODEL is not set to an azure model, we can't guess the deployment
             if not self.model_name.startswith("azure:"):
-                self.skipTest(
+                pytest.skip(
                     "Azure keys present but AIAUTOCOMMIT_MODEL not set to 'azure:<deployment>'. Skipping integration test."
                 )
         else:
-            self.skipTest(
+            pytest.skip(
                 "No valid API key (OPENAI_API_KEY, GEMINI_API_KEY, or AZURE_OPENAI_*) set, skipping integration test"
             )
 
@@ -67,7 +67,7 @@ class TestIntegration(unittest.TestCase, GitTestMixin):
                     print(f"Output: {result.output}")
                     if result.exception:
                         print(f"Exception: {result.exception}")
-                self.assertEqual(result.exit_code, 0)
+                assert result.exit_code == 0
 
                 # The message should be non-empty and not the fallback "style: whitespace change"
                 message = result.output.strip()
@@ -77,8 +77,8 @@ class TestIntegration(unittest.TestCase, GitTestMixin):
                     )
                     print(f"DEBUG: Using model: {self.model_name}")
 
-                self.assertTrue(message)
-                self.assertNotEqual(message, "style: whitespace change")
+                assert message
+                assert message != "style: whitespace change"
 
                 # It should look like a commit message (basic check)
                 print(f"\nGenerated message: {message}")
