@@ -1,4 +1,7 @@
-[![Release Notes](https://img.shields.io/github/release/iloveitaly/aiautocommit)](https://github.com/iloveitaly/aiautocommit/releases) [![Downloads](https://static.pepy.tech/badge/aiautocommit/month)](https://pepy.tech/project/aiautocommit) [![Python Versions](https://img.shields.io/pypi/pyversions/aiautocommit)](https://pypi.org/project/aiautocommit) ![GitHub CI Status](https://github.com/iloveitaly/aiautocommit/actions/workflows/build_and_publish.yml/badge.svg) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Release Notes](https://img.shields.io/github/release/iloveitaly/aiautocommit)](https://github.com/iloveitaly/aiautocommit/releases)
+[![Downloads](https://static.pepy.tech/badge/aiautocommit/month)](https://pepy.tech/project/aiautocommit)
+![GitHub CI Status](https://github.com/iloveitaly/aiautocommit/actions/workflows/build_and_publish.yml/badge.svg)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # aiautocommit
 
@@ -225,3 +228,7 @@ I looked at a bunch of projects before building this one.
 - https://github.com/markuswt/gpt-commit - single file, python based. No commits > 1yr. Very simple codebase.
 - https://github.com/josenerydev/gpt-commit - also python
 - https://github.com/di-sukharev/opencommit - has conventional commit structure
+
+---
+
+*This project was created from [iloveitaly/python-package-template](https://github.com/iloveitaly/python-package-template)*
