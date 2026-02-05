@@ -7,9 +7,12 @@ setup:
 up:
     docker compose up -d --wait
 
+# Coverage parameters for pytest
+PYTEST_COV_PARAMS := "--cov-report=html:tmp/htmlcov"
+
 # Run tests
 test:
-    uv run pytest -v
+    uv run pytest -v {{PYTEST_COV_PARAMS}}
 
 # python linting checks
 [script]
