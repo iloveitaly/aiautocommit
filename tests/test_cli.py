@@ -99,6 +99,14 @@ def test_debug_prompt(runner, git_repo):
     assert "test message" in result.output
 
 
+def test_version_option(runner):
+    from aiautocommit import __version__
+    result = runner.invoke(main, ["--version"])
+    assert result.exit_code == 0
+    assert __version__ in result.output
+
+
+
 def test_is_reversion_revert_head(runner, git_repo):
     # REVERT_HEAD exists in .git
     Path(".git/REVERT_HEAD").write_text("reverting")
