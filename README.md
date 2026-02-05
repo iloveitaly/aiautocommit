@@ -3,9 +3,9 @@
 ![GitHub CI Status](https://github.com/iloveitaly/aiautocommit/actions/workflows/build_and_publish.yml/badge.svg)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-# aiautocommit
+# Generate Commit Messages With AI
 
-Generate intelligent commit messages using AI. aiautocommit analyzes your staged changes and creates conventional commit messages, handling both small tweaks and large changesets effectively.
+`aiautocommit` analyzes your staged changes and creates conventional commit messages, handling both small tweaks and large changesets effectively.
 
 Yes, there are a lot of these. Main ways this is different:
 
@@ -16,12 +16,6 @@ Yes, there are a lot of these. Main ways this is different:
 
 ```
 uvx aiautocommit
-```
-
-Or via pip:
-
-```shell
-pip install aiautocommit
 ```
 
 > **Note**: OpenAI, Anthropic, and Gemini (Google) are supported by default. To install all providers supported by Pydantic AI, use `pip install "aiautocommit[all-providers]"`.
