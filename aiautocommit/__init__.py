@@ -7,14 +7,6 @@ import warnings
 from pathlib import Path
 from typing import List
 
-import click
-from pydantic_ai import Agent
-
-from .difftastic import get_difftastic_diff
-from .internet import wait_for_internet_connection
-from .log import log
-from .utils import run_command
-
 
 def update_env_variables():
     """
@@ -31,6 +23,14 @@ def update_env_variables():
 
 
 update_env_variables()
+
+import click  # noqa: E402
+from pydantic_ai import Agent  # noqa: E402
+
+from .difftastic import get_difftastic_diff  # noqa: E402
+from .internet import wait_for_internet_connection  # noqa: E402
+from .log import log  # noqa: E402
+from .utils import run_command  # noqa: E402
 
 
 # Config file locations in priority order
