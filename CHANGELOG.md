@@ -7,6 +7,20 @@
 
 
 
+## [0.15.0](https://github.com/iloveitaly/aiautocommit/compare/v0.14.1...v0.15.0) (2026-02-07)
+
+
+### Features
+
+* map universal ai key to provider env vars and update docs ([99f4a02](https://github.com/iloveitaly/aiautocommit/commit/99f4a027ed760ecd3f17e50564c1f1b9cb3b40fd))
+* update default model to gemini-3-flash and enable thinking ([c4faf71](https://github.com/iloveitaly/aiautocommit/commit/c4faf71d77b1f9bf9e82f9ae69bc035c1917b358))
+
+
+### Documentation
+
+* remove LOC count from README ([0cf8099](https://github.com/iloveitaly/aiautocommit/commit/0cf80997e0e4178c7c4f32581d7f469151fd5993))
+* Remove obsolete MCP Server Configuration section ([a904ef1](https://github.com/iloveitaly/aiautocommit/commit/a904ef100211359d6cbb167f05f39dbcb371cda5))
+
 ## [0.14.1](https://github.com/iloveitaly/aiautocommit/compare/v0.14.0...v0.14.1) (2026-02-05)
 
 
