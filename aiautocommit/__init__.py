@@ -8,6 +8,37 @@ from pathlib import Path
 from typing import List
 
 
+def map_ai_key(ai_key: str, model_name: str):
+    """
+    Maps the universal AIAUTOCOMMIT_AI_KEY to the provider-specific environment variable name.
+
+    This allows a single configuration variable to work across different providers (OpenAI,
+    Anthropic, Gemini, etc.) by detecting the provider from the model name.
+
+    Specific keys (e.g. OPENAI_API_KEY) already present in the environment take precedence.
+    """
+    provider = model_name.split(":")[0]
+
+    # Map the universal key to the provider-specific environment variable name
+    # https://ai.pydantic.dev/models/overview/
+    mapping = {
+        "openai": "OPENAI_API_KEY",
+        "anthropic": "ANTHROPIC_API_KEY",
+        "google": "GOOGLE_API_KEY",
+        "google-gla": "GOOGLE_API_KEY",
+        "gemini": "GOOGLE_API_KEY",
+        "azure": "AZURE_OPENAI_API_KEY",
+        "groq": "GROQ_API_KEY",
+        "mistral": "MISTRAL_API_KEY",
+        "cohere": "CO_API_KEY",
+    }
+
+    if target_key := mapping.get(provider):
+        # Only set if not already present (specific keys take precedence)
+        if target_key not in os.environ:
+            os.environ[target_key] = ai_key
+
+
 def update_env_variables():
     """
     Allow keys specific to AIAUTOCOMMIT to be set globally so project-specific keys can be used for AI calls.
@@ -23,27 +54,8 @@ def update_env_variables():
 
     # Handle universal AIAUTOCOMMIT_AI_KEY mapping
     if ai_key := os.environ.get("AIAUTOCOMMIT_AI_KEY"):
-        # Determine the provider from the model name
         model_name = os.environ.get("AIAUTOCOMMIT_MODEL", "gemini:gemini-3-flash-preview")
-        provider = model_name.split(":")[0]
-
-        # Map the universal key to the provider-specific environment variable name
-        mapping = {
-            "openai": "OPENAI_API_KEY",
-            "anthropic": "ANTHROPIC_API_KEY",
-            "google": "GOOGLE_API_KEY",
-            "google-gla": "GOOGLE_API_KEY",
-            "gemini": "GOOGLE_API_KEY",
-            "azure": "AZURE_OPENAI_API_KEY",
-            "groq": "GROQ_API_KEY",
-            "mistral": "MISTRAL_API_KEY",
-            "cohere": "CO_API_KEY",
-        }
-
-        if target_key := mapping.get(provider):
-            # Only set if not already present (specific keys take precedence)
-            if target_key not in os.environ:
-                os.environ[target_key] = ai_key
+        map_ai_key(ai_key, model_name)
 
 
 update_env_variables()
