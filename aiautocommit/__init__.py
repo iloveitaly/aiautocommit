@@ -54,7 +54,9 @@ def update_env_variables():
 
     # Handle universal AIAUTOCOMMIT_AI_KEY mapping
     if ai_key := os.environ.get("AIAUTOCOMMIT_AI_KEY"):
-        model_name = os.environ.get("AIAUTOCOMMIT_MODEL", "gemini:gemini-3-flash-preview")
+        model_name = os.environ.get(
+            "AIAUTOCOMMIT_MODEL", "gemini:gemini-3-flash-preview"
+        )
         map_ai_key(ai_key, model_name)
 
 
@@ -62,17 +64,17 @@ update_env_variables()
 
 import click  # noqa: E402
 from pydantic_ai import Agent  # noqa: E402
-from pydantic_ai.models import infer_model  # noqa: E402
 
 from .difftastic import get_difftastic_diff  # noqa: E402
 from .internet import wait_for_internet_connection  # noqa: E402
 from .log import log  # noqa: E402
 from .utils import run_command  # noqa: E402
 
+from importlib.metadata import PackageNotFoundError, version  # noqa: E402
+
 try:
-    from importlib.metadata import PackageNotFoundError, version
     __version__ = version("aiautocommit")
-except (ImportError, PackageNotFoundError):
+except PackageNotFoundError:
     # Package is not installed in the environment (e.g. running from source during development)
     __version__ = "unknown"
 
@@ -295,14 +297,19 @@ def complete(prompt, diff):
 
     model_settings = None
     from pydantic_ai.models.google import GoogleModel
+
     if isinstance(agent.model, GoogleModel):
         # Configure minimal thinking budget for Gemini models
         # https://ai.pydantic.dev/models/google/#application-default-credentials
+        from google.genai.types import ThinkingLevel
         from pydantic_ai.models.google import GoogleModelSettings
 
         model_settings = GoogleModelSettings(
             # include_thoughts=True improves accuracy via CoT and is filtered out of result.output by pydantic-ai
-            google_thinking_config={"include_thoughts": True, "thinking_level": "minimal"}
+            google_thinking_config={
+                "include_thoughts": True,
+                "thinking_level": ThinkingLevel.MINIMAL,
+            }
         )
 
     # Run the agent synchronously

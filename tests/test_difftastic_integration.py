@@ -5,9 +5,11 @@ from click.testing import CliRunner
 from aiautocommit import main
 from tests.utils import GitTestMixin
 
+
 @pytest.fixture
 def runner():
     return CliRunner()
+
 
 @pytest.fixture
 def git_repo(runner):
@@ -15,6 +17,7 @@ def git_repo(runner):
         mixin = GitTestMixin()
         mixin.init_repo()
         yield mixin
+
 
 def test_difftastic_integration(runner, git_repo):
     # Verify difft is installed as per the user's instructions
@@ -31,24 +34,25 @@ def test_difftastic_integration(runner, git_repo):
     git_repo.git_add("test.py")
 
     # Run aiautocommit with --difftastic
-    with patch('aiautocommit.get_difftastic_diff') as mock_difft:
+    with patch("aiautocommit.get_difftastic_diff") as mock_difft:
         mock_difft.return_value = "structural diff"
-        with patch('aiautocommit.generate_commit_message') as mock_gen:
+        with patch("aiautocommit.generate_commit_message") as mock_gen:
             mock_gen.return_value = "feat: add world"
             result = runner.invoke(main, ["commit", "--difftastic", "--print-message"])
-            
+
             assert result.exit_code == 0
             assert mock_difft.called
             assert "feat: add world" in result.output
 
+
 def test_difftastic_not_called_by_default(runner, git_repo):
     git_repo.create_file("test.py", "print('hello')")
     git_repo.git_add("test.py")
-    
-    with patch('aiautocommit.get_difftastic_diff') as mock_difft:
-        with patch('aiautocommit.generate_commit_message') as mock_gen:
+
+    with patch("aiautocommit.get_difftastic_diff") as mock_difft:
+        with patch("aiautocommit.generate_commit_message") as mock_gen:
             mock_gen.return_value = "feat: initial"
             result = runner.invoke(main, ["commit", "--print-message"])
-            
+
             assert result.exit_code == 0
             assert not mock_difft.called
