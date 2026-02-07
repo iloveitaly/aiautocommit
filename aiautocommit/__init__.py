@@ -10,7 +10,7 @@ from typing import List
 
 def update_env_variables():
     """
-    Allow keys specific to AIAUTOCOMMIT to be set globally so project-specific keys can be used for AI calls
+    Allow keys specific to AIAUTOCOMMIT to be set globally so project-specific keys can be used for AI calls.
     """
     prefix = "AIAUTOCOMMIT_"
     # Create a list copy of keys to avoid "dictionary changed size during iteration" errors
@@ -20,6 +20,30 @@ def update_env_variables():
             base_key = key[len(prefix) :]
             # AIAUTOCOMMIT_ prefixed variables take precedence over existing variables
             os.environ[base_key] = os.environ[key]
+
+    # Handle universal AIAUTOCOMMIT_AI_KEY mapping
+    if ai_key := os.environ.get("AIAUTOCOMMIT_AI_KEY"):
+        # Determine the provider from the model name
+        model_name = os.environ.get("AIAUTOCOMMIT_MODEL", "gemini:gemini-3-flash-preview")
+        provider = model_name.split(":")[0]
+
+        # Map the universal key to the provider-specific environment variable name
+        mapping = {
+            "openai": "OPENAI_API_KEY",
+            "anthropic": "ANTHROPIC_API_KEY",
+            "google": "GOOGLE_API_KEY",
+            "google-gla": "GOOGLE_API_KEY",
+            "gemini": "GOOGLE_API_KEY",
+            "azure": "AZURE_OPENAI_API_KEY",
+            "groq": "GROQ_API_KEY",
+            "mistral": "MISTRAL_API_KEY",
+            "cohere": "CO_API_KEY",
+        }
+
+        if target_key := mapping.get(provider):
+            # Only set if not already present (specific keys take precedence)
+            if target_key not in os.environ:
+                os.environ[target_key] = ai_key
 
 
 update_env_variables()

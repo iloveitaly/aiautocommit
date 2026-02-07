@@ -26,16 +26,17 @@ uvx aiautocommit
 * Customizable prompts and exclusions
 * Pre-commit hook integration
 * Supports custom config directories
+* CLI flag for version checking (`--version`)
 * Does not generate a commit during a merge or reversion (when an existing autogen'd msg exists)
-* **Automatic lock file handling**: recognizable lock files (e.g., `uv.lock`, `package-lock.json`) generate specific conventional messages (e.g., `build: updating python packages`) even when they are excluded from the AI prompt.
+* **Automatic lock file handling**: recognizable lock files (e.g., `uv.lock`, `package-lock.json`) generate specific conventional messages (e.g., `chore(deps): update uv.lock`) even when they are excluded from the AI prompt.
 * **Optional difftastic integration** for syntax-aware semantic diffs
 
 ## Getting Started
 
-Set your API key (Gemini is the default):
+Set your API key (works for any provider, Google Gemini is the default):
 
 ```shell
-export GEMINI_API_KEY=<YOUR API KEY>
+export AIAUTOCOMMIT_AI_KEY=<YOUR API KEY>
 ```
 
 Stage your changes and run aiautocommit:
@@ -66,10 +67,10 @@ Lock files (like `uv.lock`, `package-lock.json`, `Gemfile.lock`, etc.) are frequ
 
 However, if you stage *only* lock files, aiautocommit will detect them and automatically generate a conventional commit message:
 
-- `uv.lock`, `poetry.lock` -> `build: updating python packages`
-- `package-lock.json`, `yarn.lock` -> `build: updating node packages`
-- `.terraform.lock.hcl` -> `build: updating terraform providers`
-- Mixed lock files -> `build: updating packages`
+- `uv.lock` -> `chore(deps): update uv.lock`
+- `package-lock.json` -> `chore(deps): update package-lock.json`
+- `.terraform.lock.hcl` -> `chore(deps): update .terraform.lock.hcl`
+- Mixed lock files -> `chore(deps): update lock files`
 
 If any non-lock files are staged alongside them, the AI will ignore the lock files (based on your exclusions) and focus on the meaningful code changes.
 
@@ -152,8 +153,7 @@ prepare-commit-msg:
         # without this, lefthook will run in an infinite loop
         LEFTHOOK: 0
         # ensures that LOG_LEVEL config of the current project does not interfere with aiautocommit
-        LOG_LEVEL: info
-        OPENAI_LOG: warn
+        AIAUTOCOMMIT_LOG_LEVEL: info
       skip:
         merge:
         rebase:
@@ -163,23 +163,26 @@ prepare-commit-msg:
 
 ### Environment Variables
 
-* `AIAUTOCOMMIT_MODEL`: AI model to use, in `provider:model` format (default: `gemini:gemini-flash-latest`). Examples: `anthropic:claude-3-5-sonnet-latest`, `openai:gpt-4o`.
-* `OPENAI_API_KEY`: Your OpenAI API key (if using OpenAI models)
-* `ANTHROPIC_API_KEY`: Your Anthropic API key (if using Anthropic models)
-* `GEMINI_API_KEY`: Your Gemini API key (if using Gemini models)
-* `AIAUTOCOMMIT_OPENAI_API_KEY`: Unique API key for OpenAI, overrides `OPENAI_API_KEY` (useful for tracking or costing purposes)
+All environment variables used by `aiautocommit` or its providers can be prefixed with `AIAUTOCOMMIT_` to take precedence over the standard variable.
+
+* `AIAUTOCOMMIT_AI_KEY`: **Universal API key.** `aiautocommit` internally maps this to the correct provider-specific variable (e.g., `GOOGLE_API_KEY`, `OPENAI_API_KEY`) based on your active model.
+* `AIAUTOCOMMIT_MODEL`: AI model to use, in `provider:model` format (default: `gemini:gemini-3-flash-preview`). Examples: `anthropic:claude-3-5-sonnet-latest`, `openai:gpt-4o`.
 * `AIAUTOCOMMIT_CONFIG`: Custom config directory path
 * `AIAUTOCOMMIT_DIFFTASTIC`: Enable difftastic for syntax-aware diffs (set to "1", "true", or "yes")
-* `LOG_LEVEL`: Logging verbosity
+* `AIAUTOCOMMIT_LOG_LEVEL`: Logging verbosity
 * `AIAUTOCOMMIT_LOG_PATH`: Custom log file path
+
+Ensure you have the corresponding API key set in `AIAUTOCOMMIT_AI_KEY`.
 
 ### Model Configuration
 
 `aiautocommit` uses [pydantic-ai](https://ai.pydantic.dev/) under the hood, supporting a wide range of providers including OpenAI, Anthropic, and Gemini (via VertexAI or Generative AI) by default. You can specify the model using the `provider:model` syntax in the `AIAUTOCOMMIT_MODEL` environment variable.
 
+Google Gemini models use "thinking" (Chain of Thought) with a minimal budget to improve accuracy.
+
 Common examples:
 
-* `gemini:gemini-flash-latest` (default)
+* `gemini:gemini-3-flash-preview` (default)
 * `openai:gpt-4o`
 * `anthropic:claude-3-5-sonnet-latest`
 * `gemini:gemini-1.5-pro`
