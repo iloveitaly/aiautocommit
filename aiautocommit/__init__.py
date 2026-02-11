@@ -68,7 +68,7 @@ from pydantic_ai import Agent  # noqa: E402
 from .difftastic import get_difftastic_diff  # noqa: E402
 from .internet import wait_for_internet_connection  # noqa: E402
 from .log import log  # noqa: E402
-from .utils import run_command  # noqa: E402
+from .utils import run_command, time_it  # noqa: E402
 
 from importlib.metadata import PackageNotFoundError, version  # noqa: E402
 
@@ -282,6 +282,7 @@ def get_diff(ignore_whitespace=True, use_difftastic=False):
     return sorted_diff
 
 
+@time_it("ai_generation")
 def complete(prompt, diff):
     if len(diff) > PROMPT_CUTOFF:
         log.info(
@@ -488,66 +489,67 @@ def commit(print_message, output_file, config_dir, difftastic):
     if is_reversion(output_file):
         click.get_current_context().exit(0)
 
-    configure_prompts(config_dir)
+    with time_it("overall_execution"):
+        configure_prompts(config_dir)
 
-    # Support environment variable to enable difftastic by default
-    use_difftastic = difftastic or os.environ.get(
-        "AIAUTOCOMMIT_DIFFTASTIC", ""
-    ).lower() in ("1", "true", "yes")
+        # Support environment variable to enable difftastic by default
+        use_difftastic = difftastic or os.environ.get(
+            "AIAUTOCOMMIT_DIFFTASTIC", ""
+        ).lower() in ("1", "true", "yes")
 
-    # Check if difftastic is requested but not available
-    if use_difftastic and not shutil.which("difft"):
-        log.warning(
-            "difftastic was requested but is not installed, falling back to standard git diff"
-        )
-        use_difftastic = False
+        # Check if difftastic is requested but not available
+        if use_difftastic and not shutil.which("difft"):
+            log.warning(
+                "difftastic was requested but is not installed, falling back to standard git diff"
+            )
+            use_difftastic = False
 
-    try:
-        staged_diff = get_diff(ignore_whitespace=False, use_difftastic=use_difftastic)
+        try:
+            staged_diff = get_diff(ignore_whitespace=False, use_difftastic=use_difftastic)
 
-        if not staged_diff:
-            # If no staged diff (likely due to exclusions), check if we have any staged files
-            # that we can handle with a static commit message.
-            if lock_message := check_lock_files():
-                commit_message = lock_message
-                log.info(f"Detected lock file change, using message: {commit_message}")
+            if not staged_diff:
+                # If no staged diff (likely due to exclusions), check if we have any staged files
+                # that we can handle with a static commit message.
+                if lock_message := check_lock_files():
+                    commit_message = lock_message
+                    log.info(f"Detected lock file change, using message: {commit_message}")
+                else:
+                    click.echo(
+                        "No changes staged. Use `git add` to stage files before invoking aiautocommit.",
+                        err=True,
+                    )
+                    click.get_current_context().exit(1)
             else:
-                click.echo(
-                    "No changes staged. Use `git add` to stage files before invoking aiautocommit.",
-                    err=True,
-                )
-                click.get_current_context().exit(1)
-        else:
-            diff = get_diff(use_difftastic=use_difftastic)
-            if not diff:
-                commit_message = "style: whitespace change" + COMMIT_SUFFIX
-            else:
-                try:
-                    wait_for_internet_connection()
-                except Exception:
-                    log.warning("No internet connection. Skipping AI completion.")
-                    click.get_current_context().exit(0)
+                diff = get_diff(use_difftastic=use_difftastic)
+                if not diff:
+                    commit_message = "style: whitespace change" + COMMIT_SUFFIX
+                else:
+                    try:
+                        wait_for_internet_connection()
+                    except Exception:
+                        log.warning("No internet connection. Skipping AI completion.")
+                        click.get_current_context().exit(0)
 
-                commit_message = generate_commit_message(diff)
-    except UnicodeDecodeError:
-        click.echo("aiautocommit does not support binary files", err=True)
+                    commit_message = generate_commit_message(diff)
+        except UnicodeDecodeError:
+            click.echo("aiautocommit does not support binary files", err=True)
 
-        commit_message = (
-            # TODO use heredoc
-            "# aiautocommit does not support binary files. "
-            "Please enter a commit message manually or unstage any binary files."
-        )
+            commit_message = (
+                # TODO use heredoc
+                "# aiautocommit does not support binary files. "
+                "Please enter a commit message manually or unstage any binary files."
+            )
 
-    if output_file:
-        if commit_message:
-            Path(output_file).write_text(commit_message)
+        if output_file:
+            if commit_message:
+                Path(output_file).write_text(commit_message)
+                click.get_current_context().exit(0)
+            click.get_current_context().exit(1)
+        elif print_message:
+            click.echo(commit_message)
             click.get_current_context().exit(0)
-        click.get_current_context().exit(1)
-    elif print_message:
-        click.echo(commit_message)
-        click.get_current_context().exit(0)
-    else:
-        click.get_current_context().exit(git_commit(commit_message))
+        else:
+            click.get_current_context().exit(git_commit(commit_message))
 
 
 @main.command()

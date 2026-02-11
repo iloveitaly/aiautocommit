@@ -1,8 +1,21 @@
 import subprocess
+import time
+from contextlib import contextmanager
 from pathlib import Path
 from typing import List, Optional, Union
 
 from .log import log
+
+
+@contextmanager
+def time_it(name: str):
+    start_time = time.perf_counter()
+    try:
+        yield
+    finally:
+        end_time = time.perf_counter()
+        duration = end_time - start_time
+        log.debug("execution_time", name=name, duration=duration)
 
 
 def run_command(
