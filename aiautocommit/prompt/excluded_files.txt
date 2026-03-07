@@ -11,6 +11,7 @@ pnpm-lock.yaml
 composer.lock
 cargo.lock
 mix.lock
+mise.lock
 Pipfile.lock
 pdm.lock
 flake.lock

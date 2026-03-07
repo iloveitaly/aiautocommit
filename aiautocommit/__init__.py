@@ -123,6 +123,7 @@ LOCK_FILE_MESSAGES = {
     "Gemfile.lock": "chore(deps): update Gemfile.lock",
     "composer.lock": "chore(deps): update composer.lock",
     "mix.lock": "chore(deps): update mix.lock",
+    "mise.lock": "chore(deps): update mise.lock",
     "Cargo.lock": "chore(deps): update Cargo.lock",
     "go.sum": "chore(deps): update go.sum",
     ".terraform.lock.hcl": "chore(deps): update .terraform.lock.hcl",
