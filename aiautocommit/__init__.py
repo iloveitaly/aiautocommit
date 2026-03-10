@@ -506,14 +506,18 @@ def commit(print_message, output_file, config_dir, difftastic):
             use_difftastic = False
 
         try:
-            staged_diff = get_diff(ignore_whitespace=False, use_difftastic=use_difftastic)
+            staged_diff = get_diff(
+                ignore_whitespace=False, use_difftastic=use_difftastic
+            )
 
             if not staged_diff:
                 # If no staged diff (likely due to exclusions), check if we have any staged files
                 # that we can handle with a static commit message.
                 if lock_message := check_lock_files():
                     commit_message = lock_message
-                    log.info(f"Detected lock file change, using message: {commit_message}")
+                    log.info(
+                        f"Detected lock file change, using message: {commit_message}"
+                    )
                 else:
                     click.echo(
                         "No changes staged. Use `git add` to stage files before invoking aiautocommit.",
