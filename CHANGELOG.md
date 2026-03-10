@@ -7,6 +7,13 @@
 
 
 
+## [0.16.0](https://github.com/iloveitaly/aiautocommit/compare/v0.15.0...v0.16.0) (2026-03-10)
+
+
+### Features
+
+* add execution timing with time_it context manager ([2a9fcf9](https://github.com/iloveitaly/aiautocommit/commit/2a9fcf93e84aec673459d66388b6ec1889ab9e79))
+
 ## [0.15.0](https://github.com/iloveitaly/aiautocommit/compare/v0.14.1...v0.15.0) (2026-02-07)
 
 
