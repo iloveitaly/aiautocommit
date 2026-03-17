@@ -7,6 +7,13 @@
 
 
 
+## [0.16.1](https://github.com/iloveitaly/aiautocommit/compare/v0.16.0...v0.16.1) (2026-03-17)
+
+
+### Bug Fixes
+
+* docs update to trigger a build ([899a9a8](https://github.com/iloveitaly/aiautocommit/commit/899a9a84e2073454928c58ee3c3bce4753b916c7))
+
 ## [0.16.0](https://github.com/iloveitaly/aiautocommit/compare/v0.15.0...v0.16.0) (2026-03-10)
 
 
