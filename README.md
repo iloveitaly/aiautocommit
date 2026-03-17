@@ -9,8 +9,10 @@
 
 Yes, there are a lot of these. Main ways this is different:
 
-
 * Ability to easily customize prompts on a per-repo basis
+* Smart exclusions (e.g., lock files) that still generate useful messages without bloating the AI prompt
+* Optional difftastic integration for syntax-aware diffs that improve message quality
+* Support for multiple AI providers via pydantic-ai, with Google Gemini as the default
 
 ## Installation
 
