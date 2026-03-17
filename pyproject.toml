@@ -24,7 +24,7 @@ all-providers = [
 aiautocommit = "aiautocommit:main"
 
 [build-system]
-requires = ["uv_build>=0.9.0,<0.11.0"]
+requires = ["uv_build>=0.10.0"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
@@ -33,12 +33,12 @@ module-root = ""
 
 [dependency-groups]
 dev = [
-    "pytest>=8.3.3",
-    "pyright[nodejs]>=1.1.380",
-    "ruff>=0.8.0",
+    "pytest>=8.3.4",
+    "pyright[nodejs]>=1.1.408",
+    "ruff>=0.15.0",
     "pudb>=2024.1.3",
     "beautiful-traceback>=0.5.0",
-    "coverage>=7.13.3",
+    "coverage>=7.13.4",
     "pytest-cov>=7.0.0",
     "covdefaults>=2.3.0",
 ]
@@ -47,7 +47,7 @@ dev = [
 exclude = ["examples/", "playground/", "tmp/", ".venv/", "tests/"]
 
 [tool.pytest.ini_options]
-addopts = "--cov --cov-report=term-missing --cov-report=html"
+addopts = "--cov --cov-report=term-missing --cov-report=html:tmp/htmlcov"
 markers = [
     "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
 ]
