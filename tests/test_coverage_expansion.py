@@ -78,6 +78,61 @@ def test_check_lock_files_not_only_lock(git_repo):
     assert check_lock_files() is None
 
 
+def test_check_lock_files_mise_variations(git_repo):
+    # Test mise.dev.lock
+    git_repo.create_file("mise.dev.lock", "content")
+    git_repo.git_add("mise.dev.lock")
+    result = check_lock_files()
+    assert result.startswith("chore(deps): update mise.dev.lock")
+
+    # Test .config/mise.lock
+    subprocess.run(["git", "rm", "-f", "mise.dev.lock"], capture_output=True)
+    config_dir = Path("config")
+    config_dir.mkdir()
+    git_repo.create_file("config/mise.lock", "content")
+    git_repo.git_add("config/mise.lock")
+    result = check_lock_files()
+    assert result.startswith("chore(deps): update mise.lock")
+
+    # Test multiple mise lock files
+    git_repo.create_file("mise.dev.lock", "content")
+    git_repo.git_add("mise.dev.lock")
+    result = check_lock_files()
+    assert result.startswith("chore(deps): update lock files")
+
+
+def test_check_lock_files_not_mise_lock(git_repo):
+    # Test a file that starts with mise but isn't a lock file
+    git_repo.create_file("mise_is_cool.txt", "content")
+    git_repo.git_add("mise_is_cool.txt")
+    assert check_lock_files() is None
+
+
+def test_get_diff_exclusion_glob(git_repo):
+    from aiautocommit import get_diff, configure_prompts
+
+    # Setup a custom config with the glob pattern
+    config_dir = Path("custom_config")
+    config_dir.mkdir()
+    (config_dir / "excluded_files.txt").write_text("mise*lock")
+    (config_dir / "commit_prompt.txt").write_text("prompt")
+    configure_prompts(config_dir=str(config_dir))
+
+    # Create and stage a file that should be excluded
+    git_repo.create_file("mise.dev.lock", "changed content")
+    git_repo.git_add("mise.dev.lock")
+
+    # Create and stage a file that should NOT be excluded
+    git_repo.create_file("main.py", "print('hello')")
+    git_repo.git_add("main.py")
+
+    diff = get_diff()
+
+    # The diff should contain main.py but NOT mise.dev.lock
+    assert "main.py" in diff
+    assert "mise.dev.lock" not in diff
+
+
 def test_check_lock_files_no_staged(git_repo):
     assert check_lock_files() is None
 

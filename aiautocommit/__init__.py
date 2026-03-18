@@ -418,18 +418,25 @@ def check_lock_files():
     if not staged_files:
         return None
 
-    # check if all changed files are lock files
-    lock_files = []
+    # Mapping of filename to commit message
+    messages = []
+
     for file_path in staged_files:
         filename = Path(file_path).name
+
         if filename in LOCK_FILE_MESSAGES:
-            lock_files.append(filename)
+            messages.append(LOCK_FILE_MESSAGES[filename])
+        elif filename.startswith("mise") and filename.endswith("lock"):
+            messages.append(f"chore(deps): update {filename}")
         else:
             # If any file is not a recognized lock file, we can't use a static message
             return None
 
+    if not messages:
+        return None
+
     # If we are here, all staged files are recognized lock files
-    unique_messages = {LOCK_FILE_MESSAGES[f] for f in lock_files}
+    unique_messages = set(messages)
 
     if len(unique_messages) == 1:
         return unique_messages.pop() + COMMIT_SUFFIX
