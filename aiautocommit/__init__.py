@@ -573,16 +573,15 @@ def commit(print_message, output_file, config_dir, difftastic):
 def install_pre_commit(overwrite):
     """Install pre-commit script into git hooks directory"""
     git_result = run_command(
-        ["git", "rev-parse", "--git-dir"],
+        ["git", "rev-parse", "--git-path", "hooks"],
         check=True,
     )
 
-    git_dir = git_result.stdout.strip()
-
-    target_hooks_dir = Path(git_dir) / "hooks"
-    target_hooks_dir.mkdir(exist_ok=True)
+    target_hooks_dir = Path(git_result.stdout.strip())
+    target_hooks_dir.mkdir(exist_ok=True, parents=True)
 
     commit_msg_git_hook_name = "prepare-commit-msg"
+    pre_commit = target_hooks_dir / commit_msg_git_hook_name
     pre_commit = target_hooks_dir / commit_msg_git_hook_name
     pre_commit_script = Path(__file__).parent / commit_msg_git_hook_name
 
