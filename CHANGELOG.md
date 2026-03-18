@@ -7,6 +7,13 @@
 
 
 
+## [0.17.0](https://github.com/iloveitaly/aiautocommit/compare/v0.16.1...v0.17.0) (2026-03-18)
+
+
+### Features
+
+* add support for glob patterns in file exclusions ([e75aa8e](https://github.com/iloveitaly/aiautocommit/commit/e75aa8e0d12357c6981197df1acec49ea6aafcc0))
+
 ## [0.16.1](https://github.com/iloveitaly/aiautocommit/compare/v0.16.0...v0.16.1) (2026-03-17)
 
 
