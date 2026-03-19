@@ -89,6 +89,21 @@ export AIAUTOCOMMIT_LOG_PATH=aiautocommit.log
 
 Now, you'll have a log you can tail and fiddle with from there.
 
+Additional debugging commands:
+
+```shell
+# Print the compiled system prompt (after all config files are merged)
+aiautocommit output-prompt
+
+# Print the compiled file exclusions list
+aiautocommit output-exclusions
+
+# Generate a ChatGPT-ready debug block for a past commit to help iterate on the prompt
+aiautocommit debug-prompt <sha> "the commit message was too vague"
+```
+
+`debug-prompt` outputs the diff, the generated commit message, and the full prompt in a format you can paste directly into ChatGPT to get suggestions for improving the prompt.
+
 ### Using Config Directory
 
 aiautocommit looks for configuration files in these locations (in priority order):
