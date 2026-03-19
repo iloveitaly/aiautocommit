@@ -93,7 +93,7 @@ Now, you'll have a nice log you can tail and fiddle with from there.
 
 aiautocommit looks for configuration files in these locations (in priority order):
 
-* .aiautocommit/ in current directory
+* `.aiautocommit` in current directory — as a **directory** for full config, or a **file** to append to the default prompt
 * $XDG_CONFIG_HOME/aiautocommit/ (defaults to ~/.config/aiautocommit/)
 * Custom path via aiautocommit_CONFIG environment variable
 
@@ -108,6 +108,16 @@ This creates a `.aiautocommit/` directory with:
 * `commit_prompt.txt`: Template for generating commit messages
 * `excluded_files.txt`: List of files or glob patterns (e.g., `mise*lock`) to exclude from processing
 * `commit_suffix.txt`: Static suffix to append to commit messages. Useful for trailers.
+
+### Lightweight Prompt Extension
+
+If you only want to *extend* the default prompt rather than replace it entirely, create a plain `.aiautocommit` **file** (not a directory) in your repo root. Its contents will be appended to the stock `commit_prompt.txt`:
+
+```shell
+echo "Always include the ticket number from the branch name in the subject line." > .aiautocommit
+```
+
+This is the simplest way to add project-specific instructions without duplicating the full default prompt.
 
 ### Installing Pre-commit Hook
 
