@@ -558,7 +558,7 @@ def commit(print_message, output_file, config_dir, difftastic):
                     )
                     click.get_current_context().exit(1)
             else:
-                diff = get_diff(use_difftastic=use_difftastic)
+                diff = staged_diff
                 if not diff:
                     commit_message = "style: whitespace change" + COMMIT_SUFFIX
                 else:
