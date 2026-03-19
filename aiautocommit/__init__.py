@@ -669,10 +669,12 @@ def output_exclusions():
 @click.argument("message")
 def debug_prompt(sha, message):
     """
-    Show debug info for a given commit SHA:
-    - the git diff as a Markdown block
-    - the entire prompt as a Markdown block
-    - the full commit message
+    Generate a ChatGPT-ready block for iterating on the prompt.
+
+    SHA is the commit to debug. MESSAGE describes what was wrong with the
+    generated commit message (e.g. "the subject line was too vague"). The
+    output includes the diff, the generated commit message, and the full
+    system prompt — paste it into ChatGPT to get improvement suggestions.
     """
     configure_prompts()
 
