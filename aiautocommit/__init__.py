@@ -72,6 +72,24 @@ from .utils import run_command, time_it  # noqa: E402
 
 from importlib.metadata import PackageNotFoundError, version  # noqa: E402
 
+
+def is_local_source_checkout() -> bool:
+    package_dir = Path(__file__).resolve().parent
+    repo_root = package_dir.parent
+
+    return (repo_root / ".git").exists() and (repo_root / "pyproject.toml").exists()
+
+
+def get_cli_version() -> str:
+    if not is_local_source_checkout():
+        return __version__
+
+    if __version__.endswith(".dev"):
+        return __version__
+
+    return f"{__version__}.dev"
+
+
 try:
     __version__ = version("aiautocommit")
 except PackageNotFoundError:
@@ -453,7 +471,7 @@ def check_lock_files():
 
 
 @click.group(invoke_without_command=True)
-@click.version_option(version=__version__)
+@click.version_option(version=get_cli_version())
 def main():
     """
     Generate a commit message for staged files and commit them.

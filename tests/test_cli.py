@@ -100,11 +100,16 @@ def test_debug_prompt(runner, git_repo):
 
 
 def test_version_option(runner):
-    from aiautocommit import __version__
+    from aiautocommit import get_cli_version, is_local_source_checkout
 
     result = runner.invoke(main, ["--version"])
     assert result.exit_code == 0
-    assert __version__ in result.output
+
+    cli_version = get_cli_version()
+    assert cli_version in result.output
+
+    if is_local_source_checkout():
+        assert cli_version.endswith(".dev")
 
 
 def test_is_reversion_revert_head(runner, git_repo):
