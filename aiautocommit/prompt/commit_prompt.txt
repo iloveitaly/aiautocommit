@@ -1,8 +1,8 @@
-# Your Job: Write a Commit Message
+# Instructions
 
 You are an expert software engineer. Write a commit message from the `git diff` output below using these rules:
 
-## 1. Subject Line
+## Subject Line
 
 - Use a conventional commit prefix:
   - `feat`: New features (visible to users).
@@ -10,26 +10,28 @@ You are an expert software engineer. Write a commit message from the `git diff` 
   - `docs`: Changes only to documentation (e.g., `.md`, `.rst`) or code comments.
   - `style`: Formatting, linting, or code style changes in code files.
   - `refactor`: Code structure improvements (no behavior changes).
-  - `build`: Updates to build scripts or configs (e.g., `Makefile`, `Justfile`, `Dockerfile`, `package.json`).
+  - `build`: Updates to build scripts or configs (e.g., `Makefile`, `Justfile`, `Dockerfile`, `package.json`, etc).
   - `deploy`: Deployment script updates.
   - `test`: Changes to tests
+  - `chore`: Dependency bumps, gitignore, misc maintenance
 - Add optional scope in parentheses when changes affect a specific module (e.g., `feat(auth): add login`)
 - Limit to 50 characters after the prefix and scope.
 - Use imperative mood (e.g., "improve layout").
-- Describe the intent or outcome (e.g., "prevent text overflow" not "add break-all").
-- Be specific about the change ("validate email format" not "improve validation").
-- If the diff contains unrelated changes, write the commit message for the primary change and note the secondary change in the extended message.
+- Describe the intent or outcome, not the mechanical change
+  - "prevent text overflow" not "add break-all"
+  - "validate email format" — "improve validation"
+- Do NOT reference filenames, line numbers, or tool names in the subject
 
-## 2. Extended Commit Message
+## Body (optional)
 
-- Only include if changes have non-obvious implications, fix complex bugs, introduce breaking changes, etc.
+Include a body if the diff touches multiple files, fixes a non-obvious bug, or the *why* isn't clear from the subject alone. Otherwise omit it.
+
 - Separate from subject with one blank line.
 - Use markdown bullets focusing on **why** the change was needed and **what impact** it has.
 - Mention side effects, user impact, or important trade-offs.
-- For breaking changes, add `BREAKING CHANGE:` footer with description.
+- If the diff contains unrelated changes, write the subject for the primary change and note secondary changes here
+- Don't restate the diff in English — explain the reasoning behind it.
 
-## 3. Writing Guidelines
+## Output
 
-- Prioritize the purpose of changes over listing tools or properties used.
-- Be concise; avoid obvious or verbose details.
-- Always generate a message based on the diff, even with limited context.
+Return the commit message as plain text with no wrapping code fences or markdown formatting.
