@@ -5,12 +5,12 @@
 
 # Generate Commit Messages With AI
 
-`aiautocommit` analyzes your staged changes and creates conventional commit messages, handling both small tweaks and large changesets effectively.
+`aiautocommit` analyzes your staged changes and creates conventional commit messages.
 
 Yes, there are a lot of these. Main ways this is different:
 
 * Ability to easily customize prompts on a per-repo basis
-* Smart exclusions (e.g., lock files) that still generate useful messages without bloating the AI prompt
+* Exclusions (e.g., lock files) that still generate messages without bloating the AI prompt
 * Optional difftastic integration for syntax-aware diffs that improve message quality
 * Support for multiple AI providers via pydantic-ai, with Google Gemini as the default
 
@@ -30,7 +30,7 @@ uvx aiautocommit
 * Supports custom config directories
 * CLI flag for version checking (`--version`)
 * Does not generate a commit during a merge or reversion (when an existing autogen'd msg exists)
-* **Automatic lock file handling**: recognizable lock files (e.g., `uv.lock`, `package-lock.json`) generate specific conventional messages (e.g., `chore(deps): update uv.lock`) even when they are excluded from the AI prompt.
+* **Automatic lock file handling**: lock files (e.g., `uv.lock`, `package-lock.json`) generate conventional messages (e.g., `chore(deps): update uv.lock`) even when they are excluded from the AI prompt.
 * **Optional difftastic integration** for syntax-aware semantic diffs
 
 ## Getting Started
@@ -74,7 +74,7 @@ However, if you stage *only* lock files, aiautocommit will detect them and autom
 - `.terraform.lock.hcl` -> `chore(deps): update .terraform.lock.hcl`
 - Mixed lock files -> `chore(deps): update lock files`
 
-If any non-lock files are staged alongside them, the AI will ignore the lock files (based on your exclusions) and focus on the meaningful code changes.
+If any non-lock files are staged alongside them, the AI will ignore the lock files (based on your exclusions) and focus on the code changes.
 
 ## Customization
 
@@ -87,7 +87,7 @@ export AIAUTOCOMMIT_LOG_LEVEL=DEBUG
 export AIAUTOCOMMIT_LOG_PATH=aiautocommit.log
 ```
 
-Now, you'll have a nice log you can tail and fiddle with from there.
+Now, you'll have a log you can tail and fiddle with from there.
 
 ### Using Config Directory
 
@@ -153,7 +153,7 @@ Optional scopes (e.g., `feat(api):`):
 
 #### Lefthook Configuration
 
-[Lefthook](https://lefthook.dev) is an excellent tool for managing git hooks. To use aiautocommit with lefthook, add the following to your `.lefthook.yml`:
+[Lefthook](https://lefthook.dev) is a tool for managing git hooks. To use aiautocommit with lefthook, add the following to your `.lefthook.yml`:
 
 ```yaml
 prepare-commit-msg:
@@ -202,9 +202,9 @@ Common examples:
 
 Ensure you have the corresponding API key set in your environment (e.g., `ANTHROPIC_API_KEY` for Anthropic models).
 
-## Writing Good Commit Messages
+## Writing Commit Messages
 
-Some guides to writing good commit messages:
+Some guides to writing commit messages:
 
 * https://cbea.ms/git-commit/
 * https://groups.google.com/g/golang-dev/c/6M4dmZWpFaI
@@ -212,7 +212,7 @@ Some guides to writing good commit messages:
 
 ## Credits
 
-[This project](https://github.com/markuswt/gpt-commit) inspired this project. It had a very simple codebase. I've taken the idea and expanded it to include a lot more features, specifically per-project prompt customization.
+[This project](https://github.com/markuswt/gpt-commit) inspired this project. It had a simple codebase. I've taken the idea and expanded it to include more features, specifically per-project prompt customization.
 
 ## Related Projects
 
