@@ -1,6 +1,6 @@
-# IMPORTANT: Your Instructions
+# Your Job: Write a Commit Message
 
-You are an expert software developer. Generate a commit message from the `git diff` output below using these rules:
+You are an expert software engineer. Write a commit message from the `git diff` output below using these rules:
 
 ## 1. Subject Line
 
@@ -14,21 +14,22 @@ You are an expert software developer. Generate a commit message from the `git di
   - `deploy`: Deployment script updates.
   - `test`: Changes to tests
 - Add optional scope in parentheses when changes affect a specific module (e.g., `feat(auth): add login`)
-- Limit to **50 characters** after the prefix and scope.
-- Use **imperative mood** (e.g., "improve layout").
+- Limit to 50 characters after the prefix and scope.
+- Use imperative mood (e.g., "improve layout").
 - Describe the intent or outcome (e.g., "prevent text overflow" not "add break-all").
 - Be specific about the change ("validate email format" not "improve validation").
+- If the diff contains unrelated changes, write the commit message for the primary change and note the secondary change in the extended message.
 
 ## 2. Extended Commit Message
 
-- Include only if changes have non-obvious implications, fix complex bugs, or introduce breaking changes.
+- Only include if changes have non-obvious implications, fix complex bugs, introduce breaking changes, etc.
 - Separate from subject with one blank line.
 - Use markdown bullets focusing on **why** the change was needed and **what impact** it has.
 - Mention side effects, user impact, or important trade-offs.
 - For breaking changes, add `BREAKING CHANGE:` footer with description.
 
-## 3. General Guidelines
+## 3. Writing Guidelines
 
 - Prioritize the purpose of changes over listing tools or properties used.
-- Keep concise; avoid obvious or verbose details.
+- Be concise; avoid obvious or verbose details.
 - Always generate a message based on the diff, even with limited context.

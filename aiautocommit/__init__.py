@@ -147,8 +147,10 @@ def configure_prompts(config_dir=None):
     if config_dir:
         CONFIG_PATHS.insert(0, Path(config_dir))
 
-    # Find first existing config dir
-    config_dir = next((path for path in CONFIG_PATHS if path and path.exists()), None)
+    # Skip .aiautocommit if it's a file — file mode appends to the base prompt rather than replacing it
+    config_dir = next(
+        (path for path in CONFIG_PATHS if path and path.is_dir()), None
+    )
 
     if not config_dir:
         log.debug("No config directory found")
@@ -202,6 +204,12 @@ def configure_prompts(config_dir=None):
         COMMIT_SUFFIX = "\n\n\n" + commit_suffix_file.read_text().strip()
     else:
         log.debug(f"'{COMMIT_SUFFIX_FILE}' does not exist in {config_dir.absolute()}")
+
+    # A plain .aiautocommit file (not a directory) lets developers extend the stock prompt without fully replacing it
+    local_append_file = Path(LOCAL_REPO_AUTOCOMMIT_DIR_NAME)
+    if local_append_file.is_file():
+        log.debug("found .aiautocommit file, appending to prompt")
+        COMMIT_PROMPT += "\n\n" + local_append_file.read_text().strip()
 
 
 def get_diff_size(section: List[str]) -> int:
