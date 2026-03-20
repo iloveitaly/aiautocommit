@@ -154,8 +154,8 @@ if not os.environ.get("AIAUTOCOMMIT_LOG_PATH"):
     # Suppress ResourceWarnings
     warnings.filterwarnings("ignore", category=ResourceWarning)
 
-    # Optional: Disable httpx logging if desired
     logging.getLogger("httpx").setLevel(logging.WARNING)
+    logging.getLogger("google_genai.models").setLevel(logging.WARNING)
 
 
 def configure_prompts(config_dir=None):

@@ -35,7 +35,7 @@ def get_difftastic_diff(excluded_files: list[str] | None = None) -> str:
     if not difft_path:
         raise FileNotFoundError("difftastic binary 'difft' not found in PATH")
 
-    log.info("Using difftastic for syntax-aware diff analysis")
+    log.debug("Using difftastic for syntax-aware diff analysis")
 
     excluded_files = excluded_files or []
 
