@@ -166,9 +166,7 @@ def configure_prompts(config_dir=None):
         CONFIG_PATHS.insert(0, Path(config_dir))
 
     # Skip .aiautocommit if it's a file — file mode appends to the base prompt rather than replacing it
-    config_dir = next(
-        (path for path in CONFIG_PATHS if path and path.is_dir()), None
-    )
+    config_dir = next((path for path in CONFIG_PATHS if path and path.is_dir()), None)
 
     if not config_dir:
         log.debug("No config directory found")
@@ -558,7 +556,12 @@ def commit(print_message, output_file, config_dir, difftastic):
                     )
                     click.get_current_context().exit(1)
             else:
-                diff = staged_diff
+                # For difftastic, reuse the result (difftastic has no whitespace-ignore option).
+                # For standard diff, re-run with ignore_whitespace=True to detect whitespace-only changes.
+                if use_difftastic:
+                    diff = staged_diff
+                else:
+                    diff = get_diff(ignore_whitespace=True)
                 if not diff:
                     commit_message = "style: whitespace change" + COMMIT_SUFFIX
                 else:
