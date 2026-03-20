@@ -27,7 +27,7 @@ You are an expert software engineer. Write a commit message from the `git diff` 
 Include a body if the diff touches multiple files, fixes a non-obvious bug, or the *why* isn't clear from the subject alone. Otherwise omit it.
 
 - Separate from subject with one blank line.
-- Use markdown bullets focusing on **why** the change was needed and **what impact** it has.
+- Use markdown bullets focusing on **why** the change was needed and **what impact** it has. No nested bullets.
 - Mention side effects, user impact, or important trade-offs.
 - If the diff contains unrelated changes, write the subject for the primary change and note secondary changes here
 - Don't restate the diff in English — explain the reasoning behind it.
