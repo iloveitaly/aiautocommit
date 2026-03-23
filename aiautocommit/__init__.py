@@ -680,6 +680,7 @@ def debug_prompt(sha, message, original):
     output includes the diff, the generated commit message, and the full
     system prompt — paste it into ChatGPT to get improvement suggestions.
     """
+    # The message is used to instruct an LLM on what to fix. It is omitted when using --original to just dump the raw inputs.
     if not original and not message:
         raise click.UsageError("MESSAGE is required unless --original is used.")
 
@@ -689,6 +690,8 @@ def debug_prompt(sha, message, original):
     diff_output = run_command(diff_cmd).stdout
 
     if original:
+        # Output exactly what is sent to the LLM via pydantic-ai: the system prompt followed by the user data (diff).
+        # We use a markdown header to prevent prompt injection and clearly delineate instructions from data.
         click.echo(COMMIT_PROMPT)
         click.echo("\n# Diff\n")
         click.echo(diff_output[:PROMPT_CUTOFF])
