@@ -98,6 +98,32 @@ def test_debug_prompt(runner, git_repo):
     assert "First commit" in result.output
     assert "test message" in result.output
 
+def test_debug_prompt_original(runner, git_repo):
+    git_repo.create_file("test.txt", "content")
+    git_repo.git_add("test.txt")
+    git_repo.git_commit("First commit")
+
+    # Get the last SHA
+    sha = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()
+
+    result = runner.invoke(main, ["debug-prompt", sha, "--original"])
+    assert result.exit_code == 0
+    from aiautocommit import COMMIT_PROMPT
+    assert COMMIT_PROMPT in result.output
+    assert "content" in result.output
+
+def test_debug_prompt_requires_message(runner, git_repo):
+    git_repo.create_file("test.txt", "content")
+    git_repo.git_add("test.txt")
+    git_repo.git_commit("First commit")
+
+    # Get the last SHA
+    sha = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()
+
+    result = runner.invoke(main, ["debug-prompt", sha])
+    assert result.exit_code != 0
+    assert "MESSAGE is required unless --original is used" in result.output
+
 
 def test_version_option(runner):
     from aiautocommit import get_cli_version, is_local_source_checkout

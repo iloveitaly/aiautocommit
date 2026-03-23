@@ -669,8 +669,9 @@ def output_exclusions():
 
 @main.command()
 @click.argument("sha")
-@click.argument("message")
-def debug_prompt(sha, message):
+@click.argument("message", required=False)
+@click.option("--original", is_flag=True, help="Output the exact prompt passed to the model")
+def debug_prompt(sha, message, original):
     """
     Generate a ChatGPT-ready block for iterating on the prompt.
 
@@ -679,10 +680,19 @@ def debug_prompt(sha, message):
     output includes the diff, the generated commit message, and the full
     system prompt — paste it into ChatGPT to get improvement suggestions.
     """
+    if not original and not message:
+        raise click.UsageError("MESSAGE is required unless --original is used.")
+
     configure_prompts()
 
     diff_cmd = ["git", "show", sha, "--pretty="]
     diff_output = run_command(diff_cmd).stdout
+
+    if original:
+        click.echo(COMMIT_PROMPT)
+        click.echo("\n# Diff\n")
+        click.echo(diff_output[:PROMPT_CUTOFF])
+        return
 
     commit_msg_cmd = ["git", "log", "--format=%B", "-n", "1", sha]
     commit_message = run_command(commit_msg_cmd).stdout
