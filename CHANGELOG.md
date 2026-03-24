@@ -7,6 +7,33 @@
 
 
 
+## [0.18.0](https://github.com/iloveitaly/aiautocommit/compare/v0.17.0...v0.18.0) (2026-03-24)
+
+
+### Features
+
+* allow local .aiautocommit file to append to system prompt ([8356557](https://github.com/iloveitaly/aiautocommit/commit/8356557d7a1b8ba5a10de95812a70af6f2b861e2))
+* **cli:** append .dev suffix to local version ([9466480](https://github.com/iloveitaly/aiautocommit/commit/9466480457b6e8635f39f5faf37406b26243f9e4))
+* **cli:** make message optional for debug-prompt command ([54130ca](https://github.com/iloveitaly/aiautocommit/commit/54130ca78f53d616328c3beb5c5a2578b393e387))
+* enhance SAS token generation and add new upload endpoints ([85ae0f8](https://github.com/iloveitaly/aiautocommit/commit/85ae0f82bb30e52b24d796ca2f32cc9b49306694))
+
+
+### Bug Fixes
+
+* **cli:** provide fallback comment when AI model is unavailable ([9bf2a55](https://github.com/iloveitaly/aiautocommit/commit/9bf2a552de547d340a85528ff14d279c055e3472))
+* detect whitespace-only changes correctly ([f323228](https://github.com/iloveitaly/aiautocommit/commit/f323228c15c55c0b9f616a00ce33234313740df8))
+* improve error handling and CLI output for model failures ([7d4c29d](https://github.com/iloveitaly/aiautocommit/commit/7d4c29d06ebd9dd24cd681b078516f781de961ce))
+* improve git hook installation and commit trigger ([0f0770c](https://github.com/iloveitaly/aiautocommit/commit/0f0770cf7c1b6c8c65150284e7d5910431f06261))
+
+
+### Documentation
+
+* clarify configuration file usage in README ([845913d](https://github.com/iloveitaly/aiautocommit/commit/845913de161e2a32b5bfdccf410bac0bf9300053))
+* document debug-prompt command in README ([220af15](https://github.com/iloveitaly/aiautocommit/commit/220af1552280ead405577924285971925a66e18c))
+* improve readme clarity and tone ([24dbc90](https://github.com/iloveitaly/aiautocommit/commit/24dbc9044a74e90c973efb8f0507de95b438b890))
+* more comments ([252796d](https://github.com/iloveitaly/aiautocommit/commit/252796d7d219d5bed4777687844da81fcc70331a))
+* update debug_prompt command description ([8b2a625](https://github.com/iloveitaly/aiautocommit/commit/8b2a625213c20275215df9430fee591f63c9eef9))
+
 ## [0.17.0](https://github.com/iloveitaly/aiautocommit/compare/v0.16.1...v0.17.0) (2026-03-18)
 
 
