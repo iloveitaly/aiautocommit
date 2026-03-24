@@ -64,6 +64,7 @@ update_env_variables()
 
 import click  # noqa: E402
 from pydantic_ai import Agent  # noqa: E402
+from pydantic_ai.exceptions import ModelAPIError, ModelHTTPError  # noqa: E402
 
 from .difftastic import get_difftastic_diff  # noqa: E402
 from .internet import wait_for_internet_connection  # noqa: E402
@@ -138,6 +139,7 @@ LOCK_FILE_MESSAGES = {
     "yarn.lock": "chore(deps): update yarn.lock",
     "pnpm-lock.yaml": "chore(deps): update pnpm-lock.yaml",
     "bun.lockb": "chore(deps): update bun.lockb",
+    "bun.lock": "chore(deps): update bun.lock",
     "Gemfile.lock": "chore(deps): update Gemfile.lock",
     "composer.lock": "chore(deps): update composer.lock",
     "mix.lock": "chore(deps): update mix.lock",
@@ -339,7 +341,17 @@ def complete(prompt, diff):
         )
 
     # Run the agent synchronously
-    result = agent.run_sync(diff[:PROMPT_CUTOFF], model_settings=model_settings)
+    try:
+        result = agent.run_sync(diff[:PROMPT_CUTOFF], model_settings=model_settings)
+    except ModelHTTPError as e:
+        log.warning(
+            f"AI model is currently unavailable (HTTP {e.status_code}). "
+            "Falling back to manual commit message."
+        )
+        return ""
+    except ModelAPIError as e:
+        log.warning(f"AI API error: {e}. Falling back to manual commit message.")
+        return ""
 
     # Pydantic AI returns a RunResult object, we need the output data
     completion = result.output
@@ -363,8 +375,13 @@ def generate_commit_message(diff):
 
 def git_commit(message):
     # will ignore message if diff is empty
+    args = ["git", "commit"]
+    if message:
+        args += ["--message", message]
+    args.append("--edit")
+
     return run_command(
-        ["git", "commit", "--message", message, "--edit"],
+        args,
         capture_output=False,
     ).returncode
 
@@ -584,8 +601,7 @@ def commit(print_message, output_file, config_dir, difftastic):
         if output_file:
             if commit_message:
                 Path(output_file).write_text(commit_message)
-                click.get_current_context().exit(0)
-            click.get_current_context().exit(1)
+            click.get_current_context().exit(0)
         elif print_message:
             click.echo(commit_message)
             click.get_current_context().exit(0)
