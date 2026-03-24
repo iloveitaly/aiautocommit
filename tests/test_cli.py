@@ -215,9 +215,9 @@ def test_complete_503_graceful_fallback():
             },
         )
 
-        # This should now return "" instead of raising
+        # This should now return a commented string instead of raising
         result = complete("prompt", "diff")
-        assert result == ""
+        assert result == "# aiautocommit: AI model unavailable. Falling back to manual message."
 
 
 def test_git_commit():

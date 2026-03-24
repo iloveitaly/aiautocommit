@@ -3,6 +3,7 @@ import os
 import re
 import shutil
 import subprocess
+import tempfile
 import warnings
 from pathlib import Path
 from typing import List
@@ -348,10 +349,10 @@ def complete(prompt, diff):
             f"AI model is currently unavailable (HTTP {e.status_code}). "
             "Falling back to manual commit message."
         )
-        return ""
+        return "# aiautocommit: AI model unavailable. Falling back to manual message."
     except ModelAPIError as e:
         log.warning(f"AI API error: {e}. Falling back to manual commit message.")
-        return ""
+        return "# aiautocommit: AI model unavailable. Falling back to manual message."
 
     # Pydantic AI returns a RunResult object, we need the output data
     completion = result.output
@@ -370,20 +371,36 @@ def generate_commit_message(diff):
     # If the generated message is empty, do not add the commit suffix.
     if not message.strip() or message.strip() == '""':
         return ""
+    if message.strip().startswith("#"):
+        return message
     return message + COMMIT_SUFFIX
 
 
 def git_commit(message):
     # will ignore message if diff is empty
     args = ["git", "commit"]
+    temp_path = None
+    
     if message:
-        args += ["--message", message]
+        if message.startswith("#"):
+            # Write to a temp file and use as a template so Git still appends the status and diff (if commit.verbose=true)
+            fd, temp_path = tempfile.mkstemp(text=True)
+            with os.fdopen(fd, 'w') as f:
+                f.write(f"{message}\n\n")
+            args += ["--template", temp_path]
+        else:
+            args += ["--message", message]
+            
     args.append("--edit")
 
-    return run_command(
-        args,
-        capture_output=False,
-    ).returncode
+    try:
+        return run_command(
+            args,
+            capture_output=False,
+        ).returncode
+    finally:
+        if temp_path:
+            os.remove(temp_path)
 
 
 def get_git_dir():
@@ -600,7 +617,13 @@ def commit(print_message, output_file, config_dir, difftastic):
 
         if output_file:
             if commit_message:
-                Path(output_file).write_text(commit_message)
+                out_path = Path(output_file)
+                if commit_message.startswith("#"):
+                    # Prepend to existing Git template
+                    original_content = out_path.read_text() if out_path.exists() else ""
+                    out_path.write_text(f"{commit_message}\n\n{original_content}")
+                else:
+                    out_path.write_text(commit_message)
             click.get_current_context().exit(0)
         elif print_message:
             click.echo(commit_message)
