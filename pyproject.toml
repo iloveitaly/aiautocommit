@@ -48,6 +48,7 @@ exclude = ["examples/", "playground/", "tmp/", ".venv/", "tests/"]
 
 [tool.pytest.ini_options]
 addopts = "--cov --cov-report=term-missing --cov-report=html:tmp/htmlcov"
+norecursedirs = ["tmp", ".venv", "playground"]
 markers = [
     "integration: marks tests as integration tests (deselect with '-m \"not integration\"')",
 ]
