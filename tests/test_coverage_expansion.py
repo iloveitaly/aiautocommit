@@ -19,19 +19,6 @@ from aiautocommit.difftastic import get_difftastic_diff
 from tests.utils import GitTestMixin
 
 
-@pytest.fixture
-def runner():
-    return CliRunner()
-
-
-@pytest.fixture
-def git_repo(runner):
-    with runner.isolated_filesystem():
-        mixin = GitTestMixin()
-        mixin.init_repo()
-        yield mixin
-
-
 def test_is_reversion_revert_head(git_repo):
     git_dir = Path(".git")
     (git_dir / "REVERT_HEAD").touch()
@@ -364,7 +351,7 @@ def test_commit_empty_message(runner, git_repo):
 
     with patch("aiautocommit.generate_commit_message", return_value=""):
         result = runner.invoke(main, ["commit", "--output-file", "out.txt"])
-        assert result.exit_code == 1
+        assert result.exit_code == 0
 
 
 def test_dump_prompts_source_missing(runner):

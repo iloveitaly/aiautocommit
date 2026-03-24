@@ -8,21 +8,6 @@ from aiautocommit import main, update_env_variables, is_reversion, check_lock_fi
 from tests.utils import GitTestMixin
 
 
-@pytest.fixture
-def runner():
-    return CliRunner()
-
-
-@pytest.fixture
-def git_repo(runner):
-    with runner.isolated_filesystem():
-        from tests.utils import GitTestMixin
-
-        mixin = GitTestMixin()
-        mixin.init_repo()
-        yield mixin
-
-
 def test_update_env_variables():
     with patch.dict(os.environ, {"AIAUTOCOMMIT_TEST_VAR_123": "new_value"}):
         update_env_variables()
@@ -98,6 +83,7 @@ def test_debug_prompt(runner, git_repo):
     assert "First commit" in result.output
     assert "test message" in result.output
 
+
 def test_debug_prompt_original(runner, git_repo):
     git_repo.create_file("test.txt", "content")
     git_repo.git_add("test.txt")
@@ -109,8 +95,10 @@ def test_debug_prompt_original(runner, git_repo):
     result = runner.invoke(main, ["debug-prompt", sha, "--original"])
     assert result.exit_code == 0
     from aiautocommit import COMMIT_PROMPT
+
     assert COMMIT_PROMPT in result.output
     assert "content" in result.output
+
 
 def test_debug_prompt_requires_message(runner, git_repo):
     git_repo.create_file("test.txt", "content")
@@ -217,7 +205,10 @@ def test_complete_503_graceful_fallback():
 
         # This should now return a commented string instead of raising
         result = complete("prompt", "diff")
-        assert result == "# aiautocommit: AI model unavailable. Falling back to manual message."
+        assert (
+            result
+            == "# aiautocommit: AI model unavailable. Falling back to manual message."
+        )
 
 
 def test_git_commit():
@@ -265,8 +256,10 @@ def test_whitespace_change(runner, git_repo):
     # If get_diff(ignore_whitespace=True) works, it should return the hardcoded message.
     # If it fails to ignore whitespace, it will return the mocked AI message.
     # In both cases, the test will pass or we'll see what happened.
-    assert ("style: whitespace change" in result.output or 
-            "style: format test file whitespace" in result.output)
+    assert (
+        "style: whitespace change" in result.output
+        or "style: format test file whitespace" in result.output
+    )
 
 
 def test_no_changes(runner, git_repo):

@@ -380,17 +380,17 @@ def git_commit(message):
     # will ignore message if diff is empty
     args = ["git", "commit"]
     temp_path = None
-    
+
     if message:
         if message.startswith("#"):
             # Write to a temp file and use as a template so Git still appends the status and diff (if commit.verbose=true)
             fd, temp_path = tempfile.mkstemp(text=True)
-            with os.fdopen(fd, 'w') as f:
+            with os.fdopen(fd, "w") as f:
                 f.write(f"{message}\n\n")
             args += ["--template", temp_path]
         else:
             args += ["--message", message]
-            
+
     args.append("--edit")
 
     try:
@@ -709,7 +709,9 @@ def output_exclusions():
 @main.command()
 @click.argument("sha")
 @click.argument("message", required=False)
-@click.option("--original", is_flag=True, help="Output the exact prompt passed to the model")
+@click.option(
+    "--original", is_flag=True, help="Output the exact prompt passed to the model"
+)
 def debug_prompt(sha, message, original):
     """
     Generate a ChatGPT-ready block for iterating on the prompt.

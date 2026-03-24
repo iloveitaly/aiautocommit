@@ -6,19 +6,6 @@ from aiautocommit import main
 from tests.utils import GitTestMixin
 
 
-@pytest.fixture
-def runner():
-    return CliRunner()
-
-
-@pytest.fixture
-def git_repo(runner):
-    with runner.isolated_filesystem():
-        mixin = GitTestMixin()
-        mixin.init_repo()
-        yield mixin
-
-
 def test_difftastic_integration(runner, git_repo):
     # Verify difft is installed as per the user's instructions
     if not shutil.which("difft"):
