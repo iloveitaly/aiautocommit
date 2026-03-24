@@ -187,9 +187,10 @@ def test_complete_503_graceful_fallback():
     from aiautocommit import complete
     from pydantic_ai.exceptions import ModelHTTPError
 
-    with patch("pydantic_ai.Agent.run_sync") as mock_run:
+    with patch("aiautocommit.Agent") as mock_agent_class:
+        mock_agent = mock_agent_class.return_value
         # Simulate a 503 ModelHTTPError
-        mock_run.side_effect = ModelHTTPError(
+        mock_agent.run_sync.side_effect = ModelHTTPError(
             status_code=503,
             model_name="gemini-3.1-flash-lite-preview",
             body={
