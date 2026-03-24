@@ -2,8 +2,6 @@ import os
 import subprocess
 from pathlib import Path
 from unittest.mock import patch
-from click.testing import CliRunner
-import pytest
 from aiautocommit import main, update_env_variables, is_reversion, check_lock_files
 from tests.utils import GitTestMixin
 

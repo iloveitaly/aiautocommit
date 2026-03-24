@@ -3,7 +3,6 @@ import subprocess
 from pathlib import Path
 from unittest.mock import patch, MagicMock
 import pytest
-from click.testing import CliRunner
 from aiautocommit import (
     main,
     is_reversion,
@@ -16,7 +15,6 @@ from aiautocommit.internet import wait_for_internet_connection
 from aiautocommit.utils import run_command
 from aiautocommit import sort_git_diff, get_diff_size
 from aiautocommit.difftastic import get_difftastic_diff
-from tests.utils import GitTestMixin
 
 
 def test_is_reversion_revert_head(git_repo):

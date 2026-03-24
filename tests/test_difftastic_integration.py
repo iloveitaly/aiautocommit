@@ -1,9 +1,7 @@
 import shutil
 import pytest
 from unittest.mock import patch
-from click.testing import CliRunner
 from aiautocommit import main
-from tests.utils import GitTestMixin
 
 
 def test_difftastic_integration(runner, git_repo):
