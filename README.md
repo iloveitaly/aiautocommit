@@ -9,10 +9,11 @@
 
 Yes, there are a lot of these. Main ways this is different:
 
-* Ability to easily customize prompts on a per-repo basis
-* Exclusions (e.g., lock files) that still generate messages without bloating the AI prompt
+* Ability to easily customize prompts on a per-repo basis (`.aiautocommit` file or folder)
+* Exclusions (e.g., lock files) that generate messages without hitting LLMs
 * Optional difftastic integration for syntax-aware diffs that improve message quality
 * Support for multiple AI providers via pydantic-ai, with Google Gemini as the default
+* Tastefully written prompts by a real engineer who cares
 
 ## Installation
 
@@ -71,8 +72,8 @@ However, if you stage *only* lock files, aiautocommit will detect them and autom
 
 - `uv.lock` -> `chore(deps): update uv.lock`
 - `package-lock.json` -> `chore(deps): update package-lock.json`
-- `.terraform.lock.hcl` -> `chore(deps): update .terraform.lock.hcl`
 - Mixed lock files -> `chore(deps): update lock files`
+- ... and more
 
 If any non-lock files are staged alongside them, the AI will ignore the lock files (based on your exclusions) and focus on the code changes.
 
