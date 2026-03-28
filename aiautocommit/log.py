@@ -13,7 +13,7 @@ def setup_logging():
     # Suppress verbose INFO logs from google_genai
     logging.getLogger("google_genai.models").setLevel(logging.WARNING)
 
-    return configure_logger(logger_factory=structlog.BytesLoggerFactory(file=sys.stderr.buffer))
+    return configure_logger(logger_factory=structlog.PrintLoggerFactory(file=sys.stderr))
 
 
 log = setup_logging()
