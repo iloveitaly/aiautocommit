@@ -1,8 +1,9 @@
 import os
 import logging
+import sys
 
 from structlog_config import configure_logger
-
+import structlog
 
 def setup_logging():
     # Map AIAUTOCOMMIT_LOG_PATH to PYTHON_LOG_PATH for structlog-config
@@ -12,7 +13,7 @@ def setup_logging():
     # Suppress verbose INFO logs from google_genai
     logging.getLogger("google_genai.models").setLevel(logging.WARNING)
 
-    return configure_logger()
+    return configure_logger(logger_factory=structlog.BytesLoggerFactory(file=sys.stderr.buffer))
 
 
 log = setup_logging()
