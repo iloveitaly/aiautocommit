@@ -2,8 +2,27 @@ import os
 import subprocess
 from pathlib import Path
 from unittest.mock import patch
-from aiautocommit import main, update_env_variables, is_reversion, check_lock_files
+
+import pytest
+from click.testing import CliRunner
+
+from aiautocommit import check_lock_files, is_reversion, main, update_env_variables
 from tests.utils import GitTestMixin
+
+
+@pytest.fixture
+def runner():
+    return CliRunner()
+
+
+@pytest.fixture
+def git_repo(runner):
+    with runner.isolated_filesystem():
+        from tests.utils import GitTestMixin
+
+        mixin = GitTestMixin()
+        mixin.init_repo()
+        yield mixin
 
 
 def test_update_env_variables():
@@ -82,35 +101,6 @@ def test_debug_prompt(runner, git_repo):
     assert "test message" in result.output
 
 
-def test_debug_prompt_original(runner, git_repo):
-    git_repo.create_file("test.txt", "content")
-    git_repo.git_add("test.txt")
-    git_repo.git_commit("First commit")
-
-    # Get the last SHA
-    sha = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()
-
-    result = runner.invoke(main, ["debug-prompt", sha, "--original"])
-    assert result.exit_code == 0
-    from aiautocommit import COMMIT_PROMPT
-
-    assert COMMIT_PROMPT in result.output
-    assert "content" in result.output
-
-
-def test_debug_prompt_requires_message(runner, git_repo):
-    git_repo.create_file("test.txt", "content")
-    git_repo.git_add("test.txt")
-    git_repo.git_commit("First commit")
-
-    # Get the last SHA
-    sha = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode().strip()
-
-    result = runner.invoke(main, ["debug-prompt", sha])
-    assert result.exit_code != 0
-    assert "MESSAGE is required unless --original is used" in result.output
-
-
 def test_version_option(runner):
     from aiautocommit import get_cli_version, is_local_source_checkout
 
@@ -150,7 +140,7 @@ def test_configure_prompts_custom(runner, git_repo):
 
 
 def test_complete_truncation():
-    from aiautocommit import complete, PROMPT_CUTOFF
+    from aiautocommit import PROMPT_CUTOFF, complete
 
     with patch("aiautocommit.Agent") as mock_agent_class:
         mock_agent = mock_agent_class.return_value

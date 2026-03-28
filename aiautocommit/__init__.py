@@ -63,6 +63,8 @@ def update_env_variables():
 
 update_env_variables()
 
+from importlib.metadata import PackageNotFoundError, version  # noqa: E402
+
 import click  # noqa: E402
 from pydantic_ai import Agent  # noqa: E402
 from pydantic_ai.exceptions import ModelAPIError, ModelHTTPError  # noqa: E402
@@ -71,8 +73,6 @@ from .difftastic import get_difftastic_diff  # noqa: E402
 from .internet import wait_for_internet_connection  # noqa: E402
 from .log import log  # noqa: E402
 from .utils import run_command, time_it  # noqa: E402
-
-from importlib.metadata import PackageNotFoundError, version  # noqa: E402
 
 
 def is_local_source_checkout() -> bool:
@@ -157,8 +157,8 @@ if not os.environ.get("AIAUTOCOMMIT_LOG_PATH"):
     # Suppress ResourceWarnings
     warnings.filterwarnings("ignore", category=ResourceWarning)
 
+    # Optional: Disable httpx logging if desired
     logging.getLogger("httpx").setLevel(logging.WARNING)
-    logging.getLogger("google_genai.models").setLevel(logging.WARNING)
 
 
 def configure_prompts(config_dir=None):
@@ -590,12 +590,7 @@ def commit(print_message, output_file, config_dir, difftastic):
                     )
                     click.get_current_context().exit(1)
             else:
-                # For difftastic, reuse the result (difftastic has no whitespace-ignore option).
-                # For standard diff, re-run with ignore_whitespace=True to detect whitespace-only changes.
-                if use_difftastic:
-                    diff = staged_diff
-                else:
-                    diff = get_diff(ignore_whitespace=True)
+                diff = staged_diff
                 if not diff:
                     commit_message = "style: whitespace change" + COMMIT_SUFFIX
                 else:
@@ -708,11 +703,8 @@ def output_exclusions():
 
 @main.command()
 @click.argument("sha")
-@click.argument("message", required=False)
-@click.option(
-    "--original", is_flag=True, help="Output the exact prompt passed to the model"
-)
-def debug_prompt(sha, message, original):
+@click.argument("message")
+def debug_prompt(sha, message):
     """
     Generate a ChatGPT-ready block for iterating on the prompt.
 
@@ -721,22 +713,10 @@ def debug_prompt(sha, message, original):
     output includes the diff, the generated commit message, and the full
     system prompt — paste it into ChatGPT to get improvement suggestions.
     """
-    # The message is used to instruct an LLM on what to fix. It is omitted when using --original to just dump the raw inputs.
-    if not original and not message:
-        raise click.UsageError("MESSAGE is required unless --original is used.")
-
     configure_prompts()
 
     diff_cmd = ["git", "show", sha, "--pretty="]
     diff_output = run_command(diff_cmd).stdout
-
-    if original:
-        # Output exactly what is sent to the LLM via pydantic-ai: the system prompt followed by the user data (diff).
-        # We use a markdown header to prevent prompt injection and clearly delineate instructions from data.
-        click.echo(COMMIT_PROMPT)
-        click.echo("\n# Diff\n")
-        click.echo(diff_output[:PROMPT_CUTOFF])
-        return
 
     commit_msg_cmd = ["git", "log", "--format=%B", "-n", "1", sha]
     commit_message = run_command(commit_msg_cmd).stdout
