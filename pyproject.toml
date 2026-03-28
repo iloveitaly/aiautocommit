@@ -4,7 +4,7 @@ version = "0.18.0"
 description = "AI generated commit messages"
 keywords = ["git", "commit", "automation", "ai", "openai", "gemini", "anthropic"]
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dependencies = [
     "structlog-config>=0.6.0",
     "backoff>=2.2.1",
