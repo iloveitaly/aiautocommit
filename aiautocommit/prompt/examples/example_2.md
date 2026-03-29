@@ -1,6 +1,13 @@
-## Example 2
+<example>
+<context>
+- short diff
+- include body: no
+- ignore comment-only or doc-only changes when secondary
+- primary change: add a helper that extracts a file or folder from a GitHub repository URL
+</context>
 
-```
+<diff>
+```diff
 diff --git a/.git-functions b/.git-functions
 index ba4be51..2bbb33b 100644
 --- a/.git-functions
@@ -49,10 +56,9 @@ index ba4be51..2bbb33b 100644
 +}
 \ No newline at end of file
 ```
+</diff>
 
-This diff is short and should have no extended commit message. The updated comments of `render-git-template` and 
-`update-mit-license` should be ignored when writing the commit message.
-
-Example commit message:
-
+<expected>
 feat: git-extract function to download a folder or file from a git repo
+</expected>
+</example>

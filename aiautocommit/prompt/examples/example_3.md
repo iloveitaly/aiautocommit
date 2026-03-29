@@ -1,6 +1,12 @@
-## Example 3
+<example>
+<context>
+- medium diff
+- include body: no
+- primary change: expand upload flows to support multiple storage targets and expose new related endpoints
+</context>
 
-```
+<diff>
+```diff
 8083521 (17 seconds ago) feat: enhance SAS token generation and add new upload endpoints <Michael Bianco>
 - Introduced `UploadType` enum to support multiple upload scenarios.
 - Updated SAS token generation to handle different upload types.
@@ -171,9 +177,9 @@ index a31db12..d487410 100644
    note,
    defaultOpen = false,
 ```
+</diff>
 
-This diff is medium sized and should have no extended commit message.
-
-Example commit message:
-
+<expected>
 feat: sas for multiple storage containers, upload endpoints and expanded settings endpoint
+</expected>
+</example>

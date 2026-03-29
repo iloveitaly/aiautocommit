@@ -125,6 +125,28 @@ This creates a `.aiautocommit/` directory with:
 * `excluded_files.txt`: List of files or glob patterns (e.g., `mise*lock`) to exclude from processing
 * `commit_suffix.txt`: Static suffix to append to commit messages. Useful for trailers.
 
+If you create `.aiautocommit/examples/example_1.md`, `example_2.md`, and so on, they are appended to the prompt in filename order as few-shot examples. Keep them small and use this format:
+
+```text
+<example>
+<context>
+- short|medium|large diff
+- include body: yes|no
+- primary change: one-line intent
+</context>
+
+<diff>
+diff --git ...
+</diff>
+
+<expected>
+feat: concise subject
+
+- optional body bullet
+</expected>
+</example>
+```
+
 ### Lightweight Prompt Extension
 
 If you only want to *extend* the default prompt rather than replace it entirely, create a plain `.aiautocommit` **file** (not a directory) in your repo root. Its contents will be appended to the stock `commit_prompt.txt`:
