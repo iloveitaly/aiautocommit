@@ -6,6 +6,31 @@ from typing import List, Optional, Union
 
 from .log import log
 
+# Git config overrides to ensure clean, parseable diff output regardless of
+# user's local git configuration.
+_GIT_SAFE_CONFIG = [
+    "-c", "color.diff=false",
+    "-c", "color.ui=false",
+    "-c", "diff.noprefix=false",
+    "-c", "diff.mnemonicPrefix=false",
+    "-c", "diff.colorMoved=false",
+    "-c", "core.pager=",
+]
+
+# --no-ext-diff disables GIT_EXTERNAL_DIFF and diff.external config, which
+# would otherwise replace the output with an external tool's format.
+GIT_SAFE_DIFF_FLAGS = ["--no-ext-diff"]
+
+
+def safe_git_cmd() -> list[str]:
+    """Return a base git command with user config overrides applied."""
+    return ["git", *_GIT_SAFE_CONFIG]
+
+
+def safe_git_diff_cmd() -> list[str]:
+    """Return a base git diff --staged command with user config overrides applied."""
+    return [*safe_git_cmd(), "diff", *GIT_SAFE_DIFF_FLAGS, "--staged"]
+
 
 @contextmanager
 def time_it(name: str):

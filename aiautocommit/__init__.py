@@ -72,7 +72,7 @@ from pydantic_ai.exceptions import ModelAPIError, ModelHTTPError  # noqa: E402
 from .difftastic import get_difftastic_diff  # noqa: E402
 from .internet import wait_for_internet_connection  # noqa: E402
 from .log import log  # noqa: E402
-from .utils import run_command, time_it  # noqa: E402
+from .utils import GIT_SAFE_DIFF_FLAGS, run_command, safe_git_cmd, safe_git_diff_cmd, time_it  # noqa: E402
 
 
 def is_local_source_checkout() -> bool:
@@ -281,12 +281,8 @@ def get_diff(ignore_whitespace=True, use_difftastic=False):
         return get_difftastic_diff(EXCLUDED_FILES)
 
     # Standard git diff (existing implementation)
-    arguments = [
-        "git",
-        "--no-pager",
-        "diff",
-        "--staged",
-    ]
+    arguments = safe_git_diff_cmd()
+
     if ignore_whitespace:
         arguments += [
             "--ignore-space-change",
@@ -516,7 +512,7 @@ def main():
 
 def get_staged_files() -> List[str]:
     """Get a list of all staged files."""
-    result = run_command(["git", "diff", "--staged", "--name-only"])
+    result = run_command([*safe_git_diff_cmd(), "--name-only"])
     return result.stdout.strip().splitlines()
 
 
@@ -715,7 +711,7 @@ def debug_prompt(sha, message):
     """
     configure_prompts()
 
-    diff_cmd = ["git", "show", sha, "--pretty="]
+    diff_cmd = [*safe_git_cmd(), "show", *GIT_SAFE_DIFF_FLAGS, sha, "--pretty="]
     diff_output = run_command(diff_cmd).stdout
 
     commit_msg_cmd = ["git", "log", "--format=%B", "-n", "1", sha]
