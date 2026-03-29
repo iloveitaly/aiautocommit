@@ -69,7 +69,6 @@ import click  # noqa: E402
 from pydantic_ai import Agent  # noqa: E402
 from pydantic_ai.exceptions import ModelAPIError, ModelHTTPError  # noqa: E402
 
-from .difftastic import get_difftastic_diff  # noqa: E402
 from .internet import wait_for_internet_connection  # noqa: E402
 from .log import log  # noqa: E402
 from .utils import (
@@ -274,22 +273,7 @@ def sort_git_diff(diff_str: str) -> str:
     return "\n".join("\n".join(section) for section in sorted_sections)
 
 
-def get_diff(ignore_whitespace=True, use_difftastic=False):
-    """
-    Generate diff for staged changes.
-
-    Args:
-        ignore_whitespace: If True, ignore whitespace changes (git diff only)
-        use_difftastic: If True, use difftastic for syntax-aware diff
-
-    Returns:
-        Diff string, using difftastic if requested, otherwise standard git diff
-    """
-    # Use difftastic if requested (caller should verify availability first)
-    if use_difftastic:
-        return get_difftastic_diff(EXCLUDED_FILES)
-
-    # Standard git diff (existing implementation)
+def get_diff(ignore_whitespace=True):
     arguments = safe_git_diff_cmd()
 
     if ignore_whitespace:
@@ -544,13 +528,7 @@ def get_staged_files() -> List[str]:
     type=click.Path(exists=True, file_okay=False, dir_okay=True),
     help="specify custom config directory",
 )
-@click.option(
-    "--difftastic",
-    is_flag=True,
-    default=False,
-    help="use difftastic for syntax-aware diff analysis (requires difftastic to be installed)",
-)
-def commit(print_message, output_file, config_dir, difftastic):
+def commit(print_message, output_file, config_dir):
     """
     Generate commit message from git diff.
     """
@@ -563,22 +541,8 @@ def commit(print_message, output_file, config_dir, difftastic):
     with time_it("overall_execution"):
         configure_prompts(config_dir)
 
-        # Support environment variable to enable difftastic by default
-        use_difftastic = difftastic or os.environ.get(
-            "AIAUTOCOMMIT_DIFFTASTIC", ""
-        ).lower() in ("1", "true", "yes")
-
-        # Check if difftastic is requested but not available
-        if use_difftastic and not shutil.which("difft"):
-            log.warning(
-                "difftastic was requested but is not installed, falling back to standard git diff"
-            )
-            use_difftastic = False
-
         try:
-            staged_diff = get_diff(
-                ignore_whitespace=False, use_difftastic=use_difftastic
-            )
+            staged_diff = get_diff(ignore_whitespace=False)
 
             if not staged_diff:
                 # If no staged diff (likely due to exclusions), check if we have any staged files

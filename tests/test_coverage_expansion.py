@@ -14,7 +14,6 @@ from aiautocommit import (
 from aiautocommit.internet import wait_for_internet_connection
 from aiautocommit.utils import run_command
 from aiautocommit import sort_git_diff, get_diff_size
-from aiautocommit.difftastic import get_difftastic_diff
 
 
 def test_is_reversion_revert_head(git_repo):
@@ -184,38 +183,6 @@ def test_wait_for_internet_connection_failure():
                 wait_for_internet_connection()
 
 
-def test_get_difftastic_diff_no_binary():
-    with patch("shutil.which", return_value=None):
-        with pytest.raises(FileNotFoundError):
-            get_difftastic_diff()
-
-
-def test_get_difftastic_diff_success():
-    with patch("shutil.which", return_value="/usr/local/bin/difft"):
-        mock_result = MagicMock()
-        mock_result.returncode = 0
-        mock_result.stdout = "difftastic output"
-        with patch(
-            "aiautocommit.difftastic.run_command", return_value=mock_result
-        ) as mock_run:
-            output = get_difftastic_diff(excluded_files=["*.lock"])
-            assert output == "difftastic output"
-            args, kwargs = mock_run.call_args
-            assert kwargs["env"]["GIT_EXTERNAL_DIFF"] == "/usr/local/bin/difft"
-            assert ":(exclude)***.lock" in args[0]
-
-
-def test_get_difftastic_diff_error():
-    with patch("shutil.which", return_value="/usr/local/bin/difft"):
-        mock_result = MagicMock()
-        mock_result.returncode = 2
-        mock_result.stdout = ""
-        mock_result.stderr = "error"
-        with patch("aiautocommit.difftastic.run_command", return_value=mock_result):
-            with pytest.raises(subprocess.CalledProcessError):
-                get_difftastic_diff()
-
-
 def test_run_command_error():
     with pytest.raises(subprocess.CalledProcessError):
         run_command(["false"], check=True)
@@ -329,18 +296,6 @@ def test_commit_no_internet(runner, git_repo):
             result = runner.invoke(main, ["commit"])
             assert result.exit_code == 0
             assert "No internet connection" in result.output
-
-
-def test_commit_difftastic_missing(runner, git_repo):
-    git_repo.create_file("test.py", "print('hello')")
-    git_repo.git_add("test.py")
-
-    with patch("shutil.which", return_value=None):
-        with patch.dict(os.environ, {"AIAUTOCOMMIT_DIFFTASTIC": "1"}):
-            with patch("aiautocommit.get_diff") as mock_diff:
-                mock_diff.return_value = "diff"
-                runner.invoke(main, ["commit", "--print-message"])
-                assert mock_diff.called
 
 
 def test_commit_empty_message(runner, git_repo):

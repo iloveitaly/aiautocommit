@@ -11,7 +11,6 @@ Yes, there are a lot of these. Main ways this is different:
 
 * Ability to easily customize prompts on a per-repo basis (`.aiautocommit` file or folder)
 * Exclusions (e.g., lock files) that generate messages without hitting LLMs
-* Optional difftastic integration for syntax-aware diffs that improve message quality
 * Support for multiple AI providers via pydantic-ai, with Google Gemini as the default
 * Tastefully written prompts by a real engineer who cares
 
@@ -32,7 +31,6 @@ uvx aiautocommit
 * CLI flag for version checking (`--version`)
 * Does not generate a commit during a merge or reversion (when an existing autogen'd msg exists)
 * **Automatic lock file handling**: lock files (e.g., `uv.lock`, `package-lock.json`) generate conventional messages (e.g., `chore(deps): update uv.lock`) even when they are excluded from the AI prompt.
-* **Optional difftastic integration** for syntax-aware semantic diffs
 
 ## Getting Started
 
@@ -55,14 +53,6 @@ aiautocommit commit --print-message
 ```
 
 Using the CLI directly is the best way to debug and tinker with the project as well.
-
-## Difftastic Integration (Optional)
-
-aiautocommit can optionally use [difftastic](https://github.com/Wilfred/difftastic) for syntax-aware diffs that understand code structure rather than just line-by-line changes. This helps the AI distinguish between refactoring (variable renames, code movement) and actual functional changes, leading to more accurate commit messages. Install with `brew install difftastic` (macOS) or `cargo install difftastic` (Linux/Windows), then enable with:
-
-```shell
-aiautocommit commit --difftastic
-```
 
 ## Automatic Lock File Handling
 
@@ -218,7 +208,6 @@ All environment variables used by `aiautocommit` or its providers can be prefixe
 * `AIAUTOCOMMIT_AI_KEY`: **Universal API key.** `aiautocommit` internally maps this to the correct provider-specific variable (e.g., `GOOGLE_API_KEY`, `OPENAI_API_KEY`) based on your active model.
 * `AIAUTOCOMMIT_MODEL`: AI model to use, in `provider:model` format (default: `gemini:gemini-3-flash-preview`). Examples: `anthropic:claude-3-5-sonnet-latest`, `openai:gpt-4o`.
 * `AIAUTOCOMMIT_CONFIG`: Custom config directory path
-* `AIAUTOCOMMIT_DIFFTASTIC`: Enable difftastic for syntax-aware diffs (set to "1", "true", or "yes")
 * `AIAUTOCOMMIT_LOG_LEVEL`: Logging verbosity
 * `AIAUTOCOMMIT_LOG_PATH`: Custom log file path
 
@@ -239,6 +228,10 @@ Common examples:
 * `ollama:llama3` (for local models)
 
 Ensure you have the corresponding API key set in your environment (e.g., `ANTHROPIC_API_KEY` for Anthropic models).
+
+### Difftastic
+
+Difftastic integration was removed. While difftastic produces semantically richer diffs, LLMs do not interpret its output format well, leading to worse commit messages than standard `git diff`.
 
 ## Writing Commit Messages
 
