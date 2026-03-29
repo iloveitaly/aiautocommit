@@ -72,7 +72,13 @@ from pydantic_ai.exceptions import ModelAPIError, ModelHTTPError  # noqa: E402
 from .difftastic import get_difftastic_diff  # noqa: E402
 from .internet import wait_for_internet_connection  # noqa: E402
 from .log import log  # noqa: E402
-from .utils import GIT_SAFE_DIFF_FLAGS, run_command, safe_git_cmd, safe_git_diff_cmd, time_it  # noqa: E402
+from .utils import (
+    GIT_SAFE_DIFF_FLAGS,
+    run_command,
+    safe_git_cmd,
+    safe_git_diff_cmd,
+    time_it,
+)  # noqa: E402
 
 
 def is_local_source_checkout() -> bool:
@@ -202,6 +208,9 @@ def configure_prompts(config_dir=None):
             ],
             key=lambda f: f.name,
         )
+
+        if example_files:
+            COMMIT_PROMPT += "\n\n## Examples\n"
 
         for file in example_files:
             log.debug(f"Adding example from {file}")
