@@ -1,6 +1,6 @@
 [project]
 name = "aiautocommit"
-version = "0.18.0"
+version = "0.19.0"
 description = "AI generated commit messages"
 keywords = ["git", "commit", "automation", "ai", "openai", "gemini", "anthropic"]
 readme = "README.md"

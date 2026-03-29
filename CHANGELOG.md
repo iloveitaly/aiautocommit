@@ -7,6 +7,24 @@
 
 
 
+## [0.19.0](https://github.com/iloveitaly/aiautocommit/compare/v0.18.0...v0.19.0) (2026-03-29)
+
+
+### Features
+
+* add header to examples in commit prompt ([5e4d5ad](https://github.com/iloveitaly/aiautocommit/commit/5e4d5adf324a81fd81f0cdca078e4ae3bb3857ec))
+
+
+### Bug Fixes
+
+* ensure consistent git output by disabling custom user configs ([a7a417b](https://github.com/iloveitaly/aiautocommit/commit/a7a417b991932c9a5385215b50aa4db0ae3a5648))
+
+
+### Documentation
+
+* update example format and documentation in README ([9fff2be](https://github.com/iloveitaly/aiautocommit/commit/9fff2bea8782c29169708da839002533782340d8))
+* update feature descriptions and lock file handling in readme ([d13795a](https://github.com/iloveitaly/aiautocommit/commit/d13795addacfccca7b139a17e5422bad0b69a57e))
+
 ## [0.18.0](https://github.com/iloveitaly/aiautocommit/compare/v0.17.0...v0.18.0) (2026-03-24)
 
 
