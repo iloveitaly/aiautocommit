@@ -184,6 +184,12 @@ def configure_prompts(config_dir=None):
     else:
         log.debug(f"'commit_prompt.txt' does not exist in {config_dir}")
 
+    # A plain .aiautocommit file (not a directory) lets developers extend the stock prompt without fully replacing it
+    local_append_file = Path(LOCAL_REPO_AUTOCOMMIT_DIR_NAME)
+    if local_append_file.is_file():
+        log.debug("found .aiautocommit file, appending to prompt")
+        COMMIT_PROMPT += "\n\n" + local_append_file.read_text().strip()
+
     examples_dir = config_dir / "examples"
     if examples_dir.exists():
         log.debug("Loading examples")
@@ -223,12 +229,6 @@ def configure_prompts(config_dir=None):
         COMMIT_SUFFIX = "\n\n\n" + commit_suffix_file.read_text().strip()
     else:
         log.debug(f"'{COMMIT_SUFFIX_FILE}' does not exist in {config_dir.absolute()}")
-
-    # A plain .aiautocommit file (not a directory) lets developers extend the stock prompt without fully replacing it
-    local_append_file = Path(LOCAL_REPO_AUTOCOMMIT_DIR_NAME)
-    if local_append_file.is_file():
-        log.debug("found .aiautocommit file, appending to prompt")
-        COMMIT_PROMPT += "\n\n" + local_append_file.read_text().strip()
 
 
 def get_diff_size(section: List[str]) -> int:
