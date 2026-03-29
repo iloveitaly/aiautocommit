@@ -9,12 +9,18 @@ from .log import log
 # Git config overrides to ensure clean, parseable diff output regardless of
 # user's local git configuration.
 _GIT_SAFE_CONFIG = [
-    "-c", "color.diff=false",
-    "-c", "color.ui=false",
-    "-c", "diff.noprefix=false",
-    "-c", "diff.mnemonicPrefix=false",
-    "-c", "diff.colorMoved=false",
-    "-c", "core.pager=",
+    "-c",
+    "color.diff=false",
+    "-c",
+    "color.ui=false",
+    "-c",
+    "diff.noprefix=false",
+    "-c",
+    "diff.mnemonicPrefix=false",
+    "-c",
+    "diff.colorMoved=false",
+    "-c",
+    "core.pager=",
 ]
 
 # --no-ext-diff disables GIT_EXTERNAL_DIFF and diff.external config, which

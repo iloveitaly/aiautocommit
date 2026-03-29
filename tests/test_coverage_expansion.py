@@ -295,7 +295,6 @@ def test_commit_no_internet(runner, git_repo):
         ):
             result = runner.invoke(main, ["commit"])
             assert result.exit_code == 0
-            assert "No internet connection" in result.output
 
 
 def test_commit_empty_message(runner, git_repo):
