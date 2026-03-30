@@ -16,7 +16,7 @@ wheels = [
 
 [[package]]
 name = "aiautocommit"
-version = "0.18.0"
+version = "0.19.0"
 source = { editable = "." }
 dependencies = [
     { name = "backoff" },
@@ -2441,14 +2441,6 @@ wheels = [
 ]
 
 [[package]]
-name = "python-decouple-typed"
-version = "3.11.0"
-source = { registry = "https://pypi.org/simple" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/9d/ca/fc5a6119146651cbfbb4aae333a2e6f69844161092c450b10e97064f5e75/python_decouple_typed-3.11.0-py3-none-any.whl", hash = "sha256:967665073aec7a861844e0d9d21768324d3d819311574702cf5be7403a18da58", size = 11440, upload-time = "2023-12-17T14:43:22.043Z" },
-]
-
-[[package]]
 name = "python-dotenv"
 version = "1.2.2"
 source = { registry = "https://pypi.org/simple" }
@@ -2875,17 +2867,16 @@ wheels = [
 
 [[package]]
 name = "structlog-config"
-version = "0.12.3"
+version = "0.12.4"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "orjson" },
     { name = "pytest-plugin-utils" },
-    { name = "python-decouple-typed" },
     { name = "structlog" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/52/3a/320745fcf26a261006873a1edc2152667fd7291ccd5555c42c2b79adf9bd/structlog_config-0.12.3.tar.gz", hash = "sha256:14d0751e51fe583c6c05da63b4070599947557f55a3b8f333bbd5cc5b875adae", size = 27461, upload-time = "2026-03-28T19:04:46.67Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e4/22/ad28a63ff9108b76366e5c40e01b663caddc9b9582fa0df0be3c656de4be/structlog_config-0.12.4.tar.gz", hash = "sha256:d6216438c5d8b989802a28528573aa7612ae2d112684d8a8a914a18255a11d84", size = 28203, upload-time = "2026-03-29T21:36:42.703Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/96/a6/9d376cf304d26b2357e00f30bdf8a1b84a79ca2a3c5ab24593f23f164528/structlog_config-0.12.3-py3-none-any.whl", hash = "sha256:cb72a2eb4297b67878a77dc03d95b31bf01c081e3ed403f320f9500e4147913b", size = 34762, upload-time = "2026-03-28T19:04:45.811Z" },
+    { url = "https://files.pythonhosted.org/packages/38/d0/5e7e21b6c58871ddd55daae695edd07415645ac836adaadf336f545d2cee/structlog_config-0.12.4-py3-none-any.whl", hash = "sha256:9bb1cf0c9077eb8fccae6aa58d390a8053a6d80a7e3b3273896e29ca4d9f7f65", size = 35565, upload-time = "2026-03-29T21:36:41.698Z" },
 ]
 
 [[package]]
