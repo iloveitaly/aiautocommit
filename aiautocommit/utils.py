@@ -89,3 +89,12 @@ def run_command(
         if e.stderr:
             log.debug(f"Stderr: {e.stderr.strip()}")
         raise
+
+
+def get_current_branch() -> Optional[str]:
+    """Get the name of the current git branch."""
+    try:
+        result = run_command(["git", "rev-parse", "--abbrev-ref", "HEAD"], check=True)
+        return result.stdout.strip()
+    except Exception:
+        return None

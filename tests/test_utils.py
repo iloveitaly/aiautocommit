@@ -1,6 +1,6 @@
 import subprocess
 import pytest
-from aiautocommit.utils import run_command
+from aiautocommit.utils import get_current_branch, run_command
 
 
 def test_run_command_success():
@@ -13,3 +13,9 @@ def test_run_command_failure():
 
     with pytest.raises(subprocess.CalledProcessError):
         run_command(["ls", "/non-existent-directory-12345"], check=True)
+
+
+def test_get_current_branch():
+    branch = get_current_branch()
+    # In a git repo, this should return something
+    assert branch is not None

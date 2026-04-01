@@ -327,3 +327,24 @@ def test_static_commit_terraform(runner, git_repo):
 
     assert result.exit_code == 0
     assert "chore(deps): update .terraform.lock.hcl" in result.output
+
+
+def test_generate_commit_message_with_branch():
+    from aiautocommit import COMMIT_PROMPT, generate_commit_message
+
+    with patch("aiautocommit.get_current_branch", return_value="feature-branch"):
+        with patch("aiautocommit.complete") as mock_complete:
+            mock_complete.return_value = "AI message"
+            generate_commit_message("some diff")
+
+            # Check the prompt passed to complete
+            args, _ = mock_complete.call_args
+            prompt_arg = args[0]
+
+            assert "## Repo Information" in prompt_arg
+            assert "- Current branch: feature-branch" in prompt_arg
+
+            if "## Examples" in COMMIT_PROMPT:
+                assert prompt_arg.index("## Repo Information") < prompt_arg.index(
+                    "## Examples"
+                )

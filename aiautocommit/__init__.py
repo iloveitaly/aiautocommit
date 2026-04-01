@@ -73,6 +73,7 @@ from .internet import wait_for_internet_connection  # noqa: E402
 from .log import log  # noqa: E402
 from .utils import (  # noqa: E402
     GIT_SAFE_DIFF_FLAGS,
+    get_current_branch,
     run_command,
     safe_git_cmd,
     safe_git_diff_cmd,
@@ -356,7 +357,16 @@ def generate_commit_message(diff):
         log.debug("No commit message generated")
         return ""
 
-    message = complete(COMMIT_PROMPT, diff)
+    branch = get_current_branch()
+    prompt = COMMIT_PROMPT
+    if branch:
+        repo_info = f"## Repo Information\n- Current branch: {branch}\n"
+        if "## Examples" in prompt:
+            prompt = prompt.replace("## Examples", f"{repo_info}\n## Examples")
+        else:
+            prompt = f"{prompt}\n\n{repo_info}"
+
+    message = complete(prompt, diff)
     # If the generated message is empty, do not add the commit suffix.
     if not message.strip() or message.strip() == '""':
         return ""
