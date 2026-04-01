@@ -29,6 +29,7 @@ uvx aiautocommit
 * Pre-commit hook integration
 * Supports custom config directories
 * CLI flag for version checking (`--version`)
+* Automatically includes the current git branch name in the AI prompt for improved context
 * Does not generate a commit during a merge or reversion (when an existing autogen'd msg exists)
 * **Automatic lock file handling**: lock files (e.g., `uv.lock`, `package-lock.json`) generate conventional messages (e.g., `chore(deps): update uv.lock`) even when they are excluded from the AI prompt.
 
