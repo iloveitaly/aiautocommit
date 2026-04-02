@@ -7,6 +7,23 @@
 
 
 
+## [0.20.0](https://github.com/iloveitaly/aiautocommit/compare/v0.19.0...v0.20.0) (2026-04-02)
+
+
+### Features
+
+* include current git branch in commit generation prompt ([3153520](https://github.com/iloveitaly/aiautocommit/commit/3153520d0569c2fd8a67716eb6cb4238167c50e1))
+
+
+### Bug Fixes
+
+* improve output file handling to preserve existing content ([5c44db0](https://github.com/iloveitaly/aiautocommit/commit/5c44db0137e020c0d01abe58e923bd9f25fa897a))
+
+
+### Documentation
+
+* add git branch inclusion to feature list ([b235aa1](https://github.com/iloveitaly/aiautocommit/commit/b235aa1a71143224769956fbaaa2357ea7e7803a))
+
 ## [0.19.0](https://github.com/iloveitaly/aiautocommit/compare/v0.18.0...v0.19.0) (2026-03-29)
 
 
