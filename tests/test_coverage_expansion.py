@@ -368,6 +368,17 @@ def test_commit_with_output_file(runner, git_repo):
         assert Path("out.txt").read_text() == "feat: test"
 
 
+def test_commit_with_existing_output_file(runner, git_repo):
+    git_repo.create_file("test.py", "print('hello')")
+    git_repo.git_add("test.py")
+    out_path = Path("out.txt")
+    out_path.write_text("# existing content")
+    with patch("aiautocommit.generate_commit_message", return_value="feat: test"):
+        result = runner.invoke(main, ["commit", "--output-file", "out.txt"])
+        assert result.exit_code == 0
+        assert out_path.read_text() == "feat: test\n\n# existing content"
+
+
 def test_is_reversion_amend_success_real(git_repo):
     git_repo.create_file("test.txt", "content")
     git_repo.git_add("test.txt")

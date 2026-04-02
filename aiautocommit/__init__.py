@@ -592,9 +592,8 @@ def commit(print_message, output_file, config_dir):
         if output_file:
             if commit_message:
                 out_path = Path(output_file)
-                if commit_message.startswith("#"):
-                    # Prepend to existing Git template
-                    original_content = out_path.read_text() if out_path.exists() else ""
+                original_content = out_path.read_text() if out_path.exists() else ""
+                if original_content:
                     out_path.write_text(f"{commit_message}\n\n{original_content}")
                 else:
                     out_path.write_text(commit_message)
