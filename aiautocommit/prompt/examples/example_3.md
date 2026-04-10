@@ -1,23 +1,5 @@
 <example>
-<context>
-- medium diff
-- include body: no
-- primary change: expand upload flows to support multiple storage targets and expose new related endpoints
-</context>
-
 <diff>
-```diff
-8083521 (17 seconds ago) feat: enhance SAS token generation and add new upload endpoints <Michael Bianco>
-- Introduced `UploadType` enum to support multiple upload scenarios.
-- Updated SAS token generation to handle different upload types.
-- Added new API endpoints for generating signed URLs and handling uploads for example notes and intakes.
-- Updated existing visit audio file upload process to align with new structure.
-- Included doctor information in upload processes to store metadata and queue processing jobs.
-- Modified settings route to fetch and return notes schema for the current doctor.
-
-Generated-by: aiautocommit
-
-
 diff --git a/app/commands/uploads/sas.py b/app/commands/uploads/sas.py
 index cdfde5c..d9d55ab 100644
 --- a/app/commands/uploads/sas.py
@@ -176,10 +158,13 @@ index a31db12..d487410 100644
  export default function VisitNoteViewer({
    note,
    defaultOpen = false,
-```
 </diff>
-
-<expected>
+<diffAnalysis>
+- medium diff
+- omit body
+- primary change: expand upload flows to support multiple storage targets and expose new related endpoints
+</diffAnalysis>
+<commitMessage>
 feat: sas for multiple storage containers, upload endpoints and expanded settings endpoint
-</expected>
+</commitMessage>
 </example>

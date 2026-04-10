@@ -1,13 +1,5 @@
 <example>
-<context>
-- short diff
-- include body: no
-- ignore comment-only or doc-only changes when secondary
-- primary change: add a helper that extracts a file or folder from a GitHub repository URL
-</context>
-
 <diff>
-```diff
 diff --git a/.git-functions b/.git-functions
 index ba4be51..2bbb33b 100644
 --- a/.git-functions
@@ -55,10 +47,14 @@ index ba4be51..2bbb33b 100644
 +  curl -L $tarball | tar xz --strip=1 "$foldername/$filepath"
 +}
 \ No newline at end of file
-```
 </diff>
-
-<expected>
+<diffAnalysis>
+- short diff
+- omit body
+- ignore comment-only or doc-only changes when secondary
+- primary change: add a helper that extracts a file or folder from a GitHub repository URL
+</diffAnalysis>
+<commitMessage>
 feat: git-extract function to download a folder or file from a git repo
-</expected>
+</commitMessage>
 </example>

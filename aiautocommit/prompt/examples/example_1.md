@@ -1,12 +1,5 @@
 <example>
-<context>
-- short diff
-- include body: no
-- primary change: fix tmux session creation when tmux is only available via its full path
-</context>
-
 <diff>
-```diff
 diff --git c/.tmux-shell.sh i/.tmux-shell.sh
 index a34433f..01d2e9f 100755
 --- c/.tmux-shell.sh
@@ -21,10 +14,13 @@ index a34433f..01d2e9f 100755
 +    /opt/homebrew/bin/tmux new -ADs "$session"
      break
    fi
-```
 </diff>
-
-<expected>
+<diffAnalysis>
+- short diff
+- omit body
+- primary change: fix tmux session creation when tmux is only available via its full path
+</diffAnalysis>
+<commitMessage>
 fix: use full path to tmux in .tmux-shell.sh
-</expected>
+</commitMessage>
 </example>
