@@ -241,6 +241,7 @@ Some guides to writing commit messages:
 * https://cbea.ms/git-commit/
 * https://groups.google.com/g/golang-dev/c/6M4dmZWpFaI
 * https://github.com/RomuloOliveira/commit-messages-guide
+* https://gist.github.com/qoomon/5dfcdf8eec66a051ecd85625518cfd13
 
 ## Credits
 
