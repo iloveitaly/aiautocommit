@@ -71,6 +71,7 @@ from pydantic_ai.exceptions import ModelAPIError, ModelHTTPError  # noqa: E402
 
 from .internet import wait_for_internet_connection  # noqa: E402
 from .log import log  # noqa: E402
+from .pull_request import get_pull_request_context  # noqa: E402
 from .utils import (  # noqa: E402
     GIT_SAFE_DIFF_FLAGS,
     get_current_branch,
@@ -136,7 +137,8 @@ EXCLUDED_FILES = []
 COMMIT_SUFFIX = ""
 
 # characters, not tokens
-PROMPT_CUTOFF = 10_000
+_prompt_cutoff_env = os.environ.get("AIAUTOCOMMIT_PROMPT_CUTOFF", "10000")
+PROMPT_CUTOFF = None if _prompt_cutoff_env == "*" else int(_prompt_cutoff_env)
 
 LOCK_FILE_MESSAGES = {
     "uv.lock": "chore(deps): update uv.lock",
@@ -302,7 +304,7 @@ def get_diff(ignore_whitespace=True):
 
 @time_it("ai_generation")
 def complete(prompt, diff):
-    if len(diff) > PROMPT_CUTOFF:
+    if PROMPT_CUTOFF is not None and len(diff) > PROMPT_CUTOFF:
         log.info(
             f"Prompt length ({len(diff)}) exceeds the maximum allowed length, truncating."
         )
@@ -361,6 +363,11 @@ def generate_commit_message(diff):
     prompt = COMMIT_PROMPT
     if branch:
         repo_info = f"## Repo Information\n- Current branch: {branch}\n"
+        
+        pr_context = get_pull_request_context(branch)
+        if pr_context:
+            repo_info += f"\n{pr_context}\n"
+
         if "## Examples" in prompt:
             prompt = prompt.replace("## Examples", f"{repo_info}\n## Examples")
         else:
