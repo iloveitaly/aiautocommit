@@ -363,7 +363,7 @@ def generate_commit_message(diff):
     prompt = COMMIT_PROMPT
     if branch:
         repo_info = f"## Repo Information\n- Current branch: {branch}\n"
-        
+
         pr_context = get_pull_request_context(branch)
         if pr_context:
             repo_info += f"\n{pr_context}\n"

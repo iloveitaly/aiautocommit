@@ -11,12 +11,14 @@ from .utils import is_default_branch, run_command
 
 # Cache durations in seconds
 PR_CONTENT_CACHE_TTL = 7200  # 2 hours
-NEGATIVE_CACHE_TTL = 3600    # 1 hour
+NEGATIVE_CACHE_TTL = 3600  # 1 hour
 
 
 def get_git_dir() -> Optional[Path]:
     try:
-        return Path(run_command(["git", "rev-parse", "--git-dir"], check=True).stdout.strip())
+        return Path(
+            run_command(["git", "rev-parse", "--git-dir"], check=True).stdout.strip()
+        )
     except Exception:
         return None
 
@@ -55,7 +57,11 @@ def get_pull_request_context(branch: str) -> Optional[str]:
     Fetch the pull request context for the given branch.
     Requires AIAUTOCOMMIT_INCLUDE_PR_CONTEXT environment variable to be truthy.
     """
-    if os.environ.get("AIAUTOCOMMIT_INCLUDE_PR_CONTEXT", "false").lower() not in ("1", "true", "t"):
+    if os.environ.get("AIAUTOCOMMIT_INCLUDE_PR_CONTEXT", "false").lower() not in (
+        "1",
+        "true",
+        "t",
+    ):
         return None
 
     if not branch:
@@ -105,13 +111,15 @@ def get_pull_request_context(branch: str) -> Optional[str]:
 
     # Fallback: Query GitHub API via gh
     if not shutil.which("gh"):
-        log.error("GitHub CLI (gh) is not installed or not in PATH, but AIAUTOCOMMIT_INCLUDE_PR_CONTEXT is enabled.")
+        log.error(
+            "GitHub CLI (gh) is not installed or not in PATH, but AIAUTOCOMMIT_INCLUDE_PR_CONTEXT is enabled."
+        )
         return None
 
     try:
         # Use branch name if we don't have a PR number
         target = pr_number if pr_number else branch
-        
+
         log.debug(f"Querying GitHub API for PR info on {target}")
         result = run_command(
             ["gh", "pr", "view", target, "--json", "number,title,body"],
@@ -132,11 +140,11 @@ def get_pull_request_context(branch: str) -> Optional[str]:
                 )
 
             md_content = f"<pull_request_title>PR #{number}: {title}</pull_request_title>\n<pull_request_description>\n{body}\n</pull_request_description>\n"
-            
+
             # Cache the PR description
             cache_file = cache_dir / f"{number}_pull_request.md"
             cache_file.write_text(md_content, encoding="utf-8")
-            
+
             return md_content
         else:
             # PR not found or error, create negative cache
