@@ -98,3 +98,28 @@ def get_current_branch() -> Optional[str]:
         return result.stdout.strip()
     except Exception:
         return None
+
+
+def get_default_branch() -> str | None:
+    """Detect the repo's default branch via the remote HEAD ref."""
+    result = run_command(
+        ["git", "symbolic-ref", "--short", "refs/remotes/origin/HEAD"],
+        check=False,
+    )
+    if result.returncode != 0:
+        return None
+
+    # Returns e.g. "origin/main" — strip the remote prefix
+    ref = result.stdout.strip()
+    return ref.split("/", 1)[-1] if "/" in ref else ref
+
+
+def is_default_branch(branch: str | None) -> bool:
+    if not branch:
+        return False
+
+    default = get_default_branch()
+    if default:
+        return branch == default
+
+    return branch in ("main", "master", "trunk", "develop")
