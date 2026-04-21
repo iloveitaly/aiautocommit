@@ -68,6 +68,25 @@ However, if you stage *only* lock files, aiautocommit will detect them and autom
 
 If any non-lock files are staged alongside them, the AI will ignore the lock files (based on your exclusions) and focus on the code changes.
 
+## Pull Request Context
+
+To provide even better commit messages, `aiautocommit` can automatically pull in the title and body of the pull request associated with your current branch. This gives the AI full context of the "why" behind your changes.
+
+This feature is **disabled by default** to keep execution fast. To enable it:
+
+```shell
+export AIAUTOCOMMIT_INCLUDE_PR_CONTEXT=true
+```
+
+**How it works:**
+1. **Detection**: It checks your local git config or tracking branch for a PR number. If not found, it uses the GitHub CLI (`gh`) to find an open PR for the current branch.
+2. **Caching**: Once fetched, the PR content is cached in `.git/aiautocommit/<PR_NUMBER>_pull_request.md` for **2 hours**.
+3. **Speed**: If no PR is found, a "not found" marker is cached for **1 hour** to prevent repeated network calls on local-only branches.
+4. **Manual Edits**: You can manually edit the cached Markdown file in `.git/aiautocommit/` if you want to refine the context sent to the AI.
+
+**Requirements**:
+- [GitHub CLI (`gh`)](https://cli.github.com/) installed and authenticated.
+
 ## Customization
 
 ### Logging
