@@ -7,6 +7,13 @@
 
 
 
+## [0.20.1](https://github.com/iloveitaly/aiautocommit/compare/v0.20.0...v0.20.1) (2026-04-27)
+
+
+### Documentation
+
+* Add link to commit message guidelines gist ([a074269](https://github.com/iloveitaly/aiautocommit/commit/a074269804b5ea6d97cb16df1c642fa00ac7d8b2))
+
 ## [0.20.0](https://github.com/iloveitaly/aiautocommit/compare/v0.19.0...v0.20.0) (2026-04-02)
 
 
