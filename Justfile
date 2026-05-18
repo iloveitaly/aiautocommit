@@ -14,7 +14,11 @@ PYTEST_COV_PARAMS := "--cov-report=html:tmp/htmlcov"
 docker_down:
 	docker compose down
 
-# Run tests
+upgrade:
+    mise self-update
+    mise upgrade --local
+    uv sync -U
+
 test:
     uv run pytest -v {{PYTEST_COV_PARAMS}}
 

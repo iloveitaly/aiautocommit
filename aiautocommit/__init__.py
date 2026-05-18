@@ -6,7 +6,8 @@ import subprocess
 import tempfile
 import warnings
 from pathlib import Path
-from typing import List
+
+from .version import __version__
 
 
 def map_ai_key(ai_key: str, model_name: str):
@@ -242,7 +243,7 @@ def configure_prompts(config_dir=None):
         log.debug(f"'{COMMIT_SUFFIX_FILE}' does not exist in {config_dir.absolute()}")
 
 
-def get_diff_size(section: List[str]) -> int:
+def get_diff_size(section: list[str]) -> int:
     """Calculate the number of changed lines in a diff section."""
     try:
         i = next(j for j, line in enumerate(section) if line.startswith("@@"))
@@ -258,9 +259,9 @@ def sort_git_diff(diff_str: str) -> str:
     if not diff_str:
         return diff_str
 
-    lines: List[str] = diff_str.splitlines()
-    sections: List[List[str]] = []
-    current_section: List[str] = []
+    lines: list[str] = diff_str.splitlines()
+    sections: list[list[str]] = []
+    current_section: list[str] = []
 
     for line in lines:
         if line.startswith("diff --git"):
@@ -272,7 +273,7 @@ def sort_git_diff(diff_str: str) -> str:
     if current_section:
         sections.append(current_section)
 
-    sorted_sections: List[List[str]] = sorted(sections, key=get_diff_size)
+    sorted_sections: list[list[str]] = sorted(sections, key=get_diff_size)
     return "\n".join("\n".join(section) for section in sorted_sections)
 
 
@@ -520,7 +521,7 @@ def main():
         ctx.invoke(commit)
 
 
-def get_staged_files() -> List[str]:
+def get_staged_files() -> list[str]:
     """Get a list of all staged files."""
     result = run_command([*safe_git_diff_cmd(), "--name-only"])
     return result.stdout.strip().splitlines()

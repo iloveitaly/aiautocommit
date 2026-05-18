@@ -23,8 +23,9 @@ all-providers = [
 [project.scripts]
 aiautocommit = "aiautocommit:main"
 
+
 [build-system]
-requires = ["uv_build>=0.10.0"]
+requires = ["uv_build>=0.11.0,<0.12"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
@@ -59,6 +60,3 @@ source = ["aiautocommit"]
 
 [tool.coverage.report]
 fail_under = 50
-
-[tool.ruff]
-extend-exclude = ["playground.py", "playground/"]
