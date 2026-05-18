@@ -619,7 +619,7 @@ def commit(print_message, output_file, config_dir):
     is_flag=True,
     help="Overwrite existing pre-commit hook if it exists",
 )
-def install_pre_commit(overwrite):
+def install(overwrite):
     """Install pre-commit script into git hooks directory"""
     git_result = run_command(
         ["git", "rev-parse", "--git-path", "hooks"],
@@ -630,7 +630,6 @@ def install_pre_commit(overwrite):
     target_hooks_dir.mkdir(exist_ok=True, parents=True)
 
     commit_msg_git_hook_name = "prepare-commit-msg"
-    pre_commit = target_hooks_dir / commit_msg_git_hook_name
     pre_commit = target_hooks_dir / commit_msg_git_hook_name
     pre_commit_script = Path(__file__).parent / commit_msg_git_hook_name
 
@@ -643,6 +642,25 @@ def install_pre_commit(overwrite):
             "pre-commit hook already exists. Here's the contents we would have written:\n"
         )
         click.echo(pre_commit_script.read_text())
+
+
+@main.command()
+def uninstall():
+    """Remove pre-commit script from git hooks directory"""
+    git_result = run_command(
+        ["git", "rev-parse", "--git-path", "hooks"],
+        check=True,
+    )
+
+    target_hooks_dir = Path(git_result.stdout.strip())
+    commit_msg_git_hook_name = "prepare-commit-msg"
+    pre_commit = target_hooks_dir / commit_msg_git_hook_name
+
+    if pre_commit.exists():
+        pre_commit.unlink()
+        click.echo("Removed pre-commit hook")
+    else:
+        click.echo("pre-commit hook not found")
 
 
 @main.command()

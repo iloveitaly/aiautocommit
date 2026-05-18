@@ -75,16 +75,37 @@ def test_check_lock_files_mixed(runner, git_repo):
     assert "Generated-by: aiautocommit" in result
 
 
-def test_install_pre_commit(runner, git_repo):
+def test_install(runner, git_repo):
     with runner.isolated_filesystem():
         mixin = GitTestMixin()
         mixin.init_repo()
         # Create a dummy .git directory structure if not fully present
         # actually init_repo should handle it
-        result = runner.invoke(main, ["install-pre-commit"])
+        result = runner.invoke(main, ["install"])
         assert result.exit_code == 0
         assert "Installed pre-commit hook" in result.output
         assert Path(".git/hooks/prepare-commit-msg").exists()
+
+
+def test_uninstall(runner, git_repo):
+    with runner.isolated_filesystem():
+        mixin = GitTestMixin()
+        mixin.init_repo()
+
+        # First install the hook
+        runner.invoke(main, ["install"])
+        assert Path(".git/hooks/prepare-commit-msg").exists()
+
+        # Then uninstall it
+        result = runner.invoke(main, ["uninstall"])
+        assert result.exit_code == 0
+        assert "Removed pre-commit hook" in result.output
+        assert not Path(".git/hooks/prepare-commit-msg").exists()
+
+        # Try to uninstall again
+        result2 = runner.invoke(main, ["uninstall"])
+        assert result2.exit_code == 0
+        assert "pre-commit hook not found" in result2.output
 
 
 def test_debug_prompt(runner, git_repo):
