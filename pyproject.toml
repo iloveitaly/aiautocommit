@@ -9,7 +9,7 @@ dependencies = [
     "structlog-config>=0.6.0",
     "backoff>=2.2.1",
     "click>=8.1.7",
-    "pydantic-ai-slim[openai,anthropic,vertexai,google]>=0.0.18",
+    "pydantic-ai-slim[anthropic,google,openai,vertexai]>=0.0.18",
 ]
 authors = [{ name = "Michael Bianco", email = "mike@mikebian.co" }]
 urls = { "Repository" = "https://github.com/iloveitaly/aiautocommit" }
