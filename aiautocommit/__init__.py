@@ -56,7 +56,7 @@ def update_env_variables():
     # Handle universal AIAUTOCOMMIT_AI_KEY mapping
     if ai_key := os.environ.get("AIAUTOCOMMIT_AI_KEY"):
         model_name = os.environ.get(
-            "AIAUTOCOMMIT_MODEL", "google:gemini-3-flash-preview"
+            "AIAUTOCOMMIT_MODEL", "google:gemini-3.1-flash-lite-preview"
         )
         map_ai_key(ai_key, model_name)
 
@@ -123,7 +123,7 @@ EXCLUSIONS_FILE = "excluded_files.txt"
 COMMIT_SUFFIX_FILE = "commit_suffix.txt"
 
 # https://ai.pydantic.dev/models/overview
-MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "google:gemini-3-flash-preview")
+MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "google:gemini-3.1-flash-lite-preview")
 
 COMMIT_PROMPT = ""
 EXCLUDED_FILES = []
