@@ -9,14 +9,14 @@ dependencies = [
     "structlog-config>=0.6.0",
     "backoff>=2.2.1",
     "click>=8.1.7",
-    "pydantic-ai-slim[anthropic,google,openai,vertexai]>=0.0.18",
+    "pydantic-ai-slim[anthropic,google,openai,vertexai]>=1.97.0",
 ]
 authors = [{ name = "Michael Bianco", email = "mike@mikebian.co" }]
 urls = { "Repository" = "https://github.com/iloveitaly/aiautocommit" }
 
 [project.optional-dependencies]
 all-providers = [
-    "pydantic-ai>=0.0.18",
+    "pydantic-ai>=1.97.0",
 ]
 
 # additional packaging information: https://packaging.python.org/en/latest/specifications/core-metadata/#license
