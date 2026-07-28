@@ -39,6 +39,7 @@ Set your API key (works for any provider, Google Gemini is the default):
 
 ```shell
 export AIAUTOCOMMIT_AI_KEY=<YOUR API KEY>
+export AIAUTOCOMMIT_MODEL=google:gemini-3.5-flash-lite
 ```
 
 Stage your changes and run aiautocommit:
@@ -172,7 +173,7 @@ This is the simplest way to add project-specific instructions without duplicatin
 To automatically generate commit messages during git commits:
 
 ```
-aiautocommit install-pre-commit
+aiautocommit install
 ```
 
 [Learn more about git hooks here.](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks)
@@ -226,7 +227,7 @@ prepare-commit-msg:
 All environment variables used by `aiautocommit` or its providers can be prefixed with `AIAUTOCOMMIT_` to take precedence over the standard variable.
 
 * `AIAUTOCOMMIT_AI_KEY`: **Universal API key.** `aiautocommit` internally maps this to the correct provider-specific variable (e.g., `GOOGLE_API_KEY`, `OPENAI_API_KEY`) based on your active model.
-* `AIAUTOCOMMIT_MODEL`: AI model to use, in `provider:model` format (default: `gemini:gemini-3-flash-preview`). Examples: `anthropic:claude-3-5-sonnet-latest`, `openai:gpt-4o`.
+* `AIAUTOCOMMIT_MODEL`: AI model to use, in `provider:model` format (default: `google:gemini-3.5-flash-lite`). Examples: `anthropic:claude-3-5-sonnet-latest`, `openai:gpt-4o`.
 * `AIAUTOCOMMIT_CONFIG`: Custom config directory path
 * `AIAUTOCOMMIT_LOG_LEVEL`: Logging verbosity
 * `AIAUTOCOMMIT_LOG_PATH`: Custom log file path
@@ -241,10 +242,9 @@ Google Gemini models use "thinking" (Chain of Thought) with a minimal budget to 
 
 Common examples:
 
-* `gemini:gemini-3-flash-preview` (default)
+* `google:gemini-3.5-flash-lite` (default)
 * `openai:gpt-4o`
 * `anthropic:claude-3-5-sonnet-latest`
-* `gemini:gemini-1.5-pro`
 * `ollama:llama3` (for local models)
 
 Ensure you have the corresponding API key set in your environment (e.g., `ANTHROPIC_API_KEY` for Anthropic models).

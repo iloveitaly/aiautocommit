@@ -1,8 +1,8 @@
-import sys
 import os
-from unittest.mock import patch
+import sys
 from importlib.metadata import PackageNotFoundError
 from pathlib import Path
+from unittest.mock import patch
 
 
 def test_version_unknown():
