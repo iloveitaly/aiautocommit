@@ -30,10 +30,10 @@ class log_execution_time(ContextDecorator):
 
     # NOTE exit is still called even if an exception is raised
     def __exit__(self, _type, _value, _traceback):
-        elapsed = perf_counter() - self.time
+        elapsed = round(perf_counter() - self.time, 4)
 
         log.debug(
-            f"{self.msg} took {elapsed:.3f} seconds",
+            self.msg,
             execution_time=elapsed,
             function_name=self.msg,
         )
