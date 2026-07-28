@@ -7,6 +7,22 @@
 
 
 
+## [0.22.0](https://github.com/iloveitaly/aiautocommit/compare/v0.21.0...v0.22.0) (2026-07-28)
+
+
+### Features
+
+* update default model to google:gemini-3.5-flash-lite ([956d608](https://github.com/iloveitaly/aiautocommit/commit/956d6087df9df752ef0b23f7b4dc06243395d267))
+* update default model to google:gemini-3.5-flash-lite ([#67](https://github.com/iloveitaly/aiautocommit/issues/67)) ([4a8454a](https://github.com/iloveitaly/aiautocommit/commit/4a8454a7e5beb9820667ad0b7c8e2e682a849ced))
+
+
+### Bug Fixes
+
+* preserve Ruff rule baseline ([3fb4bee](https://github.com/iloveitaly/aiautocommit/commit/3fb4bee9841cb7722d204644184b2a0e4e672ec4))
+* **timing:** type message parameter correctly in log decorators ([#69](https://github.com/iloveitaly/aiautocommit/issues/69)) ([13619c1](https://github.com/iloveitaly/aiautocommit/commit/13619c15f94eeee4fdfed597b0a402217907731f))
+* type timing log messages ([13619c1](https://github.com/iloveitaly/aiautocommit/commit/13619c15f94eeee4fdfed597b0a402217907731f))
+* update default Google Gemini model ([4a8454a](https://github.com/iloveitaly/aiautocommit/commit/4a8454a7e5beb9820667ad0b7c8e2e682a849ced))
+
 ## [0.21.0](https://github.com/iloveitaly/aiautocommit/compare/v0.20.0...v0.21.0) (2026-07-28)
 
 
