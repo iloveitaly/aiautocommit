@@ -172,7 +172,7 @@ This is the simplest way to add project-specific instructions without duplicatin
 To automatically generate commit messages during git commits:
 
 ```
-aiautocommit install-pre-commit
+aiautocommit install
 ```
 
 [Learn more about git hooks here.](https://git-scm.com/book/en/v2/Customizing-Git-Git-Hooks)

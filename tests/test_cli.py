@@ -7,6 +7,7 @@ import pytest
 from click.testing import CliRunner
 
 from aiautocommit import check_lock_files, is_reversion, main, update_env_variables
+
 from tests.utils import GitTestMixin
 
 
@@ -195,8 +196,9 @@ def test_configure_prompts_with_examples(runner, git_repo):
 
 
 def test_complete_503_graceful_fallback():
-    from aiautocommit import complete
     from pydantic_ai.exceptions import ModelHTTPError
+
+    from aiautocommit import complete
 
     with patch("aiautocommit.Agent") as mock_agent_class:
         mock_agent = mock_agent_class.return_value
