@@ -7,6 +7,27 @@
 
 
 
+## [0.21.0](https://github.com/iloveitaly/aiautocommit/compare/v0.20.0...v0.21.0) (2026-07-28)
+
+
+### Features
+
+* add support for including pull request context in commits ([e95e03c](https://github.com/iloveitaly/aiautocommit/commit/e95e03c7f210aff7bc2e20540a96f30e51029ef2))
+* add uninstall command for pre-commit hook ([924e382](https://github.com/iloveitaly/aiautocommit/commit/924e38232d502a0c6f53b63a31f280f762e18d0f))
+* detect default branch for smarter repo context ([920741f](https://github.com/iloveitaly/aiautocommit/commit/920741fef644ef773b772f4ffae19b2baf201f85))
+* include pull request context in commit generation prompt ([154c060](https://github.com/iloveitaly/aiautocommit/commit/154c0602e8777562e4fdaee5562a32c874e009c4))
+
+
+### Bug Fixes
+
+* improve example schema to improve prompt performance ([ee9af60](https://github.com/iloveitaly/aiautocommit/commit/ee9af609bd91e613ebd6f426f034dfbbc1371444))
+
+
+### Documentation
+
+* add documentation for PR context feature ([104fe42](https://github.com/iloveitaly/aiautocommit/commit/104fe4226dd6b107b6490bd9cf5f518f5ed7e3bc))
+* Add link to commit message guidelines gist ([a074269](https://github.com/iloveitaly/aiautocommit/commit/a074269804b5ea6d97cb16df1c642fa00ac7d8b2))
+
 ## [0.20.0](https://github.com/iloveitaly/aiautocommit/compare/v0.19.0...v0.20.0) (2026-04-02)
 
 
