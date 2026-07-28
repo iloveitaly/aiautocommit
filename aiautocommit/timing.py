@@ -17,7 +17,7 @@ class log_execution_time(ContextDecorator):
         # Your code here...
     """
 
-    def __init__(self, msg=None):
+    def __init__(self, msg: str):
         """
         :param msg: message to log, normally a function name
         """
@@ -39,7 +39,7 @@ class log_execution_time(ContextDecorator):
         )
 
 
-def log_time(msg=None):
+def log_time(msg: str | None = None):
     """
     Decorator that debug logs the execution time of a function.
 
