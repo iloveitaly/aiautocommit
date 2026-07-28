@@ -4,7 +4,6 @@ import re
 import shutil
 import time
 from pathlib import Path
-from typing import Optional
 
 from .log import log
 from .utils import is_default_branch, run_command
@@ -14,7 +13,7 @@ PR_CONTENT_CACHE_TTL = 7200  # 2 hours
 NEGATIVE_CACHE_TTL = 3600  # 1 hour
 
 
-def get_git_dir() -> Optional[Path]:
+def get_git_dir() -> Path | None:
     try:
         return Path(
             run_command(["git", "rev-parse", "--git-dir"], check=True).stdout.strip()
@@ -23,7 +22,7 @@ def get_git_dir() -> Optional[Path]:
         return None
 
 
-def get_pr_number_from_git_config(branch: str) -> Optional[str]:
+def get_pr_number_from_git_config(branch: str) -> str | None:
     """Check git config for a stored PR number."""
     try:
         result = run_command(
@@ -52,7 +51,7 @@ def get_pr_number_from_git_config(branch: str) -> Optional[str]:
     return None
 
 
-def get_pull_request_context(branch: str) -> Optional[str]:
+def get_pull_request_context(branch: str) -> str | None:
     """
     Fetch the pull request context for the given branch.
     Requires AIAUTOCOMMIT_INCLUDE_PR_CONTEXT environment variable to be truthy.

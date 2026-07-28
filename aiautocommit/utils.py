@@ -1,6 +1,5 @@
 import subprocess
 from pathlib import Path
-from typing import List, Optional, Union
 
 from .log import log
 from .timing import log_execution_time
@@ -38,13 +37,13 @@ def safe_git_diff_cmd() -> list[str]:
 
 
 def run_command(
-    args: List[str],
+    args: list[str],
     check: bool = False,
     capture_output: bool = True,
     text: bool = True,
-    timeout: Optional[float] = None,
-    env: Optional[dict[str, str]] = None,
-    cwd: Optional[Union[str, Path]] = None,
+    timeout: float | None = None,
+    env: dict[str, str] | None = None,
+    cwd: str | Path | None = None,
 ) -> subprocess.CompletedProcess:
     """
     Run a shell command using subprocess.run with logging.
@@ -79,7 +78,7 @@ def run_command(
             raise
 
 
-def get_current_branch() -> Optional[str]:
+def get_current_branch() -> str | None:
     """Get the name of the current git branch."""
     try:
         result = run_command(["git", "rev-parse", "--abbrev-ref", "HEAD"], check=True)

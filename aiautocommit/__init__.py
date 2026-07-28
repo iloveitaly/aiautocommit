@@ -123,7 +123,9 @@ EXCLUSIONS_FILE = "excluded_files.txt"
 COMMIT_SUFFIX_FILE = "commit_suffix.txt"
 
 # https://ai.pydantic.dev/models/overview
-MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "google:gemini-3.1-flash-lite-preview")
+MODEL_NAME = os.environ.get(
+    "AIAUTOCOMMIT_MODEL", "google:gemini-3.1-flash-lite-preview"
+)
 
 COMMIT_PROMPT = ""
 EXCLUDED_FILES = []
@@ -641,6 +643,7 @@ def install(overwrite):
             "pre-commit hook already exists. Here's the contents we would have written:\n"
         )
         click.echo(pre_commit_script.read_text())
+
 
 @main.command()
 def uninstall():

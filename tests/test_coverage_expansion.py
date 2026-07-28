@@ -1,19 +1,22 @@
 import os
 import subprocess
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from unittest.mock import MagicMock, patch
+
 import pytest
+
 from aiautocommit import (
-    main,
-    is_reversion,
-    check_lock_files,
     LOCK_FILE_MESSAGES,
-    update_env_variables,
+    check_lock_files,
     configure_prompts,
+    get_diff_size,
+    is_reversion,
+    main,
+    sort_git_diff,
+    update_env_variables,
 )
 from aiautocommit.internet import wait_for_internet_connection
 from aiautocommit.utils import run_command
-from aiautocommit import sort_git_diff, get_diff_size
 
 
 def test_is_reversion_revert_head(git_repo):
@@ -93,7 +96,7 @@ def test_check_lock_files_not_mise_lock(git_repo):
 
 
 def test_get_diff_exclusion_glob(git_repo):
-    from aiautocommit import get_diff, configure_prompts
+    from aiautocommit import configure_prompts, get_diff
 
     # Setup a custom config with the glob pattern
     config_dir = Path("custom_config")
@@ -426,7 +429,7 @@ def test_main_default_invoke(runner):
     mock_ctx = MagicMock()
     mock_ctx.invoked_subcommand = None
     with patch("click.get_current_context", return_value=mock_ctx):
-        from aiautocommit import main, commit
+        from aiautocommit import commit, main
 
         main.callback()
         mock_ctx.invoke.assert_called_with(commit)
