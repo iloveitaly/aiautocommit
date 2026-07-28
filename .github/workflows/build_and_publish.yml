@@ -76,5 +76,5 @@ jobs:
       - run: uv run ${{ github.event.repository.name }} output-prompt
       - run: uv run ${{ github.event.repository.name }} output-exclusions
       - run: uv run ${{ github.event.repository.name }} dump-prompts
-      - run: uv run ${{ github.event.repository.name }} install-pre-commit
+      - run: uv run ${{ github.event.repository.name }} install
       - run: just test
