@@ -72,13 +72,13 @@ from pydantic_ai.exceptions import ModelAPIError, ModelHTTPError  # noqa: E402
 from .internet import wait_for_internet_connection  # noqa: E402
 from .log import log  # noqa: E402
 from .pull_request import get_pull_request_context  # noqa: E402
+from .timing import log_execution_time  # noqa: E402
 from .utils import (  # noqa: E402
     GIT_SAFE_DIFF_FLAGS,
     get_current_branch,
     run_command,
     safe_git_cmd,
     safe_git_diff_cmd,
-    time_it,
 )
 
 
@@ -302,7 +302,7 @@ def get_diff(ignore_whitespace=True):
     return sorted_diff
 
 
-@time_it("ai_generation")
+@log_execution_time("ai_generation")
 def complete(prompt, diff):
     if PROMPT_CUTOFF is not None and len(diff) > PROMPT_CUTOFF:
         log.info(
@@ -555,7 +555,7 @@ def commit(print_message, output_file, config_dir):
     if is_reversion(output_file):
         click.get_current_context().exit(0)
 
-    with time_it("overall_execution"):
+    with log_execution_time("overall_execution"):
         configure_prompts(config_dir)
 
         try:
