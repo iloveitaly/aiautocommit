@@ -1,4 +1,5 @@
 import subprocess
+from unittest.mock import ANY, patch
 
 import pytest
 
@@ -9,6 +10,17 @@ def test_run_command_success():
     result = run_command(["echo", "hello"])
     assert result.stdout.strip() == "hello"
     assert result.returncode == 0
+
+
+def test_run_command_uses_custom_timing_label():
+    with patch("aiautocommit.timing.log.debug") as mock_debug:
+        run_command(["echo", "hello"], timing_label="git_diff")
+
+    mock_debug.assert_called_once_with(
+        "git_diff",
+        execution_time=ANY,
+        function_name="git_diff",
+    )
 
 
 def test_run_command_failure():

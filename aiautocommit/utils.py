@@ -44,6 +44,7 @@ def run_command(
     timeout: float | None = None,
     env: dict[str, str] | None = None,
     cwd: str | Path | None = None,
+    timing_label: str | None = None,
 ) -> subprocess.CompletedProcess:
     """
     Run a shell command using subprocess.run with logging.
@@ -56,11 +57,12 @@ def run_command(
         timeout: Timeout in seconds
         env: Environment variables
         cwd: Current working directory
+        timing_label: Optional label for the execution-time log
 
     Returns:
         CompletedProcess object
     """
-    with log_execution_time(f"Running command: {args}"):
+    with log_execution_time(timing_label or f"Running command: {args}"):
         try:
             return subprocess.run(
                 args,

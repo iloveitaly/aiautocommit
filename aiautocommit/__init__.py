@@ -288,9 +288,10 @@ def get_diff(ignore_whitespace=True):
     for file in EXCLUDED_FILES:
         arguments += [f":(exclude)**{file}"]
 
-    log.debug(f"Running git diff command: {arguments}")
-
-    diff_process = run_command(arguments)
+    diff_process = run_command(
+        arguments,
+        timing_label=f"Running git diff command: {arguments}",
+    )
     diff_process.check_returncode()
     normalized_diff = diff_process.stdout.strip()
 
