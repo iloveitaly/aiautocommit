@@ -123,7 +123,9 @@ EXCLUSIONS_FILE = "excluded_files.txt"
 COMMIT_SUFFIX_FILE = "commit_suffix.txt"
 
 # https://ai.pydantic.dev/models/overview
-MODEL_NAME = os.environ.get("AIAUTOCOMMIT_MODEL", "google:gemini-3.1-flash-lite-preview")
+MODEL_NAME = os.environ.get(
+    "AIAUTOCOMMIT_MODEL", "google:gemini-3.1-flash-lite-preview"
+)
 
 COMMIT_PROMPT = ""
 EXCLUDED_FILES = []

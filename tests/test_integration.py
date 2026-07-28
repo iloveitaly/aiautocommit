@@ -1,8 +1,11 @@
 import os
-import pytest
 from unittest.mock import patch
+
+import pytest
 from click.testing import CliRunner
+
 from aiautocommit import main
+
 from tests.utils import GitTestMixin
 
 

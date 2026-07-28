@@ -1,5 +1,7 @@
 import subprocess
+
 import pytest
+
 from aiautocommit.utils import get_current_branch, run_command
 
 
