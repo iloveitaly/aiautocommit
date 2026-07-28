@@ -248,8 +248,8 @@ def test_generate_commit_message_with_suffix():
 
 
 def test_install_pre_commit_exists(runner, git_repo):
-    runner.invoke(main, ["install-pre-commit"])
-    result = runner.invoke(main, ["install-pre-commit"])
+    runner.invoke(main, ["install"])
+    result = runner.invoke(main, ["install"])
     assert "pre-commit hook already exists" in result.output
 
 

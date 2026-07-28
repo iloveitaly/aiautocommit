@@ -576,7 +576,7 @@ def commit(print_message, output_file, config_dir):
                     )
                     click.get_current_context().exit(1)
             else:
-                diff = staged_diff
+                diff = get_diff()
                 if not diff:
                     commit_message = "style: whitespace change" + COMMIT_SUFFIX
                 else:
@@ -641,7 +641,6 @@ def install(overwrite):
             "pre-commit hook already exists. Here's the contents we would have written:\n"
         )
         click.echo(pre_commit_script.read_text())
-
 
 @main.command()
 def uninstall():
