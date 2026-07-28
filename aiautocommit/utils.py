@@ -1,10 +1,8 @@
 import subprocess
-import time
-from contextlib import contextmanager
 from pathlib import Path
-from typing import List, Optional, Union
 
 from .log import log
+from .timing import log_execution_time
 
 # Git config overrides to ensure clean, parseable diff output regardless of
 # user's local git configuration.
@@ -38,25 +36,14 @@ def safe_git_diff_cmd() -> list[str]:
     return [*safe_git_cmd(), "diff", *GIT_SAFE_DIFF_FLAGS, "--staged"]
 
 
-@contextmanager
-def time_it(name: str):
-    start_time = time.perf_counter()
-    try:
-        yield
-    finally:
-        end_time = time.perf_counter()
-        duration = end_time - start_time
-        log.debug("execution_time", name=name, duration=duration)
-
-
 def run_command(
-    args: List[str],
+    args: list[str],
     check: bool = False,
     capture_output: bool = True,
     text: bool = True,
-    timeout: Optional[float] = None,
-    env: Optional[dict[str, str]] = None,
-    cwd: Optional[Union[str, Path]] = None,
+    timeout: float | None = None,
+    env: dict[str, str] | None = None,
+    cwd: str | Path | None = None,
 ) -> subprocess.CompletedProcess:
     """
     Run a shell command using subprocess.run with logging.
@@ -73,25 +60,25 @@ def run_command(
     Returns:
         CompletedProcess object
     """
-    log.debug(f"Running command: {args}")
-    try:
-        return subprocess.run(
-            args,
-            check=check,
-            capture_output=capture_output,
-            text=text,
-            timeout=timeout,
-            env=env,
-            cwd=cwd,
-        )
-    except subprocess.CalledProcessError as e:
-        log.debug(f"Command failed with exit code {e.returncode}")
-        if e.stderr:
-            log.debug(f"Stderr: {e.stderr.strip()}")
-        raise
+    with log_execution_time(f"Running command: {args}"):
+        try:
+            return subprocess.run(
+                args,
+                check=check,
+                capture_output=capture_output,
+                text=text,
+                timeout=timeout,
+                env=env,
+                cwd=cwd,
+            )
+        except subprocess.CalledProcessError as e:
+            log.debug(f"Command failed with exit code {e.returncode}")
+            if e.stderr:
+                log.debug(f"Stderr: {e.stderr.strip()}")
+            raise
 
 
-def get_current_branch() -> Optional[str]:
+def get_current_branch() -> str | None:
     """Get the name of the current git branch."""
     try:
         result = run_command(["git", "rev-parse", "--abbrev-ref", "HEAD"], check=True)

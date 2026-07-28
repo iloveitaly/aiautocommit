@@ -1,6 +1,6 @@
 [project]
 name = "aiautocommit"
-version = "0.20.0"
+version = "0.21.0"
 description = "AI generated commit messages"
 keywords = ["git", "commit", "automation", "ai", "openai", "gemini", "anthropic"]
 readme = "README.md"
@@ -9,14 +9,14 @@ dependencies = [
     "structlog-config>=0.6.0",
     "backoff>=2.2.1",
     "click>=8.1.7",
-    "pydantic-ai-slim[anthropic,google,openai]>=1.97.0",
+    "pydantic-ai-slim[anthropic,google,openai]>=2.19.0",
 ]
 authors = [{ name = "Michael Bianco", email = "mike@mikebian.co" }]
 urls = { "Repository" = "https://github.com/iloveitaly/aiautocommit" }
 
 [project.optional-dependencies]
 all-providers = [
-    "pydantic-ai>=1.97.0",
+    "pydantic-ai>=2.19.0",
 ]
 
 # additional packaging information: https://packaging.python.org/en/latest/specifications/core-metadata/#license

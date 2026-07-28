@@ -1,4 +1,6 @@
 import os
+from unittest.mock import patch
+
 import pytest
 from click.testing import CliRunner
 from tests.utils import GitTestMixin
@@ -19,6 +21,12 @@ def clean_env():
     # Restore environment
     os.environ.clear()
     os.environ.update(old_env)
+
+
+@pytest.fixture(autouse=True)
+def internet_connection_available():
+    with patch("aiautocommit.wait_for_internet_connection"):
+        yield
 
 
 @pytest.fixture

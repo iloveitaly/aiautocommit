@@ -1,7 +1,9 @@
-from unittest.mock import patch, MagicMock
-from aiautocommit import complete
-from pydantic_ai.models.google import GoogleModel
+from unittest.mock import MagicMock, patch
+
 from google.genai.types import ThinkingLevel
+from pydantic_ai.models.google import GoogleModel
+
+from aiautocommit import complete
 
 
 @patch("aiautocommit.Agent")

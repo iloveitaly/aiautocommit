@@ -1,6 +1,7 @@
 from unittest.mock import patch
-import socket
+
 import pytest
+
 from aiautocommit.internet import is_internet_connected, wait_for_internet_connection
 
 
@@ -17,7 +18,7 @@ def test_is_internet_connected_success(mock_socket):
 def test_is_internet_connected_failure(mock_socket):
     # Mock connection failure
     instance = mock_socket.return_value.__enter__.return_value
-    instance.connect.side_effect = socket.error("no connection")
+    instance.connect.side_effect = OSError("no connection")
 
     assert is_internet_connected() is False
 
