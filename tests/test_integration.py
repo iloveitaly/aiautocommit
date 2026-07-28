@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 from click.testing import CliRunner
 
-from aiautocommit import main
+from aiautocommit import DEFAULT_MODEL_NAME, main
 
 from tests.utils import GitTestMixin
 
@@ -14,9 +14,7 @@ class TestIntegration(GitTestMixin):
     @pytest.fixture(autouse=True)
     def setup(self):
         self.runner = CliRunner()
-        self.model_name = os.environ.get(
-            "AIAUTOCOMMIT_MODEL", "gemini:gemini-flash-latest"
-        )
+        self.model_name = os.environ.get("AIAUTOCOMMIT_MODEL", DEFAULT_MODEL_NAME)
 
         # Verify we have an API key for integration tests
         if os.environ.get("OPENAI_API_KEY"):
