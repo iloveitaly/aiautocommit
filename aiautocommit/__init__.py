@@ -642,6 +642,7 @@ def install(overwrite):
         )
         click.echo(pre_commit_script.read_text())
 
+
 @main.command()
 def uninstall():
     """Remove pre-commit script from git hooks directory"""
