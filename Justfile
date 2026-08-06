@@ -1,8 +1,42 @@
+# Line recipes and [script] recipes both use zsh with strict mode.
+set shell := ["zsh", "-euo", "pipefail", "-c"]
+set script-interpreter := ["zsh", "-euo", "pipefail"]
+
 # Set up the Python environment, done automatically for you when using direnv
 setup:
     [ -f .env ] || cp .env-example .env
     uv venv && uv sync
     @echo "activate: source ./.venv/bin/activate"
+
+# Install this checkout as the global `aiautocommit` CLI (editable).
+#
+# `uv tool install -e` alone is not enough when mise activates
+# `pipx:aiautocommit` — those isolated envs sit ahead of ~/.local/bin on PATH.
+# Patch every installed mise version (active + inactive) via `mise ls --json`.
+# Re-run after `mise upgrade pipx:aiautocommit` (it overwrites editable installs).
+[script]
+install_editable:
+    uv tool install --force --editable .
+
+    if ! command -v mise >/dev/null; then
+        echo "mise not on PATH; uv tool only"
+    else
+        mise ls --json --installed pipx:aiautocommit \
+            | jq -r '.[].install_path' \
+            | while IFS= read -r install_path; do
+                [ -n "$install_path" ] || continue
+                py="$install_path/aiautocommit/bin/python"
+                if [ ! -x "$py" ]; then
+                    echo "skip $install_path (no venv python)"
+                    continue
+                fi
+                echo "editable into mise env: $install_path"
+                uv pip install --python "$py" --reinstall-package aiautocommit --editable .
+            done
+    fi
+
+    command -v aiautocommit
+    aiautocommit --version
 
 # Start docker services
 docker_up:
