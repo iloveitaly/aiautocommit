@@ -67,7 +67,11 @@ from importlib.metadata import PackageNotFoundError, version  # noqa: E402
 
 import click  # noqa: E402
 from pydantic_ai import Agent  # noqa: E402
-from pydantic_ai.exceptions import ModelAPIError, ModelHTTPError, UserError  # noqa: E402
+from pydantic_ai.exceptions import (  # noqa: E402
+    ModelAPIError,
+    ModelHTTPError,
+    UserError,
+)
 
 from .internet import wait_for_internet_connection  # noqa: E402
 from .log import log  # noqa: E402
