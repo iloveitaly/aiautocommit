@@ -223,6 +223,39 @@ def test_complete_503_graceful_fallback():
         )
 
 
+def test_complete_user_error_as_red_message(runner, git_repo):
+    from pydantic_ai.exceptions import UserError
+
+    git_repo.create_file("test.txt", "hello\n")
+    git_repo.git_add("test.txt")
+    git_repo.cleanup_commit_editmsg()
+
+    with (
+        patch("aiautocommit.wait_for_internet_connection"),
+        patch("aiautocommit.Agent") as mock_agent_class,
+    ):
+        mock_agent_class.side_effect = UserError(
+            "Set the `GOOGLE_API_KEY` environment variable or pass it via "
+            "`GoogleProvider(api_key=...)` to use the Gemini API."
+        )
+        result = runner.invoke(main, ["commit", "--print-message"])
+
+    assert result.exit_code == 1
+    assert "GOOGLE_API_KEY" in result.output
+    assert "Traceback" not in result.output
+
+
+def test_complete_user_error_raises_user_facing_error():
+    from pydantic_ai.exceptions import UserError
+
+    from aiautocommit import UserFacingError, complete
+
+    with patch("aiautocommit.Agent") as mock_agent_class:
+        mock_agent_class.side_effect = UserError("missing API key")
+        with pytest.raises(UserFacingError, match="missing API key"):
+            complete("prompt", "diff")
+
+
 def test_git_commit():
     from aiautocommit import git_commit
 

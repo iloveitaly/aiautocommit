@@ -67,7 +67,7 @@ from importlib.metadata import PackageNotFoundError, version  # noqa: E402
 
 import click  # noqa: E402
 from pydantic_ai import Agent  # noqa: E402
-from pydantic_ai.exceptions import ModelAPIError, ModelHTTPError  # noqa: E402
+from pydantic_ai.exceptions import ModelAPIError, ModelHTTPError, UserError  # noqa: E402
 
 from .internet import wait_for_internet_connection  # noqa: E402
 from .log import log  # noqa: E402
@@ -303,6 +303,13 @@ def get_diff(ignore_whitespace=True):
     return sorted_diff
 
 
+class UserFacingError(click.ClickException):
+    """Configuration/usage error shown as a single red line (no traceback)."""
+
+    def show(self, file=None):
+        click.secho(self.format_message(), fg="red", err=True)
+
+
 @log_execution_time("ai_generation")
 def complete(prompt, diff):
     if PROMPT_CUTOFF is not None and len(diff) > PROMPT_CUTOFF:
@@ -314,29 +321,31 @@ def complete(prompt, diff):
     # Pydantic AI automatically handles OPENAI_API_KEY, ANTHROPIC_API_KEY, etc.
     # but we map our legacy/custom prefixes if they exist and standard ones don't
 
-    # Create the agent with the configured model
-    agent = Agent(MODEL_NAME, system_prompt=prompt)
-
-    model_settings = None
-    from pydantic_ai.models.google import GoogleModel
-
-    if isinstance(agent.model, GoogleModel):
-        # Configure minimal thinking budget for Gemini models
-        # https://ai.pydantic.dev/models/google/#application-default-credentials
-        from google.genai.types import ThinkingLevel
-        from pydantic_ai.models.google import GoogleModelSettings
-
-        model_settings = GoogleModelSettings(
-            # include_thoughts=True improves accuracy via CoT and is filtered out of result.output by pydantic-ai
-            google_thinking_config={
-                "include_thoughts": True,
-                "thinking_level": ThinkingLevel.MINIMAL,
-            }
-        )
-
-    # Run the agent synchronously
     try:
+        # Create the agent with the configured model
+        agent = Agent(MODEL_NAME, system_prompt=prompt)
+
+        model_settings = None
+        from pydantic_ai.models.google import GoogleModel
+
+        if isinstance(agent.model, GoogleModel):
+            # Configure minimal thinking budget for Gemini models
+            # https://ai.pydantic.dev/models/google/#application-default-credentials
+            from google.genai.types import ThinkingLevel
+            from pydantic_ai.models.google import GoogleModelSettings
+
+            model_settings = GoogleModelSettings(
+                # include_thoughts=True improves accuracy via CoT and is filtered out of result.output by pydantic-ai
+                google_thinking_config={
+                    "include_thoughts": True,
+                    "thinking_level": ThinkingLevel.MINIMAL,
+                }
+            )
+
+        # Run the agent synchronously
         result = agent.run_sync(diff[:PROMPT_CUTOFF], model_settings=model_settings)
+    except UserError as e:
+        raise UserFacingError(e.message) from None
     except ModelHTTPError as e:
         log.warning(
             f"AI model is currently unavailable (HTTP {e.status_code}). "
