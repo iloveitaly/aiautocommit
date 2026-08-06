@@ -88,6 +88,22 @@ def test_install(runner, git_repo):
         assert Path(".git/hooks/prepare-commit-msg").exists()
 
 
+def test_install_skip_edit(runner, git_repo):
+    with runner.isolated_filesystem():
+        mixin = GitTestMixin()
+        mixin.init_repo()
+        result = runner.invoke(main, ["install", "--skip-edit"])
+        assert result.exit_code == 0
+        assert "Installed pre-commit hook" in result.output
+        assert "Set local core.editor=true" in result.output
+        assert Path(".git/hooks/prepare-commit-msg").exists()
+        editor = subprocess.check_output(
+            ["git", "config", "--local", "--get", "core.editor"],
+            text=True,
+        ).strip()
+        assert editor == "true"
+
+
 def test_uninstall(runner, git_repo):
     with runner.isolated_filesystem():
         mixin = GitTestMixin()

@@ -632,7 +632,12 @@ def commit(print_message, output_file, config_dir):
     is_flag=True,
     help="Overwrite existing pre-commit hook if it exists",
 )
-def install(overwrite):
+@click.option(
+    "--skip-edit",
+    is_flag=True,
+    help="Set local core.editor to true so git commit does not open an editor after the hook",
+)
+def install(overwrite, skip_edit):
     """Install pre-commit script into git hooks directory"""
     git_result = run_command(
         ["git", "rev-parse", "--git-path", "hooks"],
@@ -655,6 +660,13 @@ def install(overwrite):
             "pre-commit hook already exists. Here's the contents we would have written:\n"
         )
         click.echo(pre_commit_script.read_text())
+
+    if skip_edit:
+        run_command(
+            ["git", "config", "core.editor", "true"],
+            check=True,
+        )
+        click.echo("Set local core.editor=true (git commit will skip the editor)")
 
 
 @main.command()
