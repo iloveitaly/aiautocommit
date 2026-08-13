@@ -314,6 +314,52 @@ class UserFacingError(click.ClickException):
         click.secho(self.format_message(), fg="red", err=True)
 
 
+# Gemini thinking_level values accepted by the API. Gemini 3.7+ rejects "minimal".
+GOOGLE_THINKING_LEVELS = ("minimal", "low", "medium", "high")
+
+
+def default_google_thinking_level(model_name: str) -> str:
+    """Pick a thinking level that the configured Gemini model accepts.
+
+    Gemini 3 models through 3.5 support ``minimal``. Gemini 3.7+ only supports
+    ``low`` / ``medium`` / ``high``; sending ``minimal`` returns an API error.
+    """
+    name = model_name.rsplit(":", 1)[-1].lower()
+    match = re.search(r"gemini-(\d+)(?:\.(\d+))?", name)
+    if not match:
+        return "minimal"
+
+    major = int(match.group(1))
+    minor = int(match.group(2) or 0)
+    if (major, minor) >= (3, 7):
+        return "low"
+    return "minimal"
+
+
+def resolve_google_thinking_level(model_name: str):
+    """Return the Google ``ThinkingLevel`` for the active model.
+
+    Override with ``AIAUTOCOMMIT_GOOGLE_THINKING_LEVEL`` (or ``GOOGLE_THINKING_LEVEL``)
+    set to ``minimal``, ``low``, ``medium``, or ``high``.
+    """
+    from google.genai.types import ThinkingLevel
+
+    raw = os.environ.get("AIAUTOCOMMIT_GOOGLE_THINKING_LEVEL") or os.environ.get(
+        "GOOGLE_THINKING_LEVEL"
+    )
+    if raw:
+        level = raw.strip().lower()
+        if level not in GOOGLE_THINKING_LEVELS:
+            allowed = ", ".join(GOOGLE_THINKING_LEVELS)
+            raise UserFacingError(
+                f"Invalid Google thinking level '{raw}'. Must be one of: {allowed}."
+            )
+    else:
+        level = default_google_thinking_level(model_name)
+
+    return ThinkingLevel[level.upper()]
+
+
 @log_execution_time("ai_generation")
 def complete(prompt, diff):
     if PROMPT_CUTOFF is not None and len(diff) > PROMPT_CUTOFF:
@@ -333,16 +379,15 @@ def complete(prompt, diff):
         from pydantic_ai.models.google import GoogleModel
 
         if isinstance(agent.model, GoogleModel):
-            # Configure minimal thinking budget for Gemini models
+            # Enable thinking (CoT) for Gemini; level depends on the model.
             # https://ai.pydantic.dev/models/google/#application-default-credentials
-            from google.genai.types import ThinkingLevel
             from pydantic_ai.models.google import GoogleModelSettings
 
             model_settings = GoogleModelSettings(
                 # include_thoughts=True improves accuracy via CoT and is filtered out of result.output by pydantic-ai
                 google_thinking_config={
                     "include_thoughts": True,
-                    "thinking_level": ThinkingLevel.MINIMAL,
+                    "thinking_level": resolve_google_thinking_level(MODEL_NAME),
                 }
             )
 
