@@ -228,6 +228,7 @@ All environment variables used by `aiautocommit` or its providers can be prefixe
 
 * `AIAUTOCOMMIT_AI_KEY`: **Universal API key.** `aiautocommit` internally maps this to the correct provider-specific variable (e.g., `GOOGLE_API_KEY`, `OPENAI_API_KEY`) based on your active model.
 * `AIAUTOCOMMIT_MODEL`: AI model to use, in `provider:model` format (default: `google:gemini-3.5-flash-lite`). Examples: `anthropic:claude-3-5-sonnet-latest`, `openai:gpt-4o`.
+* `AIAUTOCOMMIT_GOOGLE_THINKING_LEVEL`: Gemini thinking budget (`minimal`, `low`, `medium`, or `high`). Defaults to `minimal` for Gemini models through 3.5, and `low` for Gemini 3.7+ (which reject `minimal`).
 * `AIAUTOCOMMIT_CONFIG`: Custom config directory path
 * `AIAUTOCOMMIT_LOG_LEVEL`: Logging verbosity
 * `AIAUTOCOMMIT_LOG_PATH`: Custom log file path
@@ -238,7 +239,7 @@ Ensure you have the corresponding API key set in `AIAUTOCOMMIT_AI_KEY`.
 
 `aiautocommit` uses [pydantic-ai](https://ai.pydantic.dev/) under the hood, supporting a wide range of providers including OpenAI, Anthropic, and Gemini (via VertexAI or Generative AI) by default. You can specify the model using the `provider:model` syntax in the `AIAUTOCOMMIT_MODEL` environment variable.
 
-Google Gemini models use "thinking" (Chain of Thought) with a minimal budget to improve accuracy.
+Google Gemini models use "thinking" (Chain of Thought) to improve accuracy. The thinking budget defaults to `minimal` for models that support it, and `low` for Gemini 3.7+ (where `minimal` is rejected). Override with `AIAUTOCOMMIT_GOOGLE_THINKING_LEVEL`.
 
 Common examples:
 
