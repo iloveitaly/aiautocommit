@@ -7,6 +7,21 @@
 
 
 
+## [0.23.0](https://github.com/iloveitaly/aiautocommit/compare/v0.22.0...v0.23.0) (2026-08-14)
+
+
+### Features
+
+* add install_editable recipe for global CLI development ([c993811](https://github.com/iloveitaly/aiautocommit/commit/c99381122974d193bd9ca9e0a8556aa0628f6ddc))
+* **cli:** add --skip-edit option to install command ([8fd1102](https://github.com/iloveitaly/aiautocommit/commit/8fd1102502b64fcb641126cffd3d7a82ee557a51))
+
+
+### Bug Fixes
+
+* **ci:** unblock dependabot PRs and bump stalled deps ([#79](https://github.com/iloveitaly/aiautocommit/issues/79)) ([40f702b](https://github.com/iloveitaly/aiautocommit/commit/40f702bb75bdf8889331542cf71b1bf768979060))
+* **cli:** handle pydantic_ai UserError cleanly without tracebacks ([19b32e1](https://github.com/iloveitaly/aiautocommit/commit/19b32e19310397631c2401cb045cd54a018dfa67))
+* use low thinking effort for Google Gemini models ([#78](https://github.com/iloveitaly/aiautocommit/issues/78)) ([cbe82ab](https://github.com/iloveitaly/aiautocommit/commit/cbe82abe44ca26fe2f43c61c7bd87fb402c55be1))
+
 ## [0.22.0](https://github.com/iloveitaly/aiautocommit/compare/v0.21.0...v0.22.0) (2026-07-28)
 
 
