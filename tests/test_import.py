@@ -10,7 +10,7 @@ def test_import() -> None:
 
 def test_default_model() -> None:
     """Test that the default model is stable."""
-    assert aiautocommit.DEFAULT_MODEL_NAME == "google:gemini-3.5-flash-lite"
+    assert aiautocommit.DEFAULT_MODEL_NAME == "google:gemini-3.7-flash"
 
 
 def test_version() -> None:
