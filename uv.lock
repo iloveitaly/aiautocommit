@@ -40,8 +40,8 @@ dev = [
 requires-dist = [
     { name = "backoff", specifier = ">=2.2.1" },
     { name = "click", specifier = ">=8.1.7" },
-    { name = "pydantic-ai", marker = "extra == 'all-providers'", specifier = ">=2.19.0" },
-    { name = "pydantic-ai-slim", extras = ["anthropic", "google", "openai"], specifier = ">=2.19.0" },
+    { name = "pydantic-ai", marker = "extra == 'all-providers'", specifier = ">=2.29.0" },
+    { name = "pydantic-ai-slim", extras = ["anthropic", "google", "openai"], specifier = ">=2.29.0" },
     { name = "structlog-config", specifier = ">=0.6.0" },
 ]
 provides-extras = ["all-providers"]

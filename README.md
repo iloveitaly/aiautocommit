@@ -238,7 +238,7 @@ Ensure you have the corresponding API key set in `AIAUTOCOMMIT_AI_KEY`.
 
 `aiautocommit` uses [pydantic-ai](https://ai.pydantic.dev/) under the hood, supporting a wide range of providers including OpenAI, Anthropic, and Gemini (via VertexAI or Generative AI) by default. You can specify the model using the `provider:model` syntax in the `AIAUTOCOMMIT_MODEL` environment variable.
 
-Google Gemini models use "thinking" (Chain of Thought) with a minimal budget to improve accuracy.
+Google Gemini models use pydantic-ai's unified thinking setting at `low` effort. `minimal` is not used: newer Gemini models reject it.
 
 Common examples:
 

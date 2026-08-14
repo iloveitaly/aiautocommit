@@ -66,7 +66,7 @@ update_env_variables()
 from importlib.metadata import PackageNotFoundError, version  # noqa: E402
 
 import click  # noqa: E402
-from pydantic_ai import Agent  # noqa: E402
+from pydantic_ai import Agent, ModelSettings  # noqa: E402
 from pydantic_ai.exceptions import (  # noqa: E402
     ModelAPIError,
     ModelHTTPError,
@@ -329,22 +329,14 @@ def complete(prompt, diff):
         # Create the agent with the configured model
         agent = Agent(MODEL_NAME, system_prompt=prompt)
 
-        model_settings = None
+        model_settings: ModelSettings | None = None
         from pydantic_ai.models.google import GoogleModel
 
         if isinstance(agent.model, GoogleModel):
-            # Configure minimal thinking budget for Gemini models
-            # https://ai.pydantic.dev/models/google/#application-default-credentials
-            from google.genai.types import ThinkingLevel
-            from pydantic_ai.models.google import GoogleModelSettings
-
-            model_settings = GoogleModelSettings(
-                # include_thoughts=True improves accuracy via CoT and is filtered out of result.output by pydantic-ai
-                google_thinking_config={
-                    "include_thoughts": True,
-                    "thinking_level": ThinkingLevel.MINIMAL,
-                }
-            )
+            # Gemini 3.7+ rejects thinking_level=minimal; low is the cheapest
+            # level still accepted across current Gemini models.
+            # https://ai.pydantic.dev/models/google/#configure-thinking
+            model_settings = ModelSettings(thinking="low")
 
         # Run the agent synchronously
         result = agent.run_sync(diff[:PROMPT_CUTOFF], model_settings=model_settings)
