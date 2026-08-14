@@ -5,6 +5,9 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    ignore:
+      # Stay on the floating v4 tag instead of patch pins like 4.2.4
+      - dependency-name: "jdx/mise-action"
 
   - package-ecosystem: "uv"
     directory: "/"
