@@ -314,50 +314,22 @@ class UserFacingError(click.ClickException):
         click.secho(self.format_message(), fg="red", err=True)
 
 
-# Gemini thinking_level values accepted by the API. Gemini 3.7+ rejects "minimal".
-GOOGLE_THINKING_LEVELS = ("minimal", "low", "medium", "high")
+def google_thinking_level(model_name: str):
+    """Lowest ``thinking_level`` the configured Gemini model accepts.
 
-
-def default_google_thinking_level(model_name: str) -> str:
-    """Pick a thinking level that the configured Gemini model accepts.
-
-    Gemini 3 models through 3.5 support ``minimal``. Gemini 3.7+ only supports
-    ``low`` / ``medium`` / ``high``; sending ``minimal`` returns an API error.
-    """
-    name = model_name.rsplit(":", 1)[-1].lower()
-    match = re.search(r"gemini-(\d+)(?:\.(\d+))?", name)
-    if not match:
-        return "minimal"
-
-    major = int(match.group(1))
-    minor = int(match.group(2) or 0)
-    if (major, minor) >= (3, 7):
-        return "low"
-    return "minimal"
-
-
-def resolve_google_thinking_level(model_name: str):
-    """Return the Google ``ThinkingLevel`` for the active model.
-
-    Override with ``AIAUTOCOMMIT_GOOGLE_THINKING_LEVEL`` (or ``GOOGLE_THINKING_LEVEL``)
-    set to ``minimal``, ``low``, ``medium``, or ``high``.
+    Gemini through 3.5 supports ``minimal``. Gemini 3.7+ rejects ``minimal``;
+    the lowest valid value is ``low``.
     """
     from google.genai.types import ThinkingLevel
 
-    raw = os.environ.get("AIAUTOCOMMIT_GOOGLE_THINKING_LEVEL") or os.environ.get(
-        "GOOGLE_THINKING_LEVEL"
-    )
-    if raw:
-        level = raw.strip().lower()
-        if level not in GOOGLE_THINKING_LEVELS:
-            allowed = ", ".join(GOOGLE_THINKING_LEVELS)
-            raise UserFacingError(
-                f"Invalid Google thinking level '{raw}'. Must be one of: {allowed}."
-            )
-    else:
-        level = default_google_thinking_level(model_name)
-
-    return ThinkingLevel[level.upper()]
+    name = model_name.rsplit(":", 1)[-1].lower()
+    match = re.search(r"gemini-(\d+)(?:\.(\d+))?", name)
+    if match:
+        major = int(match.group(1))
+        minor = int(match.group(2) or 0)
+        if (major, minor) >= (3, 7):
+            return ThinkingLevel.LOW
+    return ThinkingLevel.MINIMAL
 
 
 @log_execution_time("ai_generation")
@@ -387,7 +359,7 @@ def complete(prompt, diff):
                 # include_thoughts=True improves accuracy via CoT and is filtered out of result.output by pydantic-ai
                 google_thinking_config={
                     "include_thoughts": True,
-                    "thinking_level": resolve_google_thinking_level(MODEL_NAME),
+                    "thinking_level": google_thinking_level(MODEL_NAME),
                 }
             )
 

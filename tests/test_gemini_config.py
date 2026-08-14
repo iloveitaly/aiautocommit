@@ -4,30 +4,24 @@ import pytest
 from google.genai.types import ThinkingLevel
 from pydantic_ai.models.google import GoogleModel
 
-from aiautocommit import (
-    UserFacingError,
-    complete,
-    default_google_thinking_level,
-    resolve_google_thinking_level,
-)
+from aiautocommit import complete, google_thinking_level
 
 
 @pytest.mark.parametrize(
     ("model_name", "expected"),
     [
-        ("google:gemini-3.5-flash-lite", "minimal"),
-        ("google:gemini-3-flash", "minimal"),
-        ("google:gemini-2.5-flash", "minimal"),
-        ("google:gemini-3.7-flash", "low"),
-        ("gemini-3.7-flash", "low"),
-        ("google:gemini-3.7-pro", "low"),
-        ("google:gemini-4-flash", "low"),
-        ("google:gemini-3.8-flash", "low"),
-        ("openai:gpt-4o", "minimal"),
+        ("google:gemini-3.5-flash-lite", ThinkingLevel.MINIMAL),
+        ("google:gemini-3-flash", ThinkingLevel.MINIMAL),
+        ("google:gemini-2.5-flash", ThinkingLevel.MINIMAL),
+        ("google:gemini-3.7-flash", ThinkingLevel.LOW),
+        ("gemini-3.7-flash", ThinkingLevel.LOW),
+        ("google:gemini-3.7-pro", ThinkingLevel.LOW),
+        ("google:gemini-4-flash", ThinkingLevel.LOW),
+        ("google:gemini-3.8-flash", ThinkingLevel.LOW),
     ],
 )
-def test_default_google_thinking_level(model_name, expected):
-    assert default_google_thinking_level(model_name) == expected
+def test_google_thinking_level(model_name, expected):
+    assert google_thinking_level(model_name) == expected
 
 
 @patch("aiautocommit.MODEL_NAME", "google:gemini-3.5-flash-lite")
@@ -65,29 +59,6 @@ def test_complete_gemini_37_uses_low_thinking(MockAgent):
     assert (
         model_settings["google_thinking_config"]["thinking_level"] == ThinkingLevel.LOW
     )
-
-
-@patch.dict("os.environ", {"AIAUTOCOMMIT_GOOGLE_THINKING_LEVEL": "high"})
-@patch("aiautocommit.MODEL_NAME", "google:gemini-3.7-flash")
-@patch("aiautocommit.Agent")
-def test_complete_gemini_thinking_level_override(MockAgent):
-    mock_agent_instance = MockAgent.return_value
-    mock_agent_instance.model = MagicMock(spec=GoogleModel)
-    mock_agent_instance.run_sync.return_value = MagicMock(output="test message")
-
-    complete("test prompt", "test diff")
-
-    args, kwargs = mock_agent_instance.run_sync.call_args
-    model_settings = kwargs["model_settings"]
-    assert (
-        model_settings["google_thinking_config"]["thinking_level"] == ThinkingLevel.HIGH
-    )
-
-
-def test_resolve_google_thinking_level_invalid():
-    with patch.dict("os.environ", {"AIAUTOCOMMIT_GOOGLE_THINKING_LEVEL": "extreme"}):
-        with pytest.raises(UserFacingError, match="Invalid Google thinking level"):
-            resolve_google_thinking_level("google:gemini-3.7-flash")
 
 
 @patch("aiautocommit.Agent")
