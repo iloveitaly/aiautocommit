@@ -39,7 +39,7 @@ Set your API key (works for any provider, Google Gemini is the default):
 
 ```shell
 export AIAUTOCOMMIT_AI_KEY=<YOUR API KEY>
-export AIAUTOCOMMIT_MODEL=google:gemini-3.5-flash-lite
+export AIAUTOCOMMIT_MODEL=google:gemini-3.7-flash
 ```
 
 Stage your changes and run aiautocommit:
@@ -227,7 +227,7 @@ prepare-commit-msg:
 All environment variables used by `aiautocommit` or its providers can be prefixed with `AIAUTOCOMMIT_` to take precedence over the standard variable.
 
 * `AIAUTOCOMMIT_AI_KEY`: **Universal API key.** `aiautocommit` internally maps this to the correct provider-specific variable (e.g., `GOOGLE_API_KEY`, `OPENAI_API_KEY`) based on your active model.
-* `AIAUTOCOMMIT_MODEL`: AI model to use, in `provider:model` format (default: `google:gemini-3.5-flash-lite`). Examples: `anthropic:claude-3-5-sonnet-latest`, `openai:gpt-4o`.
+* `AIAUTOCOMMIT_MODEL`: AI model to use, in `provider:model` format (default: `google:gemini-3.7-flash`). Examples: `anthropic:claude-3-5-sonnet-latest`, `openai:gpt-4o`.
 * `AIAUTOCOMMIT_CONFIG`: Custom config directory path
 * `AIAUTOCOMMIT_LOG_LEVEL`: Logging verbosity
 * `AIAUTOCOMMIT_LOG_PATH`: Custom log file path
@@ -242,7 +242,7 @@ Google Gemini models use pydantic-ai's unified thinking setting at `low` effort.
 
 Common examples:
 
-* `google:gemini-3.5-flash-lite` (default)
+* `google:gemini-3.7-flash` (default)
 * `openai:gpt-4o`
 * `anthropic:claude-3-5-sonnet-latest`
 * `ollama:llama3` (for local models)
