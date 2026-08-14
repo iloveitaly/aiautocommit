@@ -314,25 +314,6 @@ class UserFacingError(click.ClickException):
         click.secho(self.format_message(), fg="red", err=True)
 
 
-def lowest_thinking_effort(model_name: str) -> str:
-    """Cheapest pydantic-ai thinking effort the model will accept.
-
-    pydantic-ai's unified ``thinking`` setting maps ``minimal`` to Gemini
-    ``thinking_level=MINIMAL`` on all Gemini 3 models. Gemini 3.7+ rejects
-    that value, so those models get ``low``.
-    """
-    from pydantic_ai.models import parse_model_id
-
-    _, name = parse_model_id(model_name)
-    match = re.search(r"gemini-(\d+)(?:\.(\d+))?", name.lower())
-    if match:
-        major = int(match.group(1))
-        minor = int(match.group(2) or 0)
-        if (major, minor) >= (3, 7):
-            return "low"
-    return "minimal"
-
-
 @log_execution_time("ai_generation")
 def complete(prompt, diff):
     if PROMPT_CUTOFF is not None and len(diff) > PROMPT_CUTOFF:
@@ -352,11 +333,10 @@ def complete(prompt, diff):
         from pydantic_ai.models.google import GoogleModel
 
         if isinstance(agent.model, GoogleModel):
-            # Unified thinking maps to thinking_level (Gemini 3) or thinking_budget (2.5).
+            # Gemini 3.7+ rejects thinking_level=minimal; low is the cheapest
+            # level still accepted across current Gemini models.
             # https://ai.pydantic.dev/models/google/#configure-thinking
-            model_settings = {
-                "thinking": lowest_thinking_effort(agent.model.model_name),
-            }
+            model_settings = {"thinking": "low"}
 
         # Run the agent synchronously
         result = agent.run_sync(diff[:PROMPT_CUTOFF], model_settings=model_settings)
