@@ -314,22 +314,23 @@ class UserFacingError(click.ClickException):
         click.secho(self.format_message(), fg="red", err=True)
 
 
-def google_thinking_level(model_name: str):
-    """Lowest ``thinking_level`` the configured Gemini model accepts.
+def lowest_thinking_effort(model_name: str) -> str:
+    """Cheapest pydantic-ai thinking effort the model will accept.
 
-    Gemini through 3.5 supports ``minimal``. Gemini 3.7+ rejects ``minimal``;
-    the lowest valid value is ``low``.
+    pydantic-ai's unified ``thinking`` setting maps ``minimal`` to Gemini
+    ``thinking_level=MINIMAL`` on all Gemini 3 models. Gemini 3.7+ rejects
+    that value, so those models get ``low``.
     """
-    from google.genai.types import ThinkingLevel
+    from pydantic_ai.models import parse_model_id
 
-    name = model_name.rsplit(":", 1)[-1].lower()
-    match = re.search(r"gemini-(\d+)(?:\.(\d+))?", name)
+    _, name = parse_model_id(model_name)
+    match = re.search(r"gemini-(\d+)(?:\.(\d+))?", name.lower())
     if match:
         major = int(match.group(1))
         minor = int(match.group(2) or 0)
         if (major, minor) >= (3, 7):
-            return ThinkingLevel.LOW
-    return ThinkingLevel.MINIMAL
+            return "low"
+    return "minimal"
 
 
 @log_execution_time("ai_generation")
@@ -351,17 +352,11 @@ def complete(prompt, diff):
         from pydantic_ai.models.google import GoogleModel
 
         if isinstance(agent.model, GoogleModel):
-            # Enable thinking (CoT) for Gemini; level depends on the model.
-            # https://ai.pydantic.dev/models/google/#application-default-credentials
-            from pydantic_ai.models.google import GoogleModelSettings
-
-            model_settings = GoogleModelSettings(
-                # include_thoughts=True improves accuracy via CoT and is filtered out of result.output by pydantic-ai
-                google_thinking_config={
-                    "include_thoughts": True,
-                    "thinking_level": google_thinking_level(MODEL_NAME),
-                }
-            )
+            # Unified thinking maps to thinking_level (Gemini 3) or thinking_budget (2.5).
+            # https://ai.pydantic.dev/models/google/#configure-thinking
+            model_settings = {
+                "thinking": lowest_thinking_effort(agent.model.model_name),
+            }
 
         # Run the agent synchronously
         result = agent.run_sync(diff[:PROMPT_CUTOFF], model_settings=model_settings)
