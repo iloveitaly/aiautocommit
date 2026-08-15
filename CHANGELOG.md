@@ -7,6 +7,13 @@
 
 
 
+## [0.24.0](https://github.com/iloveitaly/aiautocommit/compare/v0.23.0...v0.24.0) (2026-08-14)
+
+
+### Features
+
+* update default model to google:gemini-3.7-flash ([#81](https://github.com/iloveitaly/aiautocommit/issues/81)) ([287aa58](https://github.com/iloveitaly/aiautocommit/commit/287aa587f27a4691053f0190a6668ecbe35a4187))
+
 ## [0.23.0](https://github.com/iloveitaly/aiautocommit/compare/v0.22.0...v0.23.0) (2026-08-14)
 
 
