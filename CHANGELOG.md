@@ -7,6 +7,13 @@
 
 
 
+## [0.25.0](https://github.com/iloveitaly/aiautocommit/compare/v0.24.0...v0.25.0) (2026-08-18)
+
+
+### Features
+
+* **cli:** include configured model in --version output ([#84](https://github.com/iloveitaly/aiautocommit/issues/84)) ([b5b9511](https://github.com/iloveitaly/aiautocommit/commit/b5b9511a2394f9a46b1a62c8e7dcb14c815009a3))
+
 ## [0.24.0](https://github.com/iloveitaly/aiautocommit/compare/v0.23.0...v0.24.0) (2026-08-14)
 
 
