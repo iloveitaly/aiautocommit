@@ -514,8 +514,25 @@ def check_lock_files():
     return "chore(deps): update lock files" + COMMIT_SUFFIX
 
 
+def echo_cli_version(ctx: click.Context, param: click.Parameter, value: bool) -> None:
+    if not value or ctx.resilient_parsing:
+        return
+
+    prog_name = ctx.find_root().info_name or "aiautocommit"
+    click.echo(f"{prog_name}, version {get_cli_version()}")
+    click.echo(f"model: {MODEL_NAME}")
+    ctx.exit()
+
+
 @click.group(invoke_without_command=True)
-@click.version_option(version=get_cli_version())
+@click.option(
+    "--version",
+    is_flag=True,
+    expose_value=False,
+    is_eager=True,
+    callback=echo_cli_version,
+    help="Show the version and configured model and exit.",
+)
 def main():
     """
     Generate a commit message for staged files and commit them.

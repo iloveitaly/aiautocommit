@@ -140,16 +140,25 @@ def test_debug_prompt(runner, git_repo):
 
 
 def test_version_option(runner):
-    from aiautocommit import get_cli_version, is_local_source_checkout
+    from aiautocommit import MODEL_NAME, get_cli_version, is_local_source_checkout
 
     result = runner.invoke(main, ["--version"])
     assert result.exit_code == 0
 
     cli_version = get_cli_version()
     assert cli_version in result.output
+    assert f"model: {MODEL_NAME}" in result.output
 
     if is_local_source_checkout():
         assert cli_version.endswith(".dev")
+
+
+def test_version_option_configured_model(runner):
+    with patch("aiautocommit.MODEL_NAME", "openai:gpt-4o"):
+        result = runner.invoke(main, ["--version"])
+
+    assert result.exit_code == 0
+    assert "model: openai:gpt-4o" in result.output
 
 
 def test_is_reversion_revert_head(runner, git_repo):
