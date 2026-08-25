@@ -80,6 +80,22 @@ def run_command(
             raise
 
 
+def get_git_toplevel() -> Path | None:
+    """Return the current worktree root, or None if not inside a git repo.
+
+    Uses `git rev-parse --show-toplevel`, which is worktree-aware: linked
+    worktrees return the worktree checkout directory (the folder that
+    contains the `.git` file), not the main repository.
+    """
+    try:
+        result = run_command(["git", "rev-parse", "--show-toplevel"], check=True)
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return None
+
+    toplevel = result.stdout.strip()
+    return Path(toplevel) if toplevel else None
+
+
 def get_current_branch() -> str | None:
     """Get the name of the current git branch."""
     try:

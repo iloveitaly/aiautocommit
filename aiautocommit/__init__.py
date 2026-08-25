@@ -80,6 +80,7 @@ from .timing import log_execution_time  # noqa: E402
 from .utils import (  # noqa: E402
     GIT_SAFE_DIFF_FLAGS,
     get_current_branch,
+    get_git_toplevel,
     run_command,
     safe_git_cmd,
     safe_git_diff_cmd,
@@ -113,7 +114,7 @@ except PackageNotFoundError:
 # Config file locations in priority order
 LOCAL_REPO_AUTOCOMMIT_DIR_NAME = ".aiautocommit"
 CONFIG_PATHS = [
-    Path(LOCAL_REPO_AUTOCOMMIT_DIR_NAME),  # $PWD/.aiautocommit
+    Path(LOCAL_REPO_AUTOCOMMIT_DIR_NAME),  # git worktree root (resolved at use time)
     Path(os.environ.get("XDG_CONFIG_HOME", "~/.config")).expanduser()
     / "aiautocommit",  # XDG config dir
     Path(__file__).parent / "prompt",  # package config dir
@@ -173,6 +174,29 @@ if not os.environ.get("AIAUTOCOMMIT_LOG_PATH"):
     logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
+def local_repo_config_path() -> Path:
+    """Return `.aiautocommit` in the current git worktree root.
+
+    Falls back to the current working directory when not inside a git repo.
+    Linked worktrees use the worktree checkout directory, not the main repo.
+    """
+    root = get_git_toplevel() or Path.cwd()
+    return root / LOCAL_REPO_AUTOCOMMIT_DIR_NAME
+
+
+def _is_unresolved_local_config_path(path: Path) -> bool:
+    return path.parts == (LOCAL_REPO_AUTOCOMMIT_DIR_NAME,)
+
+
+def config_search_paths() -> list[Path]:
+    """CONFIG_PATHS with the local `.aiautocommit` entry resolved to the worktree root."""
+    local = local_repo_config_path()
+    return [
+        local if _is_unresolved_local_config_path(path) else path
+        for path in CONFIG_PATHS
+    ]
+
+
 def configure_prompts(config_dir=None):
     global COMMIT_PROMPT, COMMIT_SUFFIX, EXCLUDED_FILES, CONFIG_PATHS
 
@@ -181,7 +205,9 @@ def configure_prompts(config_dir=None):
         CONFIG_PATHS.insert(0, Path(config_dir))
 
     # Skip .aiautocommit if it's a file — file mode appends to the base prompt rather than replacing it
-    config_dir = next((path for path in CONFIG_PATHS if path and path.is_dir()), None)
+    config_dir = next(
+        (path for path in config_search_paths() if path and path.is_dir()), None
+    )
 
     if not config_dir:
         log.debug("No config directory found")
@@ -197,7 +223,7 @@ def configure_prompts(config_dir=None):
         log.debug(f"'commit_prompt.txt' does not exist in {config_dir}")
 
     # A plain .aiautocommit file (not a directory) lets developers extend the stock prompt without fully replacing it
-    local_append_file = Path(LOCAL_REPO_AUTOCOMMIT_DIR_NAME)
+    local_append_file = local_repo_config_path()
     if local_append_file.is_file():
         log.debug("found .aiautocommit file, appending to prompt")
         COMMIT_PROMPT += "\n\n" + local_append_file.read_text().strip()
@@ -699,9 +725,9 @@ def uninstall():
 
 @main.command()
 def dump_prompts():
-    "Dump default prompts by copying the contents of the prompt directory to PWD for customization"
+    "Dump default prompts into `.aiautocommit/` at the git worktree root (or CWD if not in a git repo)"
 
-    config_dir = Path(LOCAL_REPO_AUTOCOMMIT_DIR_NAME)
+    config_dir = local_repo_config_path()
     config_dir.mkdir(exist_ok=True)
     source_prompt_dir = Path(__file__).parent / "prompt"
 
