@@ -11,8 +11,8 @@ def setup_logging():
     if log_path := os.environ.get("AIAUTOCOMMIT_LOG_PATH"):
         os.environ["PYTHON_LOG_PATH"] = log_path
 
-    # Suppress verbose INFO logs from google_genai
-    logging.getLogger("google_genai.models").setLevel(logging.WARNING)
+    # Suppress verbose INFO and AFC advisory WARNING logs from google_genai
+    logging.getLogger("google_genai.models").setLevel(logging.ERROR)
 
     return configure_logger(
         logger_factory=structlog.PrintLoggerFactory(file=sys.stderr)
