@@ -120,7 +120,7 @@ aiautocommit debug-prompt <sha> "the commit message was too vague"
 
 aiautocommit looks for configuration files in these locations (in priority order):
 
-* `.aiautocommit` in current directory — as a **directory** for full config, or a **file** to append to the default prompt
+* `.aiautocommit` in git root (or current directory) — as a **directory** for full config, or a **file** to append to the default prompt
 * $XDG_CONFIG_HOME/aiautocommit/ (defaults to ~/.config/aiautocommit/)
 * Custom path via aiautocommit_CONFIG environment variable
 
