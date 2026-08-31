@@ -134,7 +134,7 @@ This creates a `.aiautocommit/` directory with:
 
 * `commit_prompt.txt`: Template for generating commit messages
 * `excluded_files.txt`: List of files or glob patterns (e.g., `mise*lock`) to exclude from processing
-* `commit_suffix.txt`: Static suffix to append to commit messages. Useful for trailers.
+* `commit_suffix.txt`: Git trailers appended to every generated message (default `Generated-by: aiautocommit`). Trailers are stacked into one block after a blank line at the end of the subject/body — including trailers the model already wrote, such as `Dev-Note:`.
 
 If you create `.aiautocommit/examples/example_1.md`, `example_2.md`, and so on, they are appended to the prompt in filename order as few-shot examples. Keep them small and use this format:
 
