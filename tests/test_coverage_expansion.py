@@ -172,6 +172,9 @@ def test_configure_prompts_examples(runner):
 
             assert "example 1 content" in aiautocommit.COMMIT_PROMPT
             assert "example 2 content" in aiautocommit.COMMIT_PROMPT
+            assert "<examples>" in aiautocommit.COMMIT_PROMPT
+            assert "</examples>" in aiautocommit.COMMIT_PROMPT
+            assert "## Examples" not in aiautocommit.COMMIT_PROMPT
 
 
 def test_wait_for_internet_connection_success():
@@ -248,6 +251,36 @@ def test_generate_commit_message_with_suffix():
     with patch("aiautocommit.complete", return_value="feat: test"):
         with patch("aiautocommit.COMMIT_SUFFIX", " [suffix]"):
             assert generate_commit_message("some diff") == "feat: test [suffix]"
+
+
+def test_generate_commit_message_injects_xml_repo_information():
+    from aiautocommit import generate_commit_message
+
+    captured = {}
+
+    def fake_complete(prompt, diff):
+        captured["prompt"] = prompt
+        return "feat: test"
+
+    with (
+        patch("aiautocommit.complete", side_effect=fake_complete),
+        patch("aiautocommit.get_current_branch", return_value="feature/xml-tags"),
+        patch("aiautocommit.get_pull_request_context", return_value=None),
+        patch(
+            "aiautocommit.COMMIT_PROMPT",
+            "base prompt\n\n<examples>\nexample\n</examples>",
+        ),
+        patch("aiautocommit.COMMIT_SUFFIX", ""),
+    ):
+        generate_commit_message("some diff")
+
+    prompt = captured["prompt"]
+    assert "<repo_information>" in prompt
+    assert "</repo_information>" in prompt
+    assert "Current branch: feature/xml-tags" in prompt
+    assert prompt.index("<repo_information>") < prompt.index("<examples>")
+    assert "## Repo Information" not in prompt
+    assert "## Examples" not in prompt
 
 
 def test_install_pre_commit_exists(runner, git_repo):

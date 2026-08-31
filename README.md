@@ -189,8 +189,7 @@ aiautocommit dump-prompts
 Then add your scope specification to the commit prompt:
 
 ```
-#### 4. **Scopes**
-
+<scopes>
 Optional scopes (e.g., `feat(api):`):
 - `api`: API endpoints, controllers, services.
 - `frontend`: React components, styles, state management.
@@ -198,6 +197,7 @@ Optional scopes (e.g., `feat(api):`):
 - `jobs`: Background jobs, scheduled tasks.
 - `infra`: Infrastructure, networking, deployment, containerization.
 - `prompt`: Updates to LLM or AI prompts.
+</scopes>
 ```
 
 #### Lefthook Configuration

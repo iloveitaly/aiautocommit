@@ -242,11 +242,13 @@ def configure_prompts(config_dir=None):
         )
 
         if example_files:
-            COMMIT_PROMPT += "\n\n## Examples\n"
+            COMMIT_PROMPT += "\n\n<examples>\n"
 
-        for file in example_files:
-            log.debug(f"Adding example from {file}")
-            COMMIT_PROMPT += "\n\n" + file.read_text().strip() + "\n\n"
+            for file in example_files:
+                log.debug(f"Adding example from {file}")
+                COMMIT_PROMPT += "\n\n" + file.read_text().strip() + "\n\n"
+
+            COMMIT_PROMPT += "</examples>\n"
     else:
         log.debug(f"'examples' directory does not exist in {config_dir}")
 
@@ -394,14 +396,16 @@ def generate_commit_message(diff):
     branch = get_current_branch()
     prompt = COMMIT_PROMPT
     if branch:
-        repo_info = f"## Repo Information\n- Current branch: {branch}\n"
+        repo_info = f"<repo_information>\n- Current branch: {branch}\n"
 
         pr_context = get_pull_request_context(branch)
         if pr_context:
             repo_info += f"\n{pr_context}\n"
 
-        if "## Examples" in prompt:
-            prompt = prompt.replace("## Examples", f"{repo_info}\n## Examples")
+        repo_info += "</repo_information>"
+
+        if "<examples>" in prompt:
+            prompt = prompt.replace("<examples>", f"{repo_info}\n\n<examples>", 1)
         else:
             prompt = f"{prompt}\n\n{repo_info}"
 
