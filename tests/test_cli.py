@@ -36,6 +36,14 @@ def test_output_prompt(runner):
     result = runner.invoke(main, ["output-prompt"])
     assert result.exit_code == 0
     assert result.output.strip() != ""
+    assert "<instructions>" in result.output
+    assert "<subject_line>" in result.output
+    assert "<body>" in result.output
+    assert "<output>" in result.output
+    assert "<examples>" in result.output
+    assert "# Instructions" not in result.output
+    assert "## Subject Line" not in result.output
+    assert "## Examples" not in result.output
 
 
 def test_output_exclusions(runner):
@@ -310,6 +318,9 @@ def test_configure_prompts_with_examples(runner, git_repo):
     assert "base prompt" in COMMIT_PROMPT
     assert "example 1 content" in COMMIT_PROMPT
     assert "example 2 content" in COMMIT_PROMPT
+    assert COMMIT_PROMPT.index("<examples>") < COMMIT_PROMPT.index("example 1 content")
+    assert COMMIT_PROMPT.index("example 2 content") < COMMIT_PROMPT.index("</examples>")
+    assert "## Examples" not in COMMIT_PROMPT
 
 
 def test_complete_503_graceful_fallback():
