@@ -283,6 +283,39 @@ def test_generate_commit_message_injects_xml_repo_information():
     assert "## Examples" not in prompt
 
 
+def test_generate_commit_message_appends_repo_information_without_examples():
+    from aiautocommit import generate_commit_message
+
+    captured = {}
+
+    def fake_complete(prompt, diff):
+        captured["prompt"] = prompt
+        return "feat: test"
+
+    with (
+        patch("aiautocommit.complete", side_effect=fake_complete),
+        patch("aiautocommit.get_current_branch", return_value="main"),
+        patch(
+            "aiautocommit.get_pull_request_context",
+            return_value="<pull_request_title>PR #1: title</pull_request_title>\n",
+        ),
+        patch("aiautocommit.COMMIT_PROMPT", "base prompt only"),
+        patch("aiautocommit.COMMIT_SUFFIX", ""),
+    ):
+        generate_commit_message("some diff")
+
+    prompt = captured["prompt"]
+    assert prompt.startswith("base prompt only")
+    assert "<repo_information>" in prompt
+    assert "</repo_information>" in prompt
+    assert "Current branch: main" in prompt
+    assert "<pull_request_title>PR #1: title</pull_request_title>" in prompt
+    assert prompt.index("</repo_information>") > prompt.index(
+        "<pull_request_title>PR #1: title</pull_request_title>"
+    )
+    assert "## Repo Information" not in prompt
+
+
 def test_install_pre_commit_exists(runner, git_repo):
     runner.invoke(main, ["install"])
     result = runner.invoke(main, ["install"])
