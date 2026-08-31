@@ -112,6 +112,10 @@ aiautocommit output-exclusions
 
 # Generate a ChatGPT-ready debug block for a past commit to help iterate on the prompt
 aiautocommit debug-prompt <sha> "the commit message was too vague"
+
+# Ignore commands.md and instructions.md in home-level AI harness ignore files
+aiautocommit global-ignores --dry-run
+aiautocommit global-ignores
 ```
 
 `debug-prompt` outputs the diff, the generated commit message, and the full prompt in a format you can paste directly into ChatGPT to get suggestions for improving the prompt.

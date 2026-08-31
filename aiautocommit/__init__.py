@@ -73,6 +73,7 @@ from pydantic_ai.exceptions import (  # noqa: E402
     UserError,
 )
 
+from .global_ignores import apply_global_ignores, format_ignore_plan  # noqa: E402
 from .internet import wait_for_internet_connection  # noqa: E402
 from .log import log  # noqa: E402
 from .pull_request import get_pull_request_context  # noqa: E402
@@ -747,6 +748,25 @@ def dump_prompts():
             shutil.copy(item, target)
 
     click.echo(f"Copied contents of {source_prompt_dir} to {config_dir}")
+
+
+@main.command("global-ignores")
+@click.option(
+    "--dry-run",
+    is_flag=True,
+    default=False,
+    help="print planned home-level ignore updates without writing files",
+)
+def global_ignores(dry_run):
+    """
+    Ignore commands.md and instructions.md in home-level AI harness ignore files.
+
+    Writes gitignore-style patterns to ~/.cursorignore and the equivalent files
+    for other supported harnesses (Claude, Gemini, GitHub Copilot, OpenCode,
+    Antigravity, JetBrains, Windsurf).
+    """
+    planned = apply_global_ignores(dry_run=dry_run)
+    click.echo(format_ignore_plan(planned, dry_run=dry_run))
 
 
 @main.command()
