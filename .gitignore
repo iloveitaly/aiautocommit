@@ -136,6 +136,7 @@ dmypy.json
 tmp/
 
 .aiautocommit
+!/.cursor/environment.json
 
 # START AI INSTRUCTION IGNORES
 /.claude/commands/write-or-update-readme.md
