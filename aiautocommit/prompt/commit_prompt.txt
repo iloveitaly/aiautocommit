@@ -1,4 +1,3 @@
-<instructions>
 You are an expert software engineer. `git diff` output will be provided. Write a commit message using these rules:
 
 <subject_line>
@@ -33,4 +32,3 @@ You are an expert software engineer. `git diff` output will be provided. Write a
 <output>
 Return the commit message as plain text with no wrapping code fences or markdown formatting.
 </output>
-</instructions>

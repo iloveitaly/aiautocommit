@@ -36,11 +36,11 @@ def test_output_prompt(runner):
     result = runner.invoke(main, ["output-prompt"])
     assert result.exit_code == 0
     assert result.output.strip() != ""
-    assert "<instructions>" in result.output
     assert "<subject_line>" in result.output
     assert "<body>" in result.output
     assert "<output>" in result.output
     assert "<examples>" in result.output
+    assert "<instructions>" not in result.output
     assert "# Instructions" not in result.output
     assert "## Subject Line" not in result.output
     assert "## Examples" not in result.output
