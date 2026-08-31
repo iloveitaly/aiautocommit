@@ -15,7 +15,7 @@ from aiautocommit.global_ignores import (
 
 
 def test_upsert_appends_marked_block():
-    result = upsert_ignore_content("node_modules/\n")
+    result = upsert_ignore_content("node_modules/")
 
     assert result.startswith("node_modules/\n")
     assert START_MARKER in result
@@ -84,7 +84,9 @@ def test_dry_run_does_not_write(tmp_path):
 
 
 def test_cli_dry_run(tmp_path, monkeypatch):
-    monkeypatch.setattr("aiautocommit.global_ignores.home_dir", lambda: tmp_path)
+    monkeypatch.setattr(
+        "aiautocommit.global_ignores.home_dir", lambda: tmp_path
+    )
     runner = CliRunner()
 
     result = runner.invoke(main, ["global-ignores", "--dry-run"])

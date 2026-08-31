@@ -757,7 +757,7 @@ def dump_prompts():
     default=False,
     help="print planned home-level ignore updates without writing files",
 )
-def global_ignores(dry_run):
+def write_global_ignores(dry_run):
     """
     Ignore commands.md and instructions.md in home-level AI harness ignore files.
 
