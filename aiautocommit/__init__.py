@@ -228,7 +228,11 @@ def configure_prompts(config_dir=None):
     local_append_file = local_repo_config_path()
     if local_append_file.is_file():
         log.debug("found .aiautocommit file, appending to prompt")
-        COMMIT_PROMPT += "\n\n" + local_append_file.read_text().strip()
+        COMMIT_PROMPT += (
+            "\n\n<project_instructions>\n"
+            + local_append_file.read_text().strip()
+            + "\n</project_instructions>"
+        )
 
     examples_dir = config_dir / "examples"
     if examples_dir.exists():
@@ -369,8 +373,24 @@ def format_error_json(body: object) -> str | None:
     return str(body)
 
 
+def build_repo_information(branch: str, pr_context: str | None) -> str:
+    parts = ["<repo_information>", f"<branch>{branch}</branch>"]
+    if pr_context:
+        parts.append(pr_context.strip())
+    parts.append("</repo_information>")
+    return "\n".join(parts)
+
+
+def build_user_message(diff: str, repo_info: str | None = None) -> str:
+    truncated_diff = diff if PROMPT_CUTOFF is None else diff[:PROMPT_CUTOFF]
+    message = f"<diff>\n{truncated_diff}\n</diff>"
+    if repo_info:
+        return f"{repo_info}\n\n{message}"
+    return message
+
+
 @log_execution_time("ai_generation")
-def complete(prompt, diff):
+def complete(prompt, diff, repo_info=None):
     if PROMPT_CUTOFF is not None and len(diff) > PROMPT_CUTOFF:
         log.info(
             f"Prompt length ({len(diff)}) exceeds the maximum allowed length, truncating."
@@ -394,7 +414,9 @@ def complete(prompt, diff):
             model_settings = ModelSettings(thinking="low")
 
         # Run the agent synchronously
-        result = agent.run_sync(diff[:PROMPT_CUTOFF], model_settings=model_settings)
+        result = agent.run_sync(
+            build_user_message(diff, repo_info), model_settings=model_settings
+        )
     except UserError as e:
         raise UserFacingError(e.message) from None
     except ModelHTTPError as e:
@@ -436,21 +458,11 @@ def generate_commit_message(diff):
 
     branch = get_current_branch()
     prompt = COMMIT_PROMPT
+    repo_info = None
     if branch:
-        repo_info = f"<repo_information>\n- Current branch: {branch}\n"
+        repo_info = build_repo_information(branch, get_pull_request_context(branch))
 
-        pr_context = get_pull_request_context(branch)
-        if pr_context:
-            repo_info += f"\n{pr_context}\n"
-
-        repo_info += "</repo_information>"
-
-        if "<examples>" in prompt:
-            prompt = prompt.replace("<examples>", f"{repo_info}\n\n<examples>", 1)
-        else:
-            prompt = f"{prompt}\n\n{repo_info}"
-
-    message = complete(prompt, diff)
+    message = complete(prompt, diff, repo_info=repo_info)
     # If the generated message is empty, do not add the commit suffix.
     if not message.strip() or message.strip() == '""':
         return ""

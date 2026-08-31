@@ -258,8 +258,10 @@ def test_generate_commit_message_injects_xml_repo_information():
 
     captured = {}
 
-    def fake_complete(prompt, diff):
+    def fake_complete(prompt, diff, repo_info=None):
         captured["prompt"] = prompt
+        captured["diff"] = diff
+        captured["repo_info"] = repo_info
         return "feat: test"
 
     with (
@@ -274,13 +276,12 @@ def test_generate_commit_message_injects_xml_repo_information():
     ):
         generate_commit_message("some diff")
 
-    prompt = captured["prompt"]
-    assert "<repo_information>" in prompt
-    assert "</repo_information>" in prompt
-    assert "Current branch: feature/xml-tags" in prompt
-    assert prompt.index("<repo_information>") < prompt.index("<examples>")
-    assert "## Repo Information" not in prompt
-    assert "## Examples" not in prompt
+    assert captured["prompt"] == "base prompt\n\n<examples>\nexample\n</examples>"
+    assert captured["diff"] == "some diff"
+    assert "<repo_information>" in captured["repo_info"]
+    assert "<branch>feature/xml-tags</branch>" in captured["repo_info"]
+    assert "## Repo Information" not in captured["repo_info"]
+    assert "<repo_information>" not in captured["prompt"]
 
 
 def test_generate_commit_message_appends_repo_information_without_examples():
@@ -288,8 +289,9 @@ def test_generate_commit_message_appends_repo_information_without_examples():
 
     captured = {}
 
-    def fake_complete(prompt, diff):
+    def fake_complete(prompt, diff, repo_info=None):
         captured["prompt"] = prompt
+        captured["repo_info"] = repo_info
         return "feat: test"
 
     with (
@@ -304,16 +306,14 @@ def test_generate_commit_message_appends_repo_information_without_examples():
     ):
         generate_commit_message("some diff")
 
-    prompt = captured["prompt"]
-    assert prompt.startswith("base prompt only")
-    assert "<repo_information>" in prompt
-    assert "</repo_information>" in prompt
-    assert "Current branch: main" in prompt
-    assert "<pull_request_title>PR #1: title</pull_request_title>" in prompt
-    assert prompt.index("</repo_information>") > prompt.index(
+    assert captured["prompt"] == "base prompt only"
+    repo_info = captured["repo_info"]
+    assert "<branch>main</branch>" in repo_info
+    assert "<pull_request_title>PR #1: title</pull_request_title>" in repo_info
+    assert repo_info.index("</repo_information>") > repo_info.index(
         "<pull_request_title>PR #1: title</pull_request_title>"
     )
-    assert "## Repo Information" not in prompt
+    assert "## Repo Information" not in repo_info
 
 
 def test_install_pre_commit_exists(runner, git_repo):
