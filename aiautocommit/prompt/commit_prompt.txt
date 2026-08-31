@@ -30,5 +30,5 @@ You are an expert software engineer. `git diff` output will be provided. Write a
 </body>
 
 <output>
-Return the commit message as plain text with no wrapping code fences or markdown formatting.
+Return the commit message as plain text. Do not wrap it in XML tags, code fences, or other markdown.
 </output>

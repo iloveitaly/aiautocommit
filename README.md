@@ -140,21 +140,21 @@ If you create `.aiautocommit/examples/example_1.md`, `example_2.md`, and so on, 
 
 ```text
 <example>
-<context>
-- short|medium|large diff
-- include body: yes|no
-- primary change: one-line intent
-</context>
-
 <diff>
 diff --git ...
 </diff>
 
-<expected>
+<diffAnalysis>
+- short|medium|large diff
+- omit body | include body
+- primary change: one-line intent
+</diffAnalysis>
+
+<commitMessage>
 feat: concise subject
 
 - optional body bullet
-</expected>
+</commitMessage>
 </example>
 ```
 
