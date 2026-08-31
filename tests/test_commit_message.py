@@ -20,7 +20,7 @@ def test_generate_commit_message_quoted_empty():
 def test_generate_commit_message_with_suffix():
     with patch("aiautocommit.complete", return_value="feat: test"):
         with patch("aiautocommit.COMMIT_SUFFIX", " [suffix]"):
-            assert generate_commit_message("some diff") == "feat: test [suffix]"
+            assert generate_commit_message("some diff") == "feat: test\n\n\n[suffix]"
 
 
 def test_generate_commit_message_injects_xml_repo_information():
