@@ -69,7 +69,7 @@ lint FILES=".":
 
         uv run pyright {{FILES}} --outputjson > pyright_report.json || exit_code=$?
         jq -r \
-            --arg root "$GITHUB_WORKSPACE/" \
+            --arg root "${GITHUB_WORKSPACE:-}/" \
             '
                 .generalDiagnostics[] |
                 .file as $file |
