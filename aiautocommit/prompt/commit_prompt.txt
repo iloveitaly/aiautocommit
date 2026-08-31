@@ -29,6 +29,14 @@ You are an expert software engineer. `git diff` output will be provided. Write a
 - Don't restate the diff in English — explain the reasoning behind it.
 </body>
 
+<trailers>
+Git trailers are `Token: value` lines at the end of the message. They must form a single last paragraph:
+
+- Put them after one blank line following the subject or body
+- Stack trailer lines with no blank lines between them
+- Do not add a `Generated-by` trailer
+</trailers>
+
 <output>
 Return the commit message as plain text. Do not wrap it in XML tags, code fences, or other markdown.
 </output>
