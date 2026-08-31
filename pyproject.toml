@@ -9,14 +9,14 @@ dependencies = [
     "structlog-config>=0.15.0",
     "backoff>=2.2.1",
     "click>=8.5.0",
-    "pydantic-ai-slim[anthropic,google,openai]>=2.35.1",
+    "pydantic-ai-slim[anthropic,google,openai]>=2.36.0",
 ]
 authors = [{ name = "Michael Bianco", email = "mike@mikebian.co" }]
 urls = { "Repository" = "https://github.com/iloveitaly/aiautocommit" }
 
 [project.optional-dependencies]
 all-providers = [
-    "pydantic-ai>=2.35.1",
+    "pydantic-ai>=2.36.0",
 ]
 
 # additional packaging information: https://packaging.python.org/en/latest/specifications/core-metadata/#license
@@ -36,10 +36,10 @@ module-root = ""
 dev = [
     "pytest>=9.1.1",
     "pyright[nodejs]>=1.1.411",
-    "ruff>=0.16.4",
+    "ruff>=0.16.5",
     "pudb>=2025.1.5",
-    "beautiful-traceback>=0.9.0",
-    "coverage>=7.15.4",
+    "beautiful-traceback>=1.0.0",
+    "coverage>=7.16.0",
     "pytest-cov>=7.1.0",
     "covdefaults>=2.3.0",
 ]
