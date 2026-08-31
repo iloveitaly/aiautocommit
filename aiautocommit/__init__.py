@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import re
@@ -341,6 +342,31 @@ class UserFacingError(click.ClickException):
         click.secho(self.format_message(), fg="red", err=True)
 
 
+def format_error_json(body: object) -> str | None:
+    """
+    Format an error response body or object into a pretty-printed JSON string.
+
+    Used to capture and surface detailed provider diagnostic payloads (e.g. rejected parameters,
+    unsupported features, thinking budget errors, or rate limits) in the logs when AI model
+    API calls fail with non-success error codes.
+    """
+    if body is None:
+        return None
+    if isinstance(body, (dict, list)):
+        try:
+            return json.dumps(body, indent=2, default=str)
+        except Exception:
+            return str(body)
+    if isinstance(body, (str, bytes)):
+        text = body if isinstance(body, str) else body.decode("utf-8", errors="replace")
+        try:
+            parsed = json.loads(text)
+            return json.dumps(parsed, indent=2, default=str)
+        except Exception:
+            return text
+    return str(body)
+
+
 @log_execution_time("ai_generation")
 def complete(prompt, diff):
     if PROMPT_CUTOFF is not None and len(diff) > PROMPT_CUTOFF:
@@ -370,13 +396,27 @@ def complete(prompt, diff):
     except UserError as e:
         raise UserFacingError(e.message) from None
     except ModelHTTPError as e:
-        log.warning(
-            f"AI model is currently unavailable (HTTP {e.status_code}). "
-            "Falling back to manual commit message."
-        )
+        error_details = format_error_json(e.body)
+        if error_details:
+            log.warning(
+                f"AI model request failed with HTTP {e.status_code} ({e.model_name}):\n{error_details}\n"
+                "Falling back to manual commit message."
+            )
+        else:
+            log.warning(
+                f"AI model is currently unavailable (HTTP {e.status_code}). "
+                "Falling back to manual commit message."
+            )
         return "# aiautocommit: AI model unavailable. Falling back to manual message."
     except ModelAPIError as e:
-        log.warning(f"AI API error: {e}. Falling back to manual commit message.")
+        error_details = format_error_json(getattr(e, "body", None))
+        if error_details:
+            log.warning(
+                f"AI API error ({e.model_name}):\n{error_details}\n"
+                "Falling back to manual commit message."
+            )
+        else:
+            log.warning(f"AI API error: {e}. Falling back to manual commit message.")
         return "# aiautocommit: AI model unavailable. Falling back to manual message."
 
     # Pydantic AI returns a RunResult object, we need the output data

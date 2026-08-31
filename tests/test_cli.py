@@ -340,6 +340,53 @@ def test_complete_503_graceful_fallback():
         )
 
 
+def test_format_error_json():
+    from aiautocommit import format_error_json
+
+    assert format_error_json(None) is None
+    assert format_error_json({"error": "test"}) == '{\n  "error": "test"\n}'
+    assert format_error_json('{"code": 400}') == '{\n  "code": 400\n}'
+    assert format_error_json(b'{"bytes": true}') == '{\n  "bytes": true\n}'
+    assert format_error_json("plain error text") == "plain error text"
+
+
+def test_complete_model_http_error_no_body():
+    from pydantic_ai.exceptions import ModelHTTPError
+
+    from aiautocommit import complete
+
+    with patch("aiautocommit.Agent") as mock_agent_class:
+        mock_agent = mock_agent_class.return_value
+        mock_agent.run_sync.side_effect = ModelHTTPError(
+            status_code=500,
+            model_name="test-model",
+            body=None,
+        )
+        result = complete("prompt", "diff")
+        assert (
+            result
+            == "# aiautocommit: AI model unavailable. Falling back to manual message."
+        )
+
+
+def test_complete_model_api_error():
+    from pydantic_ai.exceptions import ModelAPIError
+
+    from aiautocommit import complete
+
+    with patch("aiautocommit.Agent") as mock_agent_class:
+        mock_agent = mock_agent_class.return_value
+        mock_agent.run_sync.side_effect = ModelAPIError(
+            model_name="test-model",
+            message="Connection failed",
+        )
+        result = complete("prompt", "diff")
+        assert (
+            result
+            == "# aiautocommit: AI model unavailable. Falling back to manual message."
+        )
+
+
 def test_complete_user_error_as_red_message(runner, git_repo):
     from pydantic_ai.exceptions import UserError
 
