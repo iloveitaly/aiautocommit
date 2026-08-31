@@ -298,32 +298,10 @@ def test_complete_truncation():
         long_diff = "a" * (PROMPT_CUTOFF + 100)
         complete("prompt", long_diff)
 
+        # Verify run_sync was called with the truncated raw diff as the user message
         call_args = mock_agent.run_sync.call_args[0][0]
-        assert call_args.startswith("<diff>\n")
-        assert call_args.endswith("\n</diff>")
-        inner_diff = call_args.removeprefix("<diff>\n").removesuffix("\n</diff>")
-        assert len(inner_diff) == PROMPT_CUTOFF
-
-
-def test_complete_wraps_diff_and_repo_information():
-    from aiautocommit import complete
-
-    with patch("aiautocommit.Agent") as mock_agent_class:
-        mock_agent = mock_agent_class.return_value
-        mock_agent.run_sync.return_value.output = "feat: test"
-
-        complete(
-            "prompt",
-            "the diff",
-            repo_info="<repo_information>\n<branch>main</branch>\n</repo_information>",
-        )
-
-        user_message = mock_agent.run_sync.call_args[0][0]
-
-    assert user_message.startswith("<repo_information>")
-    assert "<branch>main</branch>" in user_message
-    assert "<diff>\nthe diff\n</diff>" in user_message
-    assert user_message.index("</repo_information>") < user_message.index("<diff>")
+        assert call_args == long_diff[:PROMPT_CUTOFF]
+        assert "<diff>" not in call_args
 
 
 def test_configure_prompts_with_examples(runner, git_repo):

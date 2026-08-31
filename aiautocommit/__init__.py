@@ -354,16 +354,8 @@ def build_repo_information(branch: str, pr_context: str | None) -> str:
     return "\n".join(parts)
 
 
-def build_user_message(diff: str, repo_info: str | None = None) -> str:
-    truncated_diff = diff if PROMPT_CUTOFF is None else diff[:PROMPT_CUTOFF]
-    message = f"<diff>\n{truncated_diff}\n</diff>"
-    if repo_info:
-        return f"{repo_info}\n\n{message}"
-    return message
-
-
 @log_execution_time("ai_generation")
-def complete(prompt, diff, repo_info=None):
+def complete(prompt, diff):
     if PROMPT_CUTOFF is not None and len(diff) > PROMPT_CUTOFF:
         log.info(
             f"Prompt length ({len(diff)}) exceeds the maximum allowed length, truncating."
@@ -387,9 +379,7 @@ def complete(prompt, diff, repo_info=None):
             model_settings = ModelSettings(thinking="low")
 
         # Run the agent synchronously
-        result = agent.run_sync(
-            build_user_message(diff, repo_info), model_settings=model_settings
-        )
+        result = agent.run_sync(diff[:PROMPT_CUTOFF], model_settings=model_settings)
     except UserError as e:
         raise UserFacingError(e.message) from None
     except ModelHTTPError as e:
@@ -415,13 +405,15 @@ def generate_commit_message(diff):
         log.debug("No commit message generated")
         return ""
 
-    branch = get_current_branch()
     prompt = COMMIT_PROMPT
-    repo_info = None
+    branch = get_current_branch()
     if branch:
-        repo_info = build_repo_information(branch, get_pull_request_context(branch))
+        prompt = (
+            f"{prompt}\n\n"
+            f"{build_repo_information(branch, get_pull_request_context(branch))}"
+        )
 
-    message = complete(prompt, diff, repo_info=repo_info)
+    message = complete(prompt, diff)
     # If the generated message is empty, do not add the commit suffix.
     if not message.strip() or message.strip() == '""':
         return ""
