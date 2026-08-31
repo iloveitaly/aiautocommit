@@ -7,6 +7,23 @@
 
 
 
+## [0.26.0](https://github.com/iloveitaly/aiautocommit/compare/v0.25.0...v0.26.0) (2026-08-31)
+
+
+### Features
+
+* resolve local configuration from git worktree root ([83af908](https://github.com/iloveitaly/aiautocommit/commit/83af9085167fd732058e3ff698f7767ea7a92461))
+
+
+### Bug Fixes
+
+* **log:** suppress warning logs from google_genai models ([ba43e05](https://github.com/iloveitaly/aiautocommit/commit/ba43e058760a60cc4820bc162c166c3eec602bfe))
+
+
+### Documentation
+
+* clarify config lookup in git root ([3d83526](https://github.com/iloveitaly/aiautocommit/commit/3d83526d7675253645707600097d9f77ca0b7ed2))
+
 ## [0.25.0](https://github.com/iloveitaly/aiautocommit/compare/v0.24.0...v0.25.0) (2026-08-18)
 
 
