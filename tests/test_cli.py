@@ -36,6 +36,14 @@ def test_output_prompt(runner):
     result = runner.invoke(main, ["output-prompt"])
     assert result.exit_code == 0
     assert result.output.strip() != ""
+    assert "<subject_line>" in result.output
+    assert "<body>" in result.output
+    assert "<output>" in result.output
+    assert "<examples>" in result.output
+    assert "<instructions>" not in result.output
+    assert "# Instructions" not in result.output
+    assert "## Subject Line" not in result.output
+    assert "## Examples" not in result.output
 
 
 def test_output_exclusions(runner):
@@ -216,6 +224,8 @@ def test_configure_prompts_appends_file_from_subdirectory(runner, git_repo):
     from aiautocommit import COMMIT_PROMPT
 
     assert "Always mention JIRA tickets" in COMMIT_PROMPT
+    assert "<project_instructions>" in COMMIT_PROMPT
+    assert "</project_instructions>" in COMMIT_PROMPT
 
 
 def test_dump_prompts_to_git_root(runner, git_repo):
@@ -288,9 +298,10 @@ def test_complete_truncation():
         long_diff = "a" * (PROMPT_CUTOFF + 100)
         complete("prompt", long_diff)
 
-        # Verify run_sync was called with truncated diff
+        # Verify run_sync was called with the truncated raw diff as the user message
         call_args = mock_agent.run_sync.call_args[0][0]
-        assert len(call_args) == PROMPT_CUTOFF
+        assert call_args == long_diff[:PROMPT_CUTOFF]
+        assert "<diff>" not in call_args
 
 
 def test_configure_prompts_with_examples(runner, git_repo):
@@ -310,6 +321,9 @@ def test_configure_prompts_with_examples(runner, git_repo):
     assert "base prompt" in COMMIT_PROMPT
     assert "example 1 content" in COMMIT_PROMPT
     assert "example 2 content" in COMMIT_PROMPT
+    assert COMMIT_PROMPT.index("<examples>") < COMMIT_PROMPT.index("example 1 content")
+    assert COMMIT_PROMPT.index("example 2 content") < COMMIT_PROMPT.index("</examples>")
+    assert "## Examples" not in COMMIT_PROMPT
 
 
 def test_complete_503_graceful_fallback():
