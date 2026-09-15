@@ -7,6 +7,21 @@
 
 
 
+## [0.27.0](https://github.com/iloveitaly/aiautocommit/compare/v0.26.0...v0.27.0) (2026-09-15)
+
+
+### Features
+
+* **cli:** add global-ignores for home-level AI harness ignore files ([#90](https://github.com/iloveitaly/aiautocommit/issues/90)) ([c10146d](https://github.com/iloveitaly/aiautocommit/commit/c10146d1de95d170061388f2925aadff0fd1d801))
+* log detailed error payloads on model API failures ([441c53c](https://github.com/iloveitaly/aiautocommit/commit/441c53c7bc4794ccc44a6940b55b0bee5cf7d0b3))
+* update default model to gemini-3.8-flash ([772074a](https://github.com/iloveitaly/aiautocommit/commit/772074a79eaf1521dcb14d624ab5aa4973ac6193))
+* update default model to google:gemini-3.8-flash ([772074a](https://github.com/iloveitaly/aiautocommit/commit/772074a79eaf1521dcb14d624ab5aa4973ac6193))
+
+
+### Documentation
+
+* remove redundant agent instructions pointer ([46e7e11](https://github.com/iloveitaly/aiautocommit/commit/46e7e11c120fea8e90c3b9a961a8eda6eba0768a))
+
 ## [0.26.0](https://github.com/iloveitaly/aiautocommit/compare/v0.25.0...v0.26.0) (2026-08-31)
 
 
