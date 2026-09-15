@@ -108,8 +108,6 @@ def format_ignore_plan(planned: list[PlannedIgnoreWrite], *, dry_run: bool) -> s
     lines: list[str] = []
 
     for item in planned:
-        lines.append(
-            f"{verb[item.action]} {item.path} ({item.harness}): {patterns}"
-        )
+        lines.append(f"{verb[item.action]} {item.path} ({item.harness}): {patterns}")
 
     return "\n".join(lines)
