@@ -83,6 +83,7 @@ from .utils import (  # noqa: E402
     GIT_SAFE_DIFF_FLAGS,
     get_current_branch,
     get_git_toplevel,
+    render_tag,
     run_command,
     safe_git_cmd,
     safe_git_diff_cmd,
@@ -228,7 +229,9 @@ def configure_prompts(config_dir=None):
     local_append_file = local_repo_config_path()
     if local_append_file.is_file():
         log.debug("found .aiautocommit file, appending to prompt")
-        COMMIT_PROMPT += "\n\n" + local_append_file.read_text().strip()
+        COMMIT_PROMPT += "\n\n" + render_tag(
+            "project_instructions", local_append_file.read_text()
+        )
 
     examples_dir = config_dir / "examples"
     if examples_dir.exists():
@@ -244,11 +247,12 @@ def configure_prompts(config_dir=None):
         )
 
         if example_files:
-            COMMIT_PROMPT += "\n\n## Examples\n"
+            example_texts = []
+            for file in example_files:
+                log.debug(f"Adding example from {file}")
+                example_texts.append(file.read_text())
 
-        for file in example_files:
-            log.debug(f"Adding example from {file}")
-            COMMIT_PROMPT += "\n\n" + file.read_text().strip() + "\n\n"
+            COMMIT_PROMPT += "\n\n" + render_tag("examples", example_texts)
     else:
         log.debug(f"'examples' directory does not exist in {config_dir}")
 
@@ -367,6 +371,13 @@ def format_error_json(body: object) -> str | None:
     return str(body)
 
 
+def build_repo_information(branch: str, pr_context: str | None) -> str:
+    return render_tag(
+        "repo_information",
+        [render_tag("branch", branch), pr_context],
+    )
+
+
 @log_execution_time("ai_generation")
 def complete(prompt, diff):
     if PROMPT_CUTOFF is not None and len(diff) > PROMPT_CUTOFF:
@@ -432,19 +443,13 @@ def generate_commit_message(diff):
         log.debug("No commit message generated")
         return ""
 
-    branch = get_current_branch()
     prompt = COMMIT_PROMPT
+    branch = get_current_branch()
     if branch:
-        repo_info = f"## Repo Information\n- Current branch: {branch}\n"
-
-        pr_context = get_pull_request_context(branch)
-        if pr_context:
-            repo_info += f"\n{pr_context}\n"
-
-        if "## Examples" in prompt:
-            prompt = prompt.replace("## Examples", f"{repo_info}\n## Examples")
-        else:
-            prompt = f"{prompt}\n\n{repo_info}"
+        prompt = (
+            f"{prompt}\n\n"
+            f"{build_repo_information(branch, get_pull_request_context(branch))}"
+        )
 
     message = complete(prompt, diff)
     # If the generated message is empty, do not add the commit suffix.

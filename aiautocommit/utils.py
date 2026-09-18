@@ -1,4 +1,5 @@
 import subprocess
+from collections.abc import Sequence
 from pathlib import Path
 
 from .log import log
@@ -128,3 +129,20 @@ def is_default_branch(branch: str | None) -> bool:
         return branch == default
 
     return branch in ("main", "master", "trunk", "develop")
+
+
+def render_tag(name: str, content: str | Sequence[str | None]) -> str:
+    """Wrap prompt content in an XML-style tag.
+
+    A string is inlined when it is a single line and expanded when it
+    contains newlines. A list is always a block: items are joined with
+    newlines and empty/None entries are dropped.
+    """
+    if isinstance(content, str):
+        inner = content.strip()
+        if "\n" in inner:
+            return f"<{name}>\n{inner}\n</{name}>"
+        return f"<{name}>{inner}</{name}>"
+
+    inner = "\n".join(part.strip() for part in content if part and part.strip())
+    return f"<{name}>\n{inner}\n</{name}>"

@@ -144,21 +144,21 @@ If you create `.aiautocommit/examples/example_1.md`, `example_2.md`, and so on, 
 
 ```text
 <example>
-<context>
-- short|medium|large diff
-- include body: yes|no
-- primary change: one-line intent
-</context>
-
 <diff>
 diff --git ...
 </diff>
 
-<expected>
+<diffAnalysis>
+- short|medium|large diff
+- omit body | include body
+- primary change: one-line intent
+</diffAnalysis>
+
+<commitMessage>
 feat: concise subject
 
 - optional body bullet
-</expected>
+</commitMessage>
 </example>
 ```
 
@@ -193,8 +193,7 @@ aiautocommit dump-prompts
 Then add your scope specification to the commit prompt:
 
 ```
-#### 4. **Scopes**
-
+<scopes>
 Optional scopes (e.g., `feat(api):`):
 - `api`: API endpoints, controllers, services.
 - `frontend`: React components, styles, state management.
@@ -202,6 +201,7 @@ Optional scopes (e.g., `feat(api):`):
 - `jobs`: Background jobs, scheduled tasks.
 - `infra`: Infrastructure, networking, deployment, containerization.
 - `prompt`: Updates to LLM or AI prompts.
+</scopes>
 ```
 
 #### Lefthook Configuration
