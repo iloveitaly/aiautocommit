@@ -283,73 +283,42 @@ def is_git_trailer(line: str) -> bool:
     return bool(_TRAILER_LINE.match(line))
 
 
-def split_trailing_trailers(message: str) -> tuple[str, list[str]]:
-    """Split a commit message into body and trailing git trailer lines.
-
-    The first line is always the subject, even when it matches `Token: value`
-    (conventional commits). Blank lines between trailing trailers are ignored
-    so a generated trailer can be stacked with `Generated-by`.
-    """
-    raw = message.rstrip("\n")
-    if not raw.strip():
-        return raw, []
-
-    lines = raw.split("\n")
-    subject = lines[0]
-    rest = lines[1:]
-
-    trailers: list[str] = []
-    i = len(rest) - 1
-    while i >= 0:
-        line = rest[i]
-        if is_git_trailer(line):
-            trailers.append(line)
-            i -= 1
-            continue
-        if line == "" and trailers:
-            i -= 1
-            continue
-        break
-
-    trailers.reverse()
-    body = "\n".join([subject, *rest[: i + 1]]).rstrip()
-    return body, trailers
-
-
-def trailer_lines_from_suffix(suffix: str) -> list[str] | None:
-    """Return trailer lines when every non-empty suffix line is a trailer."""
-    nonempty = [ln.rstrip() for ln in suffix.splitlines() if ln.strip()]
-    if nonempty and all(is_git_trailer(ln) for ln in nonempty):
-        return nonempty
-    return None
-
-
 def apply_commit_suffix(message: str, suffix: str) -> str:
-    """Append commit_suffix, stacking git trailers into one last paragraph.
+    """Append commit_suffix using `git interpret-trailers`.
 
     GitHub historically needed two blank lines before a trailer block
     (https://github.com/orgs/community/discussions/143092). Non-trailer
-    suffixes keep that spacing. Trailer suffixes use one blank line so the
-    block stays a single paragraph for `git interpret-trailers`.
+    suffixes keep that spacing. Trailer suffixes go through git so they
+    stack onto any trailers already in the message.
     """
     stripped_suffix = suffix.strip()
     if not stripped_suffix:
         return message
 
-    suffix_trailers = trailer_lines_from_suffix(stripped_suffix)
-    if suffix_trailers is None:
-        return message.rstrip() + "\n\n\n" + stripped_suffix
+    trailer_args: list[str] = []
+    for line in stripped_suffix.splitlines():
+        line = line.strip()
+        if not line:
+            continue
+        if not is_git_trailer(line):
+            return message.rstrip() + "\n\n\n" + stripped_suffix
+        trailer_args.extend(["--trailer", line])
 
-    body, message_trailers = split_trailing_trailers(message)
-    stacked = list(message_trailers)
-    for trailer in suffix_trailers:
-        if trailer not in stacked:
-            stacked.append(trailer)
-
-    if not body.strip():
-        return "\n".join(stacked)
-
-    return body + "\n\n" + "\n".join(stacked)
+    # A trailing newline is required so git inserts a blank line before a
+    # new trailer block instead of gluing it to the subject.
+    result = run_command(
+        [
+            *safe_git_cmd(),
+            "interpret-trailers",
+            "--if-exists",
+            "addIfDifferent",
+            *trailer_args,
+        ],
+        input=message.rstrip() + "\n",
+        check=True,
+        timing_label="git interpret-trailers",
+    )
+    return result.stdout.rstrip("\n")
 
 
 def get_diff_size(section: list[str]) -> int:

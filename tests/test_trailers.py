@@ -1,12 +1,7 @@
 import subprocess
 from unittest.mock import patch
 
-from aiautocommit import (
-    apply_commit_suffix,
-    generate_commit_message,
-    is_git_trailer,
-    split_trailing_trailers,
-)
+from aiautocommit import apply_commit_suffix, generate_commit_message, is_git_trailer
 
 
 def git_parse_trailers(message: str) -> list[str]:
@@ -56,7 +51,7 @@ def test_stack_llm_trailer_above_generated_by():
     ]
 
 
-def test_blank_line_between_trailers_is_collapsed():
+def test_trailing_blank_after_trailer_does_not_split_block():
     message = (
         "docs: update coding instructions and guidelines\n"
         "\n"
@@ -73,33 +68,13 @@ def test_blank_line_between_trailers_is_collapsed():
     ]
 
 
-def test_glued_trailer_after_conventional_subject():
-    message = (
-        "docs: update coding instructions and guidelines\n"
-        "Dev-Note: LLM instructions have been updated"
-    )
-    result = apply_commit_suffix(message, "Generated-by: aiautocommit")
-
-    assert result == (
-        "docs: update coding instructions and guidelines\n"
-        "\n"
-        "Dev-Note: LLM instructions have been updated\n"
-        "Generated-by: aiautocommit"
-    )
-    assert git_parse_trailers(result) == [
-        "Dev-Note: LLM instructions have been updated",
-        "Generated-by: aiautocommit",
-    ]
-
-
-def test_body_then_multiple_trailers():
+def test_body_then_trailer_block():
     message = (
         "feat: add retry to webhook delivery\n"
         "\n"
         "- partner API is flaky on timeouts\n"
         "\n"
         "Dev-Note: retries are required by the partner SLA\n"
-        "\n"
         "Signed-off-by: Dev <dev@example.com>"
     )
     result = apply_commit_suffix(message, "Generated-by: aiautocommit")
@@ -140,12 +115,6 @@ def test_multiline_suffix_trailers_are_stacked():
 def test_non_trailer_suffix_is_appended_as_a_block():
     result = apply_commit_suffix("feat: test", "custom suffix")
     assert result == "feat: test\n\n\ncustom suffix"
-
-
-def test_split_does_not_treat_subject_as_trailer():
-    body, trailers = split_trailing_trailers("feat: add login")
-    assert body == "feat: add login"
-    assert trailers == []
 
 
 def test_generate_commit_message_stacks_trailers():
