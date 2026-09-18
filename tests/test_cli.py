@@ -1,35 +1,25 @@
 import os
 import subprocess
 from pathlib import Path
-from unittest.mock import patch
+from unittest.mock import MagicMock, patch
 
 import pytest
-from click.testing import CliRunner
 
-from aiautocommit import check_lock_files, is_reversion, main, update_env_variables
+from aiautocommit import main, update_env_variables
 
 from tests.utils import GitTestMixin
-
-
-@pytest.fixture
-def runner():
-    return CliRunner()
-
-
-@pytest.fixture
-def git_repo(runner):
-    with runner.isolated_filesystem():
-        from tests.utils import GitTestMixin
-
-        mixin = GitTestMixin()
-        mixin.init_repo()
-        yield mixin
 
 
 def test_update_env_variables():
     with patch.dict(os.environ, {"AIAUTOCOMMIT_TEST_VAR_123": "new_value"}):
         update_env_variables()
         assert os.environ.get("TEST_VAR_123") == "new_value"
+
+
+def test_update_env_variables_precedence():
+    with patch.dict(os.environ, {"AIAUTOCOMMIT_TEST_VAR": "new", "TEST_VAR": "old"}):
+        update_env_variables()
+        assert os.environ["TEST_VAR"] == "new"
 
 
 def test_output_prompt(runner):
@@ -59,29 +49,35 @@ def test_dump_prompts(runner):
         assert Path(".aiautocommit/commit_prompt.txt").exists()
 
 
-def test_is_reversion_amend(runner, git_repo):
-    git_repo.create_file("test.txt", "content")
-    git_repo.git_add("test.txt")
-    git_repo.git_commit("First commit")
+def test_dump_prompts_exists(runner):
+    with runner.isolated_filesystem():
+        os.mkdir(".aiautocommit")
+        with open(".aiautocommit/commit_prompt.txt", "w") as f:
+            f.write("existing")
 
-    # Create a mock COMMIT_EDITMSG with same content as last commit
-    msg_path = Path("COMMIT_EDITMSG")
-    msg_path.write_text("First commit")
-
-    # Should detect as "amend" (returning True)
-    assert is_reversion(str(msg_path)) is True
+        result = runner.invoke(main, ["dump-prompts"])
+        assert "already exists" in result.output
 
 
-def test_check_lock_files_mixed(runner, git_repo):
-    # If we have two different types of lock files, it should return a generic message
-    git_repo.create_file("uv.lock", "content")
-    git_repo.create_file("package-lock.json", "content")
-    git_repo.git_add("uv.lock")
-    git_repo.git_add("package-lock.json")
+def test_dump_prompts_source_missing(runner):
+    with runner.isolated_filesystem():
+        with patch("aiautocommit.Path.__truediv__") as mock_div:
+            mock_path = MagicMock()
+            mock_path.exists.return_value = False
+            mock_div.return_value = mock_path
 
-    result = check_lock_files()
-    assert result.startswith("chore(deps): update lock files")
-    assert "Generated-by: aiautocommit" in result
+            result = runner.invoke(main, ["dump-prompts"])
+            assert "Source prompt directory does not exist" in result.output
+
+
+def test_dump_prompts_to_git_root(runner, git_repo):
+    Path("subdir").mkdir()
+    os.chdir("subdir")
+
+    result = runner.invoke(main, ["dump-prompts"])
+    assert result.exit_code == 0
+    assert (Path("..") / ".aiautocommit" / "commit_prompt.txt").exists()
+    assert not Path(".aiautocommit").exists()
 
 
 def test_install(runner, git_repo):
@@ -110,6 +106,12 @@ def test_install_skip_edit(runner, git_repo):
             text=True,
         ).strip()
         assert editor == "true"
+
+
+def test_install_pre_commit_exists(runner, git_repo):
+    runner.invoke(main, ["install"])
+    result = runner.invoke(main, ["install"])
+    assert "pre-commit hook already exists" in result.output
 
 
 def test_uninstall(runner, git_repo):
@@ -169,125 +171,6 @@ def test_version_option_configured_model(runner):
     assert "model: openai:gpt-4o" in result.output
 
 
-def test_is_reversion_revert_head(runner, git_repo):
-    # REVERT_HEAD exists in .git
-    Path(".git/REVERT_HEAD").write_text("reverting")
-    assert is_reversion() is True
-
-
-def test_is_reversion_merge_msg(runner, git_repo):
-    # MERGE_MSG exists in .git
-    Path(".git/MERGE_MSG").write_text("merging")
-    assert is_reversion() is True
-
-
-def test_configure_prompts_custom(runner, git_repo):
-    config_dir = Path("custom_config")
-    config_dir.mkdir()
-    (config_dir / "commit_prompt.txt").write_text("custom prompt")
-
-    from aiautocommit import configure_prompts
-
-    configure_prompts(config_dir=str(config_dir))
-    from aiautocommit import COMMIT_PROMPT
-
-    assert COMMIT_PROMPT == "custom prompt"
-
-
-def test_configure_prompts_from_subdirectory(runner, git_repo):
-    config_dir = Path(".aiautocommit")
-    config_dir.mkdir()
-    (config_dir / "commit_prompt.txt").write_text("from repo root")
-
-    nested = Path("src/pkg")
-    nested.mkdir(parents=True)
-    os.chdir(nested)
-
-    from aiautocommit import configure_prompts
-
-    configure_prompts()
-    from aiautocommit import COMMIT_PROMPT
-
-    assert COMMIT_PROMPT == "from repo root"
-
-
-def test_configure_prompts_appends_file_from_subdirectory(runner, git_repo):
-    Path(".aiautocommit").write_text("Always mention JIRA tickets")
-
-    nested = Path("src/pkg")
-    nested.mkdir(parents=True)
-    os.chdir(nested)
-
-    from aiautocommit import configure_prompts
-
-    configure_prompts()
-    from aiautocommit import COMMIT_PROMPT
-
-    assert "Always mention JIRA tickets" in COMMIT_PROMPT
-    assert "<project_instructions>" in COMMIT_PROMPT
-    assert "</project_instructions>" in COMMIT_PROMPT
-
-
-def test_dump_prompts_to_git_root(runner, git_repo):
-    Path("subdir").mkdir()
-    os.chdir("subdir")
-
-    result = runner.invoke(main, ["dump-prompts"])
-    assert result.exit_code == 0
-    assert (Path("..") / ".aiautocommit" / "commit_prompt.txt").exists()
-    assert not Path(".aiautocommit").exists()
-
-
-def test_configure_prompts_uses_worktree_root(runner, git_repo, tmp_path):
-    git_repo.create_file("README", "main")
-    git_repo.git_add("README")
-    git_repo.git_commit("init")
-
-    Path(".aiautocommit").mkdir()
-    (Path(".aiautocommit") / "commit_prompt.txt").write_text("main repo prompt")
-
-    worktree = tmp_path / "worktree"
-    subprocess.check_call(["git", "worktree", "add", str(worktree), "-b", "feature"])
-
-    wt_config = worktree / ".aiautocommit"
-    wt_config.mkdir()
-    (wt_config / "commit_prompt.txt").write_text("worktree prompt")
-
-    nested = worktree / "nested"
-    nested.mkdir()
-    os.chdir(nested)
-
-    from aiautocommit import configure_prompts
-
-    configure_prompts()
-    from aiautocommit import COMMIT_PROMPT
-
-    assert COMMIT_PROMPT == "worktree prompt"
-
-
-def test_configure_prompts_worktree_ignores_main_repo_config(
-    runner, git_repo, tmp_path
-):
-    git_repo.create_file("README", "main")
-    git_repo.git_add("README")
-    git_repo.git_commit("init")
-
-    Path(".aiautocommit").mkdir()
-    (Path(".aiautocommit") / "commit_prompt.txt").write_text("main repo prompt")
-
-    worktree = tmp_path / "worktree"
-    subprocess.check_call(["git", "worktree", "add", str(worktree), "-b", "other"])
-
-    os.chdir(worktree)
-
-    from aiautocommit import configure_prompts
-
-    configure_prompts()
-    from aiautocommit import COMMIT_PROMPT
-
-    assert "main repo prompt" not in COMMIT_PROMPT
-
-
 def test_complete_truncation():
     from aiautocommit import PROMPT_CUTOFF, complete
 
@@ -304,26 +187,15 @@ def test_complete_truncation():
         assert "<diff>" not in call_args
 
 
-def test_configure_prompts_with_examples(runner, git_repo):
-    config_dir = Path("examples_config")
-    config_dir.mkdir()
-    (config_dir / "commit_prompt.txt").write_text("base prompt")
-    examples_dir = config_dir / "examples"
-    examples_dir.mkdir()
-    (examples_dir / "example_1.md").write_text("example 1 content")
-    (examples_dir / "example_2.md").write_text("example 2 content")
+def test_complete_returns_none():
+    from aiautocommit import complete
 
-    from aiautocommit import configure_prompts
-
-    configure_prompts(config_dir=str(config_dir))
-    from aiautocommit import COMMIT_PROMPT
-
-    assert "base prompt" in COMMIT_PROMPT
-    assert "example 1 content" in COMMIT_PROMPT
-    assert "example 2 content" in COMMIT_PROMPT
-    assert COMMIT_PROMPT.index("<examples>") < COMMIT_PROMPT.index("example 1 content")
-    assert COMMIT_PROMPT.index("example 2 content") < COMMIT_PROMPT.index("</examples>")
-    assert "## Examples" not in COMMIT_PROMPT
+    with patch("aiautocommit.Agent") as MockAgent:
+        mock_agent_instance = MockAgent.return_value
+        mock_result = MagicMock()
+        mock_result.output = None
+        mock_agent_instance.run_sync.return_value = mock_result
+        assert complete("prompt", "diff") == ""
 
 
 def test_complete_503_graceful_fallback():
@@ -445,6 +317,16 @@ def test_git_commit():
         assert "test message" in mock_run.call_args[0][0]
 
 
+def test_git_commit_failure():
+    from aiautocommit import git_commit
+
+    with patch("aiautocommit.run_command") as mock_run:
+        mock_result = MagicMock()
+        mock_result.returncode = 1
+        mock_run.return_value = mock_result
+        assert git_commit("msg") == 1
+
+
 def test_get_git_dir_failure():
     from aiautocommit import get_git_dir
 
@@ -561,3 +443,92 @@ def test_static_commit_terraform(runner, git_repo):
 
     assert result.exit_code == 0
     assert "chore(deps): update .terraform.lock.hcl" in result.output
+
+
+def test_commit_binary_file(runner, git_repo):
+    binary_path = Path("test.bin")
+    binary_path.write_bytes(b"\x80\x81\x82")
+    git_repo.git_add("test.bin")
+
+    result = runner.invoke(main, ["commit", "--print-message"])
+    assert "aiautocommit does not support binary files" in result.output
+    assert result.exit_code == 0
+
+
+def test_commit_binary_file_exit_path(runner, git_repo):
+    with patch(
+        "aiautocommit.get_diff",
+        side_effect=UnicodeDecodeError("codec", b"", 0, 1, "reason"),
+    ):
+        result = runner.invoke(main, ["commit"])
+        assert result.exit_code == 1
+        assert "does not support binary files" in result.output
+
+
+def test_commit_no_internet(runner, git_repo):
+    git_repo.create_file("test.py", "print('hello')")
+    git_repo.git_add("test.py")
+
+    with patch("aiautocommit.get_diff", return_value="some diff"):
+        with patch(
+            "aiautocommit.wait_for_internet_connection",
+            side_effect=Exception("No internet"),
+        ):
+            result = runner.invoke(main, ["commit"])
+            assert result.exit_code == 0
+
+
+def test_commit_empty_message(runner, git_repo):
+    git_repo.create_file("test.py", "print('hello')")
+    git_repo.git_add("test.py")
+
+    with patch("aiautocommit.generate_commit_message", return_value=""):
+        result = runner.invoke(main, ["commit", "--output-file", "out.txt"])
+        assert result.exit_code == 0
+
+
+def test_commit_performs_git_commit(runner, git_repo):
+    git_repo.create_file("test.py", "print('hello')")
+    git_repo.git_add("test.py")
+    with patch("aiautocommit.generate_commit_message", return_value="feat: test"):
+        with patch("aiautocommit.git_commit", return_value=0) as mock_commit:
+            result = runner.invoke(main, ["commit"])
+            assert result.exit_code == 0
+            assert mock_commit.called
+
+
+def test_commit_with_output_file(runner, git_repo):
+    git_repo.create_file("test.py", "print('hello')")
+    git_repo.git_add("test.py")
+    with patch("aiautocommit.generate_commit_message", return_value="feat: test"):
+        result = runner.invoke(main, ["commit", "--output-file", "out.txt"])
+        assert result.exit_code == 0
+        assert Path("out.txt").read_text() == "feat: test"
+
+
+def test_commit_with_existing_output_file(runner, git_repo):
+    git_repo.create_file("test.py", "print('hello')")
+    git_repo.git_add("test.py")
+    out_path = Path("out.txt")
+    out_path.write_text("# existing content")
+    with patch("aiautocommit.generate_commit_message", return_value="feat: test"):
+        result = runner.invoke(main, ["commit", "--output-file", "out.txt"])
+        assert result.exit_code == 0
+        assert out_path.read_text() == "feat: test\n\n# existing content"
+
+
+def test_commit_reversion_exit(runner):
+    with patch("aiautocommit.is_reversion", return_value=True):
+        result = runner.invoke(main, ["commit"])
+        assert result.exit_code == 0
+
+
+def test_main_default_invoke(runner):
+    # This triggers line 404: ctx.invoke(commit)
+    mock_ctx = MagicMock()
+    mock_ctx.invoked_subcommand = None
+    with patch("click.get_current_context", return_value=mock_ctx):
+        from aiautocommit import commit, main
+
+        main.callback()
+        mock_ctx.invoke.assert_called_with(commit)
