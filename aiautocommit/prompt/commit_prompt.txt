@@ -34,7 +34,6 @@ Git trailers are `Token: value` lines at the end of the message. They must form 
 
 - Put them after one blank line following the subject or body
 - Stack trailer lines with no blank lines between them
-- Do not add a `Generated-by` trailer
 </trailers>
 
 <output>
