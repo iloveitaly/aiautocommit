@@ -46,6 +46,7 @@ def run_command(
     env: dict[str, str] | None = None,
     cwd: str | Path | None = None,
     timing_label: str | None = None,
+    input: str | bytes | None = None,
 ) -> subprocess.CompletedProcess:
     """
     Run a shell command using subprocess.run with logging.
@@ -59,6 +60,7 @@ def run_command(
         env: Environment variables
         cwd: Current working directory
         timing_label: Optional label for the execution-time log
+        input: Optional stdin payload
 
     Returns:
         CompletedProcess object
@@ -73,6 +75,7 @@ def run_command(
                 timeout=timeout,
                 env=env,
                 cwd=cwd,
+                input=input,
             )
         except subprocess.CalledProcessError as e:
             log.debug(f"Command failed with exit code {e.returncode}")
