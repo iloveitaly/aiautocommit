@@ -142,6 +142,10 @@ EXCLUDED_FILES = []
 # Git trailers: https://git-scm.com/docs/git-interpret-trailers
 # Trailers are the last paragraph of `Token: value` lines. A blank line after
 # the subject/body starts the block; blank lines between trailers split it.
+# GitHub requires two blank lines before trailers for some features to work
+# correctly. See: https://github.com/orgs/community/discussions/143092
+# Note: This may require `git commit --cleanup=verbatim` to prevent git from
+# collapsing the blank lines.
 COMMIT_SUFFIX = ""
 
 # Git trailer tokens are alphanumeric plus hyphen, then `:` or `=`
@@ -324,7 +328,13 @@ def trailer_lines_from_suffix(suffix: str) -> list[str] | None:
 
 
 def apply_commit_suffix(message: str, suffix: str) -> str:
-    """Append commit_suffix, stacking git trailers into one last paragraph."""
+    """Append commit_suffix, stacking git trailers into one last paragraph.
+
+    GitHub historically needed two blank lines before a trailer block
+    (https://github.com/orgs/community/discussions/143092). Non-trailer
+    suffixes keep that spacing. Trailer suffixes use one blank line so the
+    block stays a single paragraph for `git interpret-trailers`.
+    """
     stripped_suffix = suffix.strip()
     if not stripped_suffix:
         return message
