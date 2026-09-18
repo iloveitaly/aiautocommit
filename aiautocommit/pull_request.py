@@ -6,7 +6,7 @@ import time
 from pathlib import Path
 
 from .log import log
-from .utils import is_default_branch, run_command
+from .utils import is_default_branch, render_tag, run_command
 
 # Cache durations in seconds
 PR_CONTENT_CACHE_TTL = 7200  # 2 hours
@@ -138,7 +138,12 @@ def get_pull_request_context(branch: str) -> str | None:
                     check=False,
                 )
 
-            md_content = f"<pull_request_title>PR #{number}: {title}</pull_request_title>\n<pull_request_description>\n{body}\n</pull_request_description>\n"
+            md_content = (
+                render_tag("pull_request_title", f"PR #{number}: {title}")
+                + "\n"
+                + render_tag("pull_request_description", body)
+                + "\n"
+            )
 
             # Cache the PR description
             cache_file = cache_dir / f"{number}_pull_request.md"

@@ -4,7 +4,12 @@ from unittest.mock import ANY, patch
 
 import pytest
 
-from aiautocommit.utils import get_current_branch, get_git_toplevel, run_command
+from aiautocommit.utils import (
+    get_current_branch,
+    get_git_toplevel,
+    render_tag,
+    run_command,
+)
 
 
 def test_run_command_success():
@@ -85,3 +90,31 @@ def test_get_git_toplevel_worktree(tmp_path, monkeypatch):
 def test_get_git_toplevel_git_missing():
     with patch("aiautocommit.utils.run_command", side_effect=FileNotFoundError):
         assert get_git_toplevel() is None
+
+
+def test_render_tag_single_line_string():
+    assert render_tag("branch", "main") == "<branch>main</branch>"
+
+
+def test_render_tag_multiline_string():
+    assert render_tag("body", "line1\nline2") == "<body>\nline1\nline2\n</body>"
+
+
+def test_render_tag_strips_string():
+    assert render_tag("branch", "  main\n") == "<branch>main</branch>"
+
+
+def test_render_tag_list_is_block_and_skips_empty():
+    result = render_tag(
+        "repo_information",
+        ["<branch>main</branch>", None, "  ", "<pr>x</pr>"],
+    )
+    assert result == (
+        "<repo_information>\n<branch>main</branch>\n<pr>x</pr>\n</repo_information>"
+    )
+
+
+def test_render_tag_list_single_item_is_block():
+    assert render_tag("examples", ["<example>one</example>"]) == (
+        "<examples>\n<example>one</example>\n</examples>"
+    )

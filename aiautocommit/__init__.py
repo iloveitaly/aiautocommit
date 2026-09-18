@@ -83,6 +83,7 @@ from .utils import (  # noqa: E402
     GIT_SAFE_DIFF_FLAGS,
     get_current_branch,
     get_git_toplevel,
+    render_tag,
     run_command,
     safe_git_cmd,
     safe_git_diff_cmd,
@@ -228,10 +229,8 @@ def configure_prompts(config_dir=None):
     local_append_file = local_repo_config_path()
     if local_append_file.is_file():
         log.debug("found .aiautocommit file, appending to prompt")
-        COMMIT_PROMPT += (
-            "\n\n<project_instructions>\n"
-            + local_append_file.read_text().strip()
-            + "\n</project_instructions>"
+        COMMIT_PROMPT += "\n\n" + render_tag(
+            "project_instructions", local_append_file.read_text()
         )
 
     examples_dir = config_dir / "examples"
@@ -248,13 +247,12 @@ def configure_prompts(config_dir=None):
         )
 
         if example_files:
-            COMMIT_PROMPT += "\n\n<examples>\n"
-
+            example_texts = []
             for file in example_files:
                 log.debug(f"Adding example from {file}")
-                COMMIT_PROMPT += "\n\n" + file.read_text().strip() + "\n\n"
+                example_texts.append(file.read_text())
 
-            COMMIT_PROMPT += "</examples>\n"
+            COMMIT_PROMPT += "\n\n" + render_tag("examples", example_texts)
     else:
         log.debug(f"'examples' directory does not exist in {config_dir}")
 
@@ -374,11 +372,10 @@ def format_error_json(body: object) -> str | None:
 
 
 def build_repo_information(branch: str, pr_context: str | None) -> str:
-    parts = ["<repo_information>", f"<branch>{branch}</branch>"]
-    if pr_context:
-        parts.append(pr_context.strip())
-    parts.append("</repo_information>")
-    return "\n".join(parts)
+    return render_tag(
+        "repo_information",
+        [render_tag("branch", branch), pr_context],
+    )
 
 
 @log_execution_time("ai_generation")
