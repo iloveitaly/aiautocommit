@@ -5,10 +5,7 @@ set script-interpreter := ["zsh", "-euo", "pipefail"]
 # Set up the Python environment, done automatically for you when using direnv
 setup:
     [ -f .env ] || cp .env-example .env
-    # `--allow-existing` is required: mise `python.uv_venv_auto = "create|source"`
-    # pre-creates `.venv`, and plain `uv venv` then exits 2.
-    uv venv --allow-existing
-    uv sync
+    uv venv --allow-existing && uv sync
     @echo "activate: source ./.venv/bin/activate"
 
 # Install this checkout as the global `aiautocommit` CLI (editable).
