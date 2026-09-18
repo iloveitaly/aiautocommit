@@ -7,6 +7,18 @@
 
 
 
+## [0.28.0](https://github.com/iloveitaly/aiautocommit/compare/v0.27.0...v0.28.0) (2026-09-18)
+
+
+### Features
+
+* structure commit prompt with XML tags ([#89](https://github.com/iloveitaly/aiautocommit/issues/89)) ([91028cc](https://github.com/iloveitaly/aiautocommit/commit/91028ccb41b0af7f0a9fc5feab82df91a6ff2495))
+
+
+### Bug Fixes
+
+* **just:** use `uv venv --allow-existing` so setup is idempotent ([#98](https://github.com/iloveitaly/aiautocommit/issues/98)) ([2e99159](https://github.com/iloveitaly/aiautocommit/commit/2e99159bd955ee678b5361696b1d142c738d210d))
+
 ## [0.27.0](https://github.com/iloveitaly/aiautocommit/compare/v0.26.0...v0.27.0) (2026-09-15)
 
 
