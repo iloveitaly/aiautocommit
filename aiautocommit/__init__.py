@@ -64,9 +64,6 @@ def update_env_variables():
 
 update_env_variables()
 
-# pydantic-ai prints a first-run observability banner to stderr on a TTY.
-os.environ["PYDANTIC_AI_NO_BANNER"] = "1"
-
 from importlib.metadata import PackageNotFoundError, version  # noqa: E402
 
 import click  # noqa: E402
