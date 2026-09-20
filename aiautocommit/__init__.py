@@ -67,12 +67,15 @@ update_env_variables()
 from importlib.metadata import PackageNotFoundError, version  # noqa: E402
 
 import click  # noqa: E402
+import pydantic_ai  # noqa: E402
 from pydantic_ai import Agent, ModelSettings  # noqa: E402
 from pydantic_ai.exceptions import (  # noqa: E402
     ModelAPIError,
     ModelHTTPError,
     UserError,
 )
+
+pydantic_ai.BANNER_ENABLED = False
 
 from .global_ignores import apply_global_ignores, format_ignore_plan  # noqa: E402
 from .internet import wait_for_internet_connection  # noqa: E402
