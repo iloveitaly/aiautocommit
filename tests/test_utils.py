@@ -35,6 +35,11 @@ def test_run_command_failure():
         run_command(["ls", "/non-existent-directory-12345"], check=True)
 
 
+def test_run_command_error():
+    with pytest.raises(subprocess.CalledProcessError):
+        run_command(["false"], check=True)
+
+
 def test_get_current_branch():
     branch = get_current_branch()
     # In a git repo, this should return something
