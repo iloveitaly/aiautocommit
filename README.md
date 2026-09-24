@@ -253,6 +253,15 @@ Common examples:
 
 Ensure you have the corresponding API key set in your environment (e.g., `ANTHROPIC_API_KEY` for Anthropic models).
 
+#### Example: Meta Muse
+
+Meta's Model API at [dev.meta.ai](https://dev.meta.ai) is OpenAI-compatible. Because Pydantic AI does not yet have a dedicated `meta:` provider class, use the `openai:` prefix along with `AIAUTOCOMMIT_OPENAI_BASE_URL`:
+
+```shell
+export AIAUTOCOMMIT_MODEL="openai:muse-spark-1.3-contributor"
+export AIAUTOCOMMIT_OPENAI_BASE_URL="https://api.meta.ai/v1"
+```
+
 ### Difftastic
 
 Difftastic integration was removed. While difftastic produces semantically richer diffs, LLMs do not interpret its output format well, leading to worse commit messages than standard `git diff`.
