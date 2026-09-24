@@ -7,6 +7,18 @@
 
 
 
+## [0.28.1](https://github.com/iloveitaly/aiautocommit/compare/v0.28.0...v0.28.1) (2026-09-24)
+
+
+### Bug Fixes
+
+* stack generated git trailers with Generated-by ([#91](https://github.com/iloveitaly/aiautocommit/issues/91)) ([be4cb35](https://github.com/iloveitaly/aiautocommit/commit/be4cb3590563da5bbb51200265c9eb2e7f7e3119))
+
+
+### Documentation
+
+* add Meta Muse configuration example to README ([07b70dd](https://github.com/iloveitaly/aiautocommit/commit/07b70dd4d2b4b009f7700ae603ddec3fd483046b))
+
 ## [0.28.0](https://github.com/iloveitaly/aiautocommit/compare/v0.27.0...v0.28.0) (2026-09-18)
 
 
