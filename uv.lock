@@ -46,7 +46,7 @@ provides-extras = ["all-providers"]
 
 [package.metadata.requires-dev]
 dev = [
-    { name = "beautiful-traceback", specifier = ">=1.0.0" },
+    { name = "beautiful-traceback", specifier = ">=1.0.2" },
     { name = "covdefaults", specifier = ">=2.3.0" },
     { name = "coverage", specifier = ">=7.16.0" },
     { name = "pudb", specifier = ">=2025.1.5" },

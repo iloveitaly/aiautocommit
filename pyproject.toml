@@ -5,6 +5,13 @@ description = "AI generated commit messages"
 keywords = ["git", "commit", "automation", "ai", "openai", "gemini", "anthropic"]
 readme = "README.md"
 requires-python = ">=3.12"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3 :: Only",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+]
 dependencies = [
     "structlog-config>=0.15.0",
     "backoff>=2.2.1",
@@ -25,7 +32,7 @@ aiautocommit = "aiautocommit:main"
 
 
 [build-system]
-requires = ["uv_build>=0.11.0,<0.13"]
+requires = ["uv_build>=0.11.0,<0.14"]
 build-backend = "uv_build"
 
 [tool.uv.build-backend]
@@ -38,10 +45,10 @@ dev = [
     "pyright[nodejs]>=1.1.411",
     "ruff>=0.16.5",
     "pudb>=2025.1.5",
-    "beautiful-traceback>=1.0.0",
     "coverage>=7.16.0",
     "pytest-cov>=7.1.0",
     "covdefaults>=2.3.0",
+    "beautiful-traceback>=1.0.2",
 ]
 
 [tool.pyright]
