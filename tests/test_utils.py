@@ -18,6 +18,11 @@ def test_run_command_success():
     assert result.returncode == 0
 
 
+def test_run_command_passes_stdin():
+    result = run_command(["cat"], input="trailer stdin")
+    assert result.stdout == "trailer stdin"
+
+
 def test_run_command_uses_custom_timing_label():
     with patch("aiautocommit.timing.log.debug") as mock_debug:
         run_command(["echo", "hello"], timing_label="git_diff")
