@@ -59,7 +59,7 @@ class TestIntegration(GitTestMixin):
                 result = self.runner.invoke(
                     main,
                     ["commit", "--print-message"],
-                    env={"LOG_LEVEL": "DEBUG", **os.environ},
+                    env={"AIAUTOCOMMIT_LOG_LEVEL": "DEBUG", **os.environ},
                 )
 
                 # Assertions

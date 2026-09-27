@@ -53,6 +53,10 @@ def update_env_variables():
     for key in list(os.environ.keys()):
         if key.startswith(prefix):
             base_key = key[len(prefix) :]
+            # Logging configuration is handled directly in aiautocommit.log and should not
+            # leak to the plain LOG_LEVEL environment variable.
+            if base_key == "LOG_LEVEL":
+                continue
             # AIAUTOCOMMIT_ prefixed variables take precedence over existing variables
             os.environ[base_key] = os.environ[key]
 
