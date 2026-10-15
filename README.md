@@ -293,6 +293,13 @@ I looked at a bunch of projects before building this one.
 - https://github.com/josenerydev/gpt-commit - also python
 - https://github.com/di-sukharev/opencommit - has conventional commit structure
 
+
+## Local CLI development
+
+Run `just install_editable` to install this checkout globally in editable mode. Source changes are reflected without reinstalling.
+
+This requires `uv`, `just`, `zsh`, and `jq`. If mise is available, the recipe also updates every installed `pipx:aiautocommit` environment so mise can use the local checkout. Re-run after mise upgrades, which replace those editable installations.
+
 ---
 
 *This project was created from [iloveitaly/python-package-template](https://github.com/iloveitaly/python-package-template)*
