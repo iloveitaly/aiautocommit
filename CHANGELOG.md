@@ -7,6 +7,13 @@
 
 
 
+## [0.28.2](https://github.com/iloveitaly/aiautocommit/compare/v0.28.1...v0.28.2) (2026-10-19)
+
+
+### Bug Fixes
+
+* **log:** ignore generic LOG_LEVEL in favor of AIAUTOCOMMIT_LOG_LEVEL ([ced74f5](https://github.com/iloveitaly/aiautocommit/commit/ced74f59fec9fbacf2556df48f187ced2cca2306))
+
 ## [0.28.1](https://github.com/iloveitaly/aiautocommit/compare/v0.28.0...v0.28.1) (2026-09-24)
 
 
