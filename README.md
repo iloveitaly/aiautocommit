@@ -233,7 +233,7 @@ All environment variables used by `aiautocommit` or its providers can be prefixe
 * `AIAUTOCOMMIT_AI_KEY`: **Universal API key.** `aiautocommit` internally maps this to the correct provider-specific variable (e.g., `GOOGLE_API_KEY`, `OPENAI_API_KEY`) based on your active model.
 * `AIAUTOCOMMIT_MODEL`: AI model to use, in `provider:model` format (default: `google:gemini-3.8-flash`). Examples: `anthropic:claude-3-5-sonnet-latest`, `openai:gpt-4o`.
 * `AIAUTOCOMMIT_CONFIG`: Custom config directory path
-* `AIAUTOCOMMIT_LOG_LEVEL`: Logging verbosity
+* `AIAUTOCOMMIT_LOG_LEVEL`: Logging verbosity (default: `WARNING`)
 * `AIAUTOCOMMIT_LOG_PATH`: Custom log file path
 
 Ensure you have the corresponding API key set in `AIAUTOCOMMIT_AI_KEY`.

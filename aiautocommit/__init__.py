@@ -1,5 +1,4 @@
 import json
-import logging
 import os
 import re
 import shutil
@@ -183,9 +182,6 @@ LOCK_FILE_MESSAGES = {
 if not os.environ.get("AIAUTOCOMMIT_LOG_PATH"):
     # Suppress ResourceWarnings
     warnings.filterwarnings("ignore", category=ResourceWarning)
-
-    # Optional: Disable httpx logging if desired
-    logging.getLogger("httpx").setLevel(logging.WARNING)
 
 
 def local_repo_config_path() -> Path:
