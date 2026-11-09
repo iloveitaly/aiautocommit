@@ -6,6 +6,13 @@ from aiautocommit import update_env_variables
 from aiautocommit.log import ignore_log_level_env, setup_logging
 
 
+def test_default_log_level():
+    with patch.dict(os.environ, {}, clear=True):
+        setup_logging()
+        assert logging.getLogger().level == logging.WARNING
+        assert os.environ.get("LOG_LEVEL") == "WARNING"
+
+
 def test_plain_log_level_ignored():
     with patch.dict(
         os.environ,
@@ -13,8 +20,8 @@ def test_plain_log_level_ignored():
         clear=True,
     ):
         setup_logging()
-        assert logging.getLogger().level == logging.INFO
-        assert os.environ.get("LOG_LEVEL") is None
+        assert logging.getLogger().level == logging.WARNING
+        assert os.environ.get("LOG_LEVEL") == "WARNING"
 
 
 def test_aiautocommit_log_level_respected():
@@ -52,7 +59,11 @@ def test_update_env_variables_skips_log_level():
 def test_ignore_log_level_env():
     with patch.dict(os.environ, {"LOG_LEVEL": "DEBUG"}, clear=True):
         ignore_log_level_env()
-        assert "LOG_LEVEL" not in os.environ
+        assert os.environ.get("LOG_LEVEL") == "WARNING"
+
+    with patch.dict(os.environ, {}, clear=True):
+        ignore_log_level_env()
+        assert os.environ.get("LOG_LEVEL") == "WARNING"
 
     with patch.dict(
         os.environ,

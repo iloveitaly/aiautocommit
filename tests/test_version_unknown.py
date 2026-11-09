@@ -33,29 +33,29 @@ def test_config_paths_env():
     import aiautocommit
 
 
-def test_logging_suppression():
+def test_resource_warning_suppression():
     if "aiautocommit" in sys.modules:
         del sys.modules["aiautocommit"]
 
     with patch.dict(os.environ, {}, clear=True):
-        with patch("logging.getLogger") as mock_get_logger:
+        with patch("warnings.filterwarnings") as mock_filterwarnings:
             import aiautocommit  # noqa: F401
 
-            assert mock_get_logger.called
+            assert mock_filterwarnings.called
 
     if "aiautocommit" in sys.modules:
         del sys.modules["aiautocommit"]
 
 
-def test_logging_not_suppressed():
+def test_resource_warning_not_suppressed():
     if "aiautocommit" in sys.modules:
         del sys.modules["aiautocommit"]
 
     with patch.dict(os.environ, {"AIAUTOCOMMIT_LOG_PATH": "/tmp/test.log"}):
-        with patch("logging.getLogger") as mock_get_logger:
+        with patch("warnings.filterwarnings") as mock_filterwarnings:
             import aiautocommit  # noqa: F401
 
-            assert not mock_get_logger.called
+            assert not mock_filterwarnings.called
 
     if "aiautocommit" in sys.modules:
         del sys.modules["aiautocommit"]
