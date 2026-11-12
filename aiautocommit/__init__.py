@@ -9,7 +9,7 @@ from pathlib import Path
 
 from .version import __version__
 
-DEFAULT_MODEL_NAME = "google:gemini-3.8-flash"
+DEFAULT_MODEL_NAME = "google:gemini-4-hydrogen"
 
 
 def map_ai_key(ai_key: str, model_name: str):
