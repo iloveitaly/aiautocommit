@@ -89,7 +89,13 @@ def test_install(runner, git_repo):
         result = runner.invoke(main, ["install"])
         assert result.exit_code == 0
         assert "Installed pre-commit hook" in result.output
+        assert "Set local core.editor=true" in result.output
         assert Path(".git/hooks/prepare-commit-msg").exists()
+        editor = subprocess.check_output(
+            ["git", "config", "--local", "--get", "core.editor"],
+            text=True,
+        ).strip()
+        assert editor == "true"
 
 
 def test_install_skip_edit(runner, git_repo):
@@ -106,6 +112,23 @@ def test_install_skip_edit(runner, git_repo):
             text=True,
         ).strip()
         assert editor == "true"
+
+
+def test_install_no_skip_edit(runner, git_repo):
+    with runner.isolated_filesystem():
+        mixin = GitTestMixin()
+        mixin.init_repo()
+        result = runner.invoke(main, ["install", "--no-skip-edit"])
+        assert result.exit_code == 0
+        assert "Installed pre-commit hook" in result.output
+        assert "Set local core.editor=true" not in result.output
+        assert Path(".git/hooks/prepare-commit-msg").exists()
+        proc = subprocess.run(
+            ["git", "config", "--local", "--get", "core.editor"],
+            capture_output=True,
+            text=True,
+        )
+        assert proc.returncode != 0
 
 
 def test_install_pre_commit_exists(runner, git_repo):

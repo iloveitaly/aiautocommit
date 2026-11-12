@@ -762,8 +762,8 @@ def commit(print_message, output_file, config_dir):
     help="Overwrite existing pre-commit hook if it exists",
 )
 @click.option(
-    "--skip-edit",
-    is_flag=True,
+    "--skip-edit/--no-skip-edit",
+    default=True,
     help="Set local core.editor to true so git commit does not open an editor after the hook",
 )
 def install(overwrite, skip_edit):
