@@ -7,6 +7,20 @@
 
 
 
+## [0.29.0](https://github.com/iloveitaly/aiautocommit/compare/v0.28.1...v0.29.0) (2026-11-12)
+
+
+### Features
+
+* **cli:** default --skip-edit to True and add --no-skip-edit flag ([735e791](https://github.com/iloveitaly/aiautocommit/commit/735e79122987a9f621fd15b80298fbcf6e14639c))
+* **install:** enable skip-edit by default ([735e791](https://github.com/iloveitaly/aiautocommit/commit/735e79122987a9f621fd15b80298fbcf6e14639c))
+
+
+### Bug Fixes
+
+* **logging:** default log level to WARNING and suppress HTTP noise ([55ee236](https://github.com/iloveitaly/aiautocommit/commit/55ee236161db19e31627cfd474c4adeffee66005))
+* **log:** ignore generic LOG_LEVEL in favor of AIAUTOCOMMIT_LOG_LEVEL ([ced74f5](https://github.com/iloveitaly/aiautocommit/commit/ced74f59fec9fbacf2556df48f187ced2cca2306))
+
 ## [0.28.1](https://github.com/iloveitaly/aiautocommit/compare/v0.28.0...v0.28.1) (2026-09-24)
 
 
