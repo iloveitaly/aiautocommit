@@ -7,6 +7,13 @@
 
 
 
+## [0.30.0](https://github.com/iloveitaly/aiautocommit/compare/v0.29.0...v0.30.0) (2026-11-12)
+
+
+### Features
+
+* update default model to gemini-4-hydrogen ([879c1ec](https://github.com/iloveitaly/aiautocommit/commit/879c1ec42735b1fcfc5e92657543d828bfaa800b))
+
 ## [0.29.0](https://github.com/iloveitaly/aiautocommit/compare/v0.28.1...v0.29.0) (2026-11-12)
 
 
